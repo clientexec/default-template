@@ -49,13 +49,25 @@
             </thead>
         </table>
     </div>
-<?php if ($this->user->hasPermission('billing_send_invoices')) { ?>
     <div>
-        <button type="button" class="btn btn-default btn-lg" data-toggle="modal" data-target="#confirmSendInvoice" id="openConfirmInvoices">
-            <?php echo $this->user->lang("Send Invoice(s)"); ?>
-        </button>
-    </div>
+    <div class="row invoice-buttons">
+<?php if ($this->user->hasPermission('billing_send_invoices')) { ?>
+        <div class="col-xs-12 col-sm-2">
+            <div class="row">
+                <button type="button" class="btn btn-default btn-lg form-control" data-toggle="modal" data-target="#confirmSendInvoice" id="openConfirmInvoices">
+                    <?php echo $this->user->lang("Send Invoice(s)"); ?>
+                </button>
+            </div>
+        </div>
 <?php } ?>
+<?php if ($this->user->hasPermission('billing_masspay')) { ?>
+        <div class="col-xs-12 col-sm-2">
+            <button type="button" class="btn btn-default btn-lg form-control" id="massPayButton">
+                <?php echo $this->user->lang("Mass Pay"); ?>
+            </button>
+        </div>
+<?php } ?>
+    </div>
 </div>
 <div class="hidden" id="invoices-hidden"></div>
 <div class="modal fade" tabindex="-1" role="dialog" id="confirmSendInvoice">

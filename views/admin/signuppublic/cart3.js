@@ -81,7 +81,7 @@ cart.update_pricing = function() {
                 document.getElementById('payment_information_display').value = 1;
                 if ($('.'+gatewayNameSelected+'paymentbutton').length > 0) {
                     $('.paymentbutton1').hide();
-                    $('.'+gatewayNameSelected+'paymentbutton').show();
+                    $('.'+gatewayNameSelected+'paymentbutton').show().trigger('paymentShow');
                 }
             }
 
@@ -303,7 +303,7 @@ cart.toggle_gateway = function(gatewayName) {
     }
     if ($('.'+cart.selected_gateway+'paymentbutton').length > 0 && !(parseFloat(document.getElementById('totalPay_raw').value) == 0 && document.getElementById('hidePaymentMethods').value == 1)) {
         $('.paymentbutton1').hide();
-        $('.'+cart.selected_gateway+'paymentbutton').show();
+        $('.'+cart.selected_gateway+'paymentbutton').show().trigger('paymentShow');
     } else {
         $('.'+cart.selected_gateway+'paymentbutton').hide();
         $('.paymentbutton1').show();

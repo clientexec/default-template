@@ -111,10 +111,13 @@
             $quantitysubtotalprice = $this->subtotalprice;
             $quantitytotaltax = $this->totaltax;
 
+            include_once 'modules/billing/models/BillingGateway.php';
+            $billingGateway = new BillingGateway($this->user);
+
             foreach ($this->items as $invoiceentry) { ?>
             <tr>
                 <td>
-                    <?php echo $this->escape($invoiceentry['description']) ?><br/>
+                    <?php echo $this->escape($billingGateway->translateText($invoiceentry['description'], $this->user)); ?><br/>
                     <?php
                     $addonQuantity = '';
                     $addonQuantityPrice = $invoiceentry['price'];
@@ -135,10 +138,10 @@
                         </span><br>
                     <?php } ?>
                     <span class="entry-details"><?php
-                        echo nl2br($invoiceentry['detail']);
+                        echo nl2br($billingGateway->translateText($invoiceentry['detail'], $this->user));
                     ?></span>
                 </td>
-                <td><?php echo $invoiceentry['billingtypename'];?>
+                <td><?php echo $this->user->lang($invoiceentry['billingtypename']);?>
                 </td>
                 <td class="text-right"><?php echo $addonQuantityPrice;?>
                 </td>
@@ -317,7 +320,7 @@
     <?php if (count($this->paymentMethods) != 0) { ?>
         <div class="form-actions col-xs-12 form-group">
             <?php if ($this->user->hasPermission('clients_edit_payment_type')) { ?>
-            <div class="payment-container">
+            <div class="payment-container col-xs-12">
                 <label class="checkbox inline">
                     <input type="checkbox" name="makeDefault" id="makeDefault" value="1" checked="true" />
                     <span class='makeDefaultNoCC'>
@@ -333,9 +336,9 @@
                 <button style="margin-left:0px;cursor:pointer;" class="pull-right btn btn-lg btn-default" id="submitButton"><?php echo $this->user->lang('Pay Invoice'); ?></button>
             </span>
         <?php foreach ($this->gatewayForms as $gatewayName => $gatewayForm) { ?>
-            <span class='paymentbutton2 <?php echo $gatewayName."paymentbutton"; ?> pull-right hidden'>
+            <div class='paymentbutton2 <?php echo $gatewayName."paymentbutton"; ?> text-right col-xs-12 hidden'>
                 <?php echo $this->unescape($gatewayForm); ?>
-            </span>
+            </div>
         <?php } ?>
         </div>
     <?php } ?>

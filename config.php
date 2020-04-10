@@ -1,6 +1,11 @@
 <?php
 $templateOptions = array();
 $templateOptions[] = array(
+    "name"=> "JavaScript / CSS Source",
+    "description" => $this->user->lang("Controls the source of some core JavaScript and CSS libraries"),
+    "values" => array("CDN*", "Local")
+);
+$templateOptions[] = array(
     "name"=> "Theme Style",
     "description" => $this->user->lang("Please select one of the two overall styles you want to use"),
     "values" => array("Light*", "Dark")

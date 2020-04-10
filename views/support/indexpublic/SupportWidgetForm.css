@@ -5,6 +5,7 @@ a {
 body {
     font-family:Arial,Helvetica,sans-serif;
     font-size:10px;
+    background-color: unset;
 }
 
 abbr {
@@ -32,14 +33,14 @@ input,select,textarea {
 }*/
 
 input, select, textarea {
-background-color: #f6f6f6;
-border: 2px solid #9A9A9A;
-border-radius: 4px;
-display: block;
-outline: none;
-width: 100%;
-padding: 10px;
-font-size: 13px;
+    background-color: #f6f6f6;
+    border: 2px solid #9A9A9A;
+    border-radius: 4px;
+    display: block;
+    outline: none;
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
 }
 
 input[type="search"],input.search {
@@ -81,7 +82,7 @@ input[type="hidden"]+label {
 }
 
 .view .body {
-    padding:16px;
+    /* padding:16px; */
 }
 
 .flash {
@@ -111,8 +112,9 @@ input[type="hidden"]+label {
 }
 
 .view footer {
-text-align:right;
-padding:14px 0px 0;
+    text-align:right;
+    padding-top: 14px;
+    padding-bottom: 14px;
 }
 
 .footer a,.view footer a {
@@ -120,20 +122,20 @@ padding:14px 0px 0;
 }
 
 .view footer .spacer {
-font-size:13px;
-padding:5px 10px;
+    font-size:13px;
+    padding:5px 10px;
 }
 
 .view footer .branding {
-color:#888;
-float:left;
-padding-top:7px;
+    color:#888;
+    float:left;
+    padding-top:7px;
 }
 
 .view footer .branding a,.view footer .branding a:visited {
-color:#adadad;
-font-size:11px;
-text-decoration:none;
+    color:#adadad;
+    font-size:11px;
+    text-decoration:none;
 }
 
 .view footer .branding+span {
@@ -157,11 +159,11 @@ input.button, input.submit {
 /*.ceform input.submit { margin-top:22px; }*/
 
 input.button {
-background:url(../../../../../javascript/external/images/buttonbg.gif);
-border:1px solid #ccc;
-color:#666;
-font-size:90%;
-color:#1a6690;
+    background:url(../../../../../javascript/external/images/buttonbg.gif);
+    border:1px solid #ccc;
+    color:#666;
+    font-size:90%;
+    color:#1a6690;
 }
 
 #suggestions_submit.button {
@@ -272,79 +274,85 @@ background-position:0 -273px;
 }
 
 .search_results li>p {
-color:#777;
-font-size:13px;
-font-weight:400;
-margin-top:5px;
-overflow:hidden;
-text-overflow:ellipsis;
-white-space:nowrap;
+    color:#777;
+    font-size:13px;
+    font-weight:400;
+    margin-top:5px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
 }
 
 .search_results div.footer {
-border-top:1px solid #eee;
-padding-top:7px;
-text-align:right;
+    border-top:1px solid #eee;
+    padding-top:7px;
+    text-align:right;
 }
 
 .zd_label {
-border-radius:4px;
--moz-border-radius:4px;
--webkit-border-radius:4px;
-display:none;
-font-weight:700;
-padding:2px 4px;
+    border-radius:4px;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    display:none;
+    font-weight:700;
+    padding:2px 4px;
 }
 
 .zd_label.answered,.zd_label.done {
-background:#7eab38;
-color:#fff;
+    background:#7eab38;
+    color:#fff;
 }
 
 .zd_label.planned {
-background:#dd7a18;
-color:#fff;
+    background:#dd7a18;
+    color:#fff;
 }
 
 .zd_label.not_planned {
-background:#BBB;
-color:#fff;
+    background:#BBB;
+    color:#fff;
 }
 
 #wrapper {
     background-color:#fff;
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+    border-radius:5px;
+    float:  left;
+    width:  100%;
 }
 
 #dropbox {
-    padding-left: 50px;
+    padding:  20px 20px 10px 50px;
 }
 
 #dropbox>header {
-margin-bottom:5px;
-padding:0 14px;
+    margin-bottom:5px;
+    /* padding:0 14px; */
 }
 
 #dropbox>header h1 {
-color:#333;
-font-size:18px;
-font-weight:bold;
+    color:#333;
+    font-size:18px;
+    font-weight:bold;
+    margin-top:  0;
 }
 
 #knowledge_base_search {
-float:right;
+    float:right;
 }
 
 #knowledge_base_search input {
-width:180px;
+    width:180px;
 }
 
 #suggestions_query+input {
-margin-left:79%;
-width:19%;
+    margin-left:79%;
+    width:19%;
 }
 
 #knowledge_base_search_results,#suggestions_results {
-max-width:565px;
+    max-width:565px;
 }
 
 #suggestions_results .body{
@@ -354,34 +362,33 @@ max-width:565px;
 
 
 #ticket_success {
-text-align:center;
-margin:20px;
+    text-align:center;
+    margin:20px;
 }
 
 #ticket_success .body span {
-/*background:transparent url(../../../../javascript/external/images/nice_check.png) no-repeat 0 3px;*/
-font-size:20px;
-padding:5px 34px;
+    font-size:20px;
+    padding:5px 34px;
 }
 
 #waiting .body {
-text-align:center;
+    text-align:center;
 }
 
 header,footer,section,.view footer span,.search_results li>a,.search_results li>p,.zd_label.selected{
-display:block;
+    display:block;
 }
 
 input[type=checkbox],input[type=radio],select,.view footer input,.search_results div.footer .button {
-width:auto;
+    width:auto;
 }
 
 input[type="hidden"],.view {
-display:none;
+    display:none;
 }
 
 .search_results div.footer .back{
-float:left;
+    float:left;
 }
 
 .more .button,
@@ -409,4 +416,14 @@ float:left;
     background-position-x: -445px;
     background-position-y: -66px;
     opacity: .07;
+}
+
+footer .branding .branding-image {
+    height:  20px;
+    position: relative;
+    top:  -2px;
+}
+
+#suggestions_results .content ul {
+    padding-left: 0;
 }

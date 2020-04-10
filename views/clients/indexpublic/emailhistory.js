@@ -17,6 +17,8 @@ $(document).ready(function() {
             data: 'subject'
         },{
             data: 'date'
+        },{
+            data: 'from'
         }],
         order: [
             [ 2, 'desc' ]

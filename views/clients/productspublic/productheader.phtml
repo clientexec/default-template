@@ -15,7 +15,9 @@
         <?php foreach ($this->pluginActions as $action) { ?>
             <?php if (isset($action['url'])) { ?>
             <li><a href="<?php echo $action['url']; ?>"><?php echo $action['name']; ?></a></li>
-            <?php } else if (isset($action['form'])) { ?>
+            <?php } else if (isset($action['link']) && $action['form'] == '') { ?>
+                <?php echo $action['link']; ?>
+            <?php } else if (isset($action['form']) && $action['form'] != '') { ?>
             <?php echo $actionsHtml .= $action['link']; ?>
             <?php $additionalHTML .= $action['form']; ?>
             <?php } else { ?>

@@ -46,6 +46,13 @@ $(document).ready(function() {
                     'data': v,
                     'sortable': false,
                 });
+            } else if (v == 'nextDueDate') {
+                datatbl.columns.push({
+                    'data': {
+                        '_': v + '.display',
+                        'sort': v + '.sort'
+                    }
+                });
             } else {
                 datatbl.columns.push({'data': v});
             }
@@ -63,7 +70,9 @@ $(document).ready(function() {
                         datatbl.data[row][v] = '<a href="index.php?fuse=clients&controller=products&view=product&id=' + value['id'] + '">' + ce.htmlspecialchars(value[v]) + '</a>';
                     } else if (v == 'nextDueDate') {
                         if (value[v].length) {
-                            datatbl.data[row][v] = value[v];
+                            datatbl.data[row][v] = {};
+                            datatbl.data[row][v]['display'] = value[v];
+                            datatbl.data[row][v]['sort'] = value[v + 'TS'];
                         } else {
                             datatbl.data[row][v] = lang("Not Applicable");
                         }

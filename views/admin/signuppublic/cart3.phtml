@@ -287,9 +287,9 @@ if (@$item['newSetup']) {
                         </div>
                     <?php } ?>
                     <div class="col-xs-12 <?php if (stripos($field['fieldName'], 'cvv') !== false) { ?>
-                        col-xs-2
+                        col-sm-2
                         <?php } elseif ($field['fieldType'] != 'grouplabel') { ?>
-                        col-xs-4
+                        col-sm-4
                         <?php } ?>">
                     <?php if ($field['fieldType'] == 'text') { ?>
                         <input id="<?php echo $field['fieldName'];?>" name="<?php echo $field['fieldName'];?>" <?php echo $requiredtype;?> type="text" value="<?php echo @$field['fieldValue'];?>"<?php echo (@$field['fieldDisabled']) ? ' disabled' : ''; ?> class="form-control">
@@ -336,7 +336,7 @@ if (@$item['newSetup']) {
 
         <?php if (@$this->termsConditions) { ?>
 
-            <div class="cart_agree col-xs-12 col-sm-5 form-group center-on-mobile">
+            <div class="cart_agree col-xs-12 form-group">
                 <label class="checkbox">
                 <input type="checkbox" onclick="cart.agree_tc();" name="agree" value="1">
                 <?php echo $this->user->lang('I Agree to the'); ?>
@@ -353,14 +353,14 @@ if (@$item['newSetup']) {
 
         <?php if (count($this->paymentmethods) != 0) { ?>
 
-        <div class="form-actions col-xs-12 col-sm-6 form-group center-on-mobile">
+        <div class="form-actions col-xs-12 col-sm-6 form-group center-on-mobile pull-left">
             <span class='paymentbutton1'><a style="margin-left:0px;cursor:pointer;" class="btn-success btn btn-lg <?php if (@$this->termsConditions) {
 ?>disabled<?php
 } ?>" onclick="cart.submit_form(<?php echo $this->loggedIn; ?>);"  id="submitButton"></a></span>
         <?php foreach ($this->gatewayForms as $gatewayName => $gatewayForm) { ?>
-            <span class='paymentbutton2 <?php echo $gatewayName."paymentbutton"; ?> pull-right'>
+            <div class='paymentbutton2 <?php echo $gatewayName."paymentbutton"; ?> pull-left col-xs-12'>
                 <?php echo $this->unescape($gatewayForm); ?>
-            </span>
+            </div>
         <?php } ?>
         </div>
 
@@ -424,24 +424,6 @@ if (@$item['newSetup']) {
             s.parentNode.insertBefore(e, s);
         }
         (window.attachEvent) ? window.attachEvent('onload', s) : window.addEventListener('load', s, false);
-    })();
-</script>
-<?php } ?>
-
-<?php if ($this->maxmind_device_tracking_enabled === true) { ?>
-<script data-cfasync="false">
-    maxmind_user_id = '<?php echo $this->maxmind_account_id; ?>';
-    (function() {
-        var loadDeviceJs = function() {
-            var element = document.createElement('script');
-            element.src = ('https:' == document.location.protocol ? 'https:' : 'http:') + '//device.maxmind.com/js/device.js';
-            document.body.appendChild(element);
-        };
-        if (window.addEventListener) {
-            window.addEventListener('load', loadDeviceJs, false);
-        } else if (window.attachEvent) {
-            window.attachEvent('onload', loadDeviceJs);
-        }
     })();
 </script>
 <?php } ?>

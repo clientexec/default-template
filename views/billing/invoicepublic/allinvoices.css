@@ -14,3 +14,7 @@
 .long-currency {
     font-size:12px;
 }
+
+.invoice-buttons .btn-group-lg>.btn, .invoice-buttons .btn-lg {
+    padding:  6px 12px;
+}

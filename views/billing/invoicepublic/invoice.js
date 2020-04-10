@@ -37,7 +37,7 @@ invoice.toggle_gateway = function(gatewayName) {
     }
     if ($('.'+invoice.selected_gateway+'paymentbutton').length) {
         $('.paymentbutton1').addClass('hidden');
-        $('.' + invoice.selected_gateway + 'paymentbutton').removeClass('hidden');
+        $('.' + invoice.selected_gateway + 'paymentbutton').removeClass('hidden').trigger('paymentShow');
     } else {
         $('.paymentbutton1').removeClass('hidden');
     }

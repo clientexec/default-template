@@ -68,12 +68,14 @@ $(document).ready(function() {
         $('input[type="checkbox"]', rows).prop('checked', $(this).prop('checked'));
         if ($('#invoices-grid tbody input[type="checkbox"]:checked').length) {
             $('#openConfirmInvoices').prop('disabled', false);
+            $('#massPayButton').prop('disabled', false);
         } else {
             $('#openConfirmInvoices').prop('disabled', true);
+            $('#massPayButton').prop('disabled', true);
         }
     });
 
-    // Handle click on checkbox to set state of "Select all" control
+    // Handle click on each checkbox
     $('#invoices-grid tbody').on('change', 'input[type="checkbox"]', function() {
         // If checkbox is not checked
         if (!$(this).prop('checked')) {
@@ -84,13 +86,45 @@ $(document).ready(function() {
         } else {
             $('#openConfirmInvoices').prop('disabled', true);
         }
+
+        // handle mass pay (must have at least 2 checked)
+        if ($('#invoices-grid tbody input[type="checkbox"]:checked').length > 1) {
+            $('#massPayButton').prop('disabled', false);
+        } else {
+            $('#massPayButton').prop('disabled', true);
+        }
     });
 
+    // set default to off
     if ($('#invoices-grid tbody input[type="checkbox"]:checked').length) {
         $('#openConfirmInvoices').prop('disabled', false);
+        $('#massPayButton').prop('disabled', false);
     } else {
         $('#openConfirmInvoices').prop('disabled', true);
+        $('#massPayButton').prop('disabled', true);
     }
+
+    $('#massPayButton').on('click', function(){
+        var selectedInvoices = [];
+        $('#invoices-grid tbody input[type="checkbox"').each(function () {
+            if ($(this).prop('checked')) {
+                selectedInvoices.push($(this).val());
+            }
+        });
+        $.ajax({
+            url: 'index.php?fuse=billing&controller=invoice&action=masspay',
+            type: 'POST',
+            data: {
+                invoices: selectedInvoices,
+            },
+            success: function(xhr) {
+                response = ce.parseResponse(xhr);
+                if (response.success == true) {
+                    window.location = 'index.php?fuse=billing&controller=invoice&view=invoice&id=' + response.invoiceId;
+                }
+            }
+        });
+    });
 
     $('#sendInvoice').click(function() {
         $('#confirmSendInvoice').modal('hide');

@@ -508,11 +508,11 @@ form.selected-domain-form .domain-option-add .fa {
     clear: both;
 }
 
-@media (min-width: 767px) {
+/*@media (min-width: 767px) {
     .center-on-mobile .paymentbutton1 a {
         float: right;
     }
-}
+}*/
 
 .parsley-error-list.for_sub_label, .parsley-error-list li {
     margin-bottom: 0px;

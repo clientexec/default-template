@@ -78,7 +78,7 @@ paymentmethod.process_plugin_details = function(json)
 
     if ($('.' + json.internalname + 'PaymentInformation').length) {
         if (json.customercurrentpaymenttype == json.internalname) {
-            $('.' + json.internalname + 'PaymentInformation').removeClass('hidden');
+            $('.' + json.internalname + 'PaymentInformation').removeClass('hidden').trigger('paymentShow');
             if ($('.' + json.internalname + 'PaymentIframe').length > 0) {
                 $('.' + json.internalname + 'PaymentIframe').prop('src', 'index.php?fuse=admin&view=viewpluginurl&plugintoshow=' + json.internalname);
             } else if (json.openHandler) {
