@@ -1,0 +1,44 @@
+<?php echo $this->publicproductheader($this->user); ?>
+
+<div class="well well-lg" id="ssl-info">
+    <table class="table table-striped table-responsive">
+        <tr>
+            <td>
+                <strong><?php echo $this->user->lang("Type");?></strong>
+                <?php echo $this->cert['type']; ?>
+            </td>
+            <td>
+                <strong><?php echo $this->user->lang("Status");?></strong>
+                <?php echo $this->cert['status']; ?>
+            </td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <strong><?php echo $this->user->lang("Certificate ID");?></strong>
+                <?php echo $this->cert['id']; ?>
+            </td>
+            <td>
+                <strong><?php echo $this->user->lang("Domain");?></strong>
+                <?php echo $this->cert['domain']; ?>
+            </td>
+            <td>
+                <strong><?php echo $this->user->lang("Expiration Date");?></strong>
+                <?php echo $this->cert['expirationDate']; ?>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <strong><?php echo $this->user->lang("Administration Email");?></strong>
+                <div class="form-group col-xs-12 col-sm-5">
+                    <input type="text" class="form-control" value="<?php echo $this->cert['adminEmail']; ?>">
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="col-xs-12 col-sm-5">
+    <strong><?php echo $this->user->lang("CSR");?></strong>
+    <textarea name="csr" class="form-control"><?php echo $this->cert['csr']; ?></textarea>
+</div>

@@ -1,0 +1,91 @@
+.ce-loginbox {
+    height:410px;
+    color: #555;
+}
+
+.ce-loginbox-header {
+    color: #555;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 35px;
+}
+
+.ce-loginbox #url {
+    color: #888;
+    font-size: smaller;
+}
+
+#loginbtn {
+    padding: 0;
+    margin-top: 20px;
+}
+
+.ce-loginbox .newaccounturl,
+.ce-loginbox .forgotpasswordurl {
+    cursor: pointer;
+}
+
+.ce-loginbox .input-group {
+    margin-top: 20px;
+    /* width: 100%; */
+}
+
+.ce-loginbox .input-group-addon {
+    width: 40px;
+}
+
+.alert-loginalerts {
+    display:none;
+}
+
+.sociallogin .twitter {
+    width:165px;
+    height:30px;
+    border:0px;
+    background: url('../../../img/login/twitter_button.png') no-repeat left bottom;
+}
+
+.sociallogin .facebook {
+    width:165px;
+    height:30px;
+    border:0px;
+    background: url('../../../img/login/facebook_button.png') no-repeat left bottom;
+}
+
+.register-description {
+    margin-bottom:15px;
+}
+
+.alert-registration-success,
+.alert-reset-password-success {
+    display:none;
+}
+
+.g-recaptcha {
+    transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+}
+
+ul.parsley-error-list {
+    padding-left: 0px;
+    margin-bottom: 0px;
+}
+
+.parsley-error-list li {
+    margin-bottom: 0px;
+}
+
+.checkbox input[type=checkbox] {
+    height: 13px;
+    margin-top: 2px;
+}
+
+.checkbox .parsley-error-list {
+    display: block !important;
+}
+
+.checkbox {
+    margin-bottom: 0px;
+}

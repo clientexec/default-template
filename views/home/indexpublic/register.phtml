@@ -1,0 +1,41 @@
+<div class="alert ce-alert register-description description"><?php echo $this->user->lang("Access the client portal by registering below.");?></div>
+
+<div class="col-xs-12 header col-sm-6 form-group">
+    <label><?php echo $this->user->lang("First Name");?></label>
+    <input type="text" class="guestFirstName required form-control" name="guestFirstName" value="">
+</div>
+
+<div class="col-xs-12 header col-sm-6 form-group">
+    <label><?php echo $this->user->lang("Last Name");?></label>
+    <input type="text" class="guestLastName required form-control" name="guestLastName" value="">
+</div>
+
+
+<div class="col-xs-12 header form-group">
+    <label><?php echo $this->user->lang("Email");?></label>
+    <input type="text" class="guestEmail form-control" data-required="true" data-type="email" name="guestEmail" value="">
+</div>
+
+<?php if (@$this->termsConditions) { ?>
+<div class="col-xs-12 header form-group">
+    <div class="checkbox">
+        <label>
+            <input type="checkbox" class="agree required" name="agree" value="1">
+            <?php echo $this->user->lang('I Agree to the'); ?>
+            <?php if ($this->termsConditions == '-1') { ?>
+                <a href="<?php echo @$this->termsConditionsUrl;?>" target="_blank"><?php echo $this->user->lang('Terms and Conditions');?></a>
+            <?php } else { ?>
+                <a onclick="ce_login.show_tc();" href="javascript:void(0);"><?php echo $this->user->lang('Terms and Conditions');?></a>
+                <div id="toc" class="hide"><?php echo $this->unescape($this->termsConditionsText) ?></div>
+            <?php } ?>
+        </label>
+    </div>
+</div>
+<?php } ?>
+
+<?php if ($this->showCaptcha) { ?>
+<div class="col-xs-12 header form-group">
+    <div class="g-recaptcha" data-sitekey="<?php echo $this->captchaPublicKey; ?>"></div>
+    <script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>
+</div>
+<?php } ?>

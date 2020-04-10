@@ -1,0 +1,192 @@
+.feature-block .feature-tab {
+    font-size: 2.5em;
+    height: 80px;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: inherit;
+    width: 80px;
+    margin: 25px auto;
+}
+.feature-block i.fa {
+    line-height: 80px;
+}
+.feature-block .panel-body h2 {
+    line-height: 25px;
+    font-weight: bold;
+}
+.feature-block .panel-body {
+    color: black;
+    text-align: center;
+    padding: 20px 35px;
+    min-height: 273px;
+}
+
+.support-boxes,
+.main-bottom-blox {
+    float: left;
+}
+.support-box:hover {
+    text-decoration: none;
+}
+
+.support-boxes {
+    min-width: 100%;
+}
+.support-box:hover .panel-body {
+    background: #EEE;
+    border-color: #ddd;
+    opacity: 1;
+}
+
+.nav-pills li.active a:hover,
+.nav-pills li.active a
+{
+    color: #333;
+    background-color: #f4f4f4;
+}
+
+
+.announcement {
+    width: 100%;
+    padding: 0;
+    font-size: 15px;
+    margin-left: 0;
+    margin-bottom:40px;
+}
+
+.post-date {
+    padding: 0 5px 0 0;
+}
+
+.post-date > div {
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+    min-width: 30px;
+}
+
+.post-date .day {
+    font-size: 25px;
+    margin-top: 12px;
+}
+
+.post-date .month {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.announcement-header {
+    color : #333;
+    margin-left: 22px;
+}
+
+.announcement-title {
+    font-family: 'Open Sans', sans-serif;
+    color: #333332;
+    padding-top: 3px;
+}
+.announcement-title h2 {
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1em;
+    margin-top: 0;
+}
+
+.announcement-title a {
+    text-decoration: none;
+}
+
+.ann-post {
+    margin-top: -25px;
+    background-color: #FAFAFA;
+    padding: 15px 10px 20px 10px;
+}
+
+.announcement-title a:hover {
+    border-bottom: 3px solid #f4f4f4;
+}
+
+.announcement-meta {
+    border-bottom: 1px solid #f3f3f3;
+    font-size: 13px;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    color: #999;
+}
+
+.read-more {
+    font-size: 13px;
+    margin-top: 20px !important;
+}
+
+#kb-accordion .panel-heading a:not(.collapsed) {
+    color: #555;
+    text-decoration: none;
+}
+
+.nav-tabs li a {
+    background-color: #f4f4f4;
+}
+
+
+.faq-accordion-heading a {
+    font-size:14px;
+}
+
+.accordion-group {
+    border: 1px solid #f4f4f4;
+}
+.accordion-inner {
+    padding: 35px;
+    font-size:14px;
+}
+
+.recent-articles {
+    margin-left:10px;
+}
+
+.recent-article {
+    margin-bottom: 15px;
+
+}
+
+.recent-article .article-image {
+    float: left;
+    margin-right: 8px;
+    color:#888;
+    position: relative;
+    top: 2px;
+    left:4px;
+}
+
+.recent-article .articleName {
+    padding-left: 5px;
+    font-size: 14px;
+    padding-top: 1px;
+}
+
+.recent-article .articleMeta a{
+    margin-left: 21px;
+    color:#999;
+}
+
+.recent-article .articleName a{
+    margin-left: 4px;
+}
+
+.has-cart-badge {
+    margin-top:-9px;
+}
+
+.cart-badge {
+    position: relative;
+    top: -85px;
+    left: 4px;
+}
+
+.tab-content>.tab-pane{
+    overflow-x: hidden;
+}

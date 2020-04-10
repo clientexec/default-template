@@ -1,0 +1,68 @@
+<div class="form-group col-xs-12">
+    <div class="btn-group pull-right" role="group" id="filter-ul">
+        <button type="button" class="btn<?php echo ($this->filter == 'open') ? ' btn-primary' : ''; ?>" data-filter="open">
+            <?php echo $this->user->lang("Open");?>
+        </button>
+        <button type="button" class="btn<?php echo ($this->filter == 'closed') ? ' btn-primary' : ''; ?>" data-filter="-1">
+            <?php echo $this->user->lang("Closed");?>
+        </button>
+        <button type="button" class="btn<?php echo ($this->filter == 'all') ? ' btn-primary' : ''; ?>" data-filter="all">
+            <?php echo $this->user->lang("All");?>
+        </button>
+    </div>
+</div>
+
+<div class="form-group col-xs-12">
+    <div class="table-responsive">
+        <table id="tickets-grid" class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="all" width="70"><?php echo $this->user->lang("Ticket");?> #</th>
+                    <th class="all"><?php echo $this->user->lang("Subject");?></th>
+                    <th class="text-right all"><?php echo $this->user->lang("Status");?></th>
+                <?php foreach ($this->customCols as $label) { ?>
+                    <th class="all"><?php echo $label ?></th>
+                <?php } ?>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($this->tickets as $ticket) { ?>
+                <tr>
+                    <td data-order="<?php echo $ticket['id']; ?>">#<?php echo $ticket['id'];?></td>
+                    <td>
+                        <a href='index.php?fuse=support&controller=ticket&view=ticket&id=<?php echo $ticket['id'];?>'><?php echo $this->escape($ticket['subject']) ?></a><br/>
+                        <span class="ticket-second-line"><?php echo $this->user->lang("Date Created").': '.$ticket['datesubmitted'];?></span>
+                    </td>
+                    <td class="text-right"><?php echo $this->user->lang($ticket['ticketStatus']) ?></td>
+                <?php foreach ($ticket['customfields'] as $value) { ?>
+                    <td><?php echo $this->escape($value) ?></td>
+                <?php } ?>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#tickets-grid').DataTable({
+            columnDefs: [
+                {
+                    width: "10%",
+                    "targets": [0]
+                },
+                {
+                    width: "15%",
+                    "targets": [2]
+                }
+            ],
+            'language': {
+                'emptyTable': lang('There are currently no support tickets'),
+            },
+            'order': [[ 0, 'desc' ]]
+        });
+        $('#filter-ul button').click(function () {
+            window.location = 'index.php?fuse=support&controller=ticket&view=alltickets&filter=' + $(this).data('filter');
+        });
+    });
+</script>

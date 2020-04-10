@@ -1,0 +1,168 @@
+<form class="update-profile-method-frm" action="index.php?fuse=clients&controller=userprofile&action=saveprofile" method="POST">
+
+<div class="customerdata" style="display: none">
+
+    <div class="ce-box-inner">
+
+        <h1 class="pull-left"><?php echo $this->user->lang("Edit Profile");?></h1>
+        <div class="customfields-wrapper"></div>
+        <div class="form-actions col-xs-12 col-sm-2">
+            <button class="btn btn-default btn-update-profile-method form-control" type="button"><?php echo $this->user->lang('Update Profile'); ?></button>
+        </div>
+    </div>
+</div>
+
+</form>
+
+<script data-cfasync="false" type="text/javascript">
+    $(document).ready(function(){
+        <?php echo "var customFields = " . json_encode($this->customFields) . ";\n"; ?>
+        process_profile_customfields(customFields);
+
+        // Set values for all our custom fields
+        <?php foreach ($this->customFieldValues as $id => $value) { ?>
+            $('#CT_<?php echo $id; ?>').val("<?php echo str_replace("\r\n", "\\r\\n", $this->escapeScriptVars($value)) ?>");
+            <?php
+                $view = $this; // needed for php < 5.4
+                array_walk($this->customFields, function ($val) use ($view, $id, $value) {
+                    if ($val['fieldtype'] == typeDATE && $val['id'] == $id) {
+                        echo "$('input[name=CT_$id]').val(\"" . $view->dateRenderer($value) . "\");\n";
+                    }
+                }) ?>
+        <?php } ?>
+        <?php foreach ($this->selectCustomFields as $id => $value) { ?>
+        $('#CT_<?php echo $id; ?>').val("<?php echo $this->escape($value) ?>").selectpicker();
+        <?php } ?>
+
+        state_var_id = 'CT_<?php echo $this->state_var_id;?>';
+        $("#"+state_var_id).bind('blur',function(){
+            validate_vat();//tax purposes
+        });
+        country_var_id = 'CT_<?php echo $this->country_var_id;?>';
+        $("#"+country_var_id).bind('change',function(){
+            validate_vat();//tax purposes
+        });
+        vat_var_id = 'CT_<?php echo $this->vat_var_id;?>';
+        $("#"+vat_var_id).bind('blur',function(){
+            validate_vat();//tax purposes
+        });
+
+        validate_vat();
+
+    });
+
+    function validate_vat() {
+        if(document.getElementById('vat_validating') != undefined){
+            document.getElementById('vat_validating').style.display = '';
+            document.getElementById('vat_valid').style.display = 'none';
+            document.getElementById('vat_invalid').style.display = 'none';
+            document.getElementById('vat_error').style.display = 'none';
+        }
+        // Get the country and state information to pass to the view
+        var selectedState = document.getElementById(state_var_id).value;
+        var selectedCountry = document.getElementById(country_var_id).options[document.getElementById(country_var_id).selectedIndex].value;
+        if(document.getElementById(vat_var_id)) {
+            var selectedVATNumber = document.getElementById(vat_var_id).value;
+        }
+        $.getJSON('index.php?fuse=billing&action=checkvat&ignoreuser=1&requestVAT=1',
+            { country: selectedCountry, state: selectedState, vat: selectedVATNumber } ,
+            function(response) {
+                respArr = response.responseText.split("|");
+
+                if (document.getElementById('VAT'+vat_var_id)) {
+                    if(selectedCountry == 'GR'){
+                        selectedCountry = 'EL';
+                    }
+                    $("#vat_country").html(selectedCountry);
+                    document.getElementById('vat_validating').style.display = 'none';
+                    if (respArr[3] == '1') {
+                        if(selectedVATNumber != ""){
+                            switch(respArr[0]){
+                                case "-1":
+                                    document.getElementById('vat_error').style.display = '';
+                                    break;
+                                case "0":
+                                    document.getElementById('vat_invalid').style.display = '';
+                                    break;
+                                case "1":
+                                    document.getElementById('vat_valid').style.display = '';
+                                    break;
+                            }
+                        }
+                        document.getElementById('VAT'+vat_var_id).style.display = 'block';
+                    } else {
+                        document.getElementById('VAT'+vat_var_id).style.display = 'none';
+                    }
+                }
+            }
+        );
+    }
+
+
+    function process_profile_customfields(fields) {
+
+        customFields.load(fields,function(data) {
+            $('.customfields-wrapper').append(customFields.bootstrapWrap(data));
+        }, function(){
+            clientexec.postpageload('.customfields-wrapper');
+            $('.searching-customfields').remove();
+
+            /*** FULL NAME */
+            //let's check for full name and full address and pretty up the display
+            $('.type_11').parent().addClass('first_name col-sm-5 form-group').appendTo($('.type_63').parent());
+            $('.type_11').parent().find('label').addClass('sub_label').text(lang('First')).appendTo($('.first_name')); //moving label below field
+
+            $('.type_12').parent().addClass('second_name col-sm-5 form-group').appendTo($('.type_63').parent());
+            $('.type_12').parent().find('label').addClass('sub_label').text(lang('Last')).appendTo($('.second_name')); //moving label below field
+
+            $('.type_13').parents('.header').addClass('email col-sm-5 form-group customfield_group');
+
+            $('.type_14').parents('.header').addClass('organization col-sm-5 form-group customfield_group');
+            $('.type_7').parents('.header').addClass('phone col-sm-5 form-group customfield_group');
+            $('.type_16').parents('.header').addClass('accouncements col-sm-5 form-group customfield_group');
+            $('.type_8').parents('.header').addClass('language col-sm-5 form-group customfield_group');
+            $('.customfields-wrapper .header textarea').parents('.header').addClass('col-xs-12 col-sm-10 textarea form-group customfield_group');
+            $('.customfields-wrapper .header input.type_0').parents('.header').addClass('col-xs-12 col-sm-5 link form-group customfield_group');
+            $('.type_1').parents('.header').addClass('accouncements col-sm-5 col-xs-12 form-group customfield_group');
+            $('.type_9').parents('.header').addClass('accouncements col-sm-5 col-xs-12 form-group customfield_group');
+            $('.date').parents('.header').addClass('customfield_group col-sm-5');
+
+            $('.type_47').parent().parent().addClass('col-sm-5 col-xs-12 form-group customfield_group');
+
+            /*** FULL ADDRESS **/
+            //let's move around address
+            $('.type_2').parent().addClass('address col-sm-10 form-group').appendTo($('.type_64').parent());
+            $('.type_2').parent().find('label').addClass('sub_label').text(lang('Address')).appendTo($('.address')); //moving label below field
+
+            $('.type_3').parent().addClass('city col-sm-5 form-group').appendTo($('.type_64').parent());
+            $('.type_3').parent().find('label').addClass('sub_label').text(lang('City')).appendTo($('.city')); //moving label below field
+
+            $('.type_4').parent().addClass('state col-sm-5 form-group').appendTo($('.type_64').parent());
+            $('.type_4').parent().find('label').addClass('sub_label').text(lang('State / Province / Region')).appendTo($('.state')); //moving label below field
+
+            $('.type_5').parent().addClass('zipcode col-sm-5 form-group').appendTo($('.type_64').parent());
+            $('.type_5').parent().find('label').addClass('sub_label').text(lang('Postal / Zip Code')).appendTo($('.zipcode')); //moving label below field
+
+            $('.type_6').parent().addClass('country col-sm-5 form-group').appendTo($('.type_64').parent());
+            $('.type_6').parent().find('label').addClass('sub_label').text(lang('Country')).appendTo($('.country')); //moving label below field
+
+            //bold the group label
+            $('.type_64').hide().parent().addClass('customfield_group');
+            $('.type_63').hide().parent().addClass('customfield_group');
+
+            $('.customfield').addClass('customfield_not_ingroup');
+            $('.customfield_group,.customfield_group .customfield').removeClass('customfield_not_ingroup');
+            $('.customfield_hidden, .type_65, .type_13').parent('.customfield').removeClass('customfield_not_ingroup');
+
+            $('#customfields-wrapper select').addClass('selectpicker');
+
+            $('.customerdata').css('display', 'block');
+
+            $('.btn-update-profile-method').bind('click', function(e){
+                if ( $('.update-profile-method-frm').parsley('validate') ) {
+                    $('.update-profile-method-frm').submit();
+                }
+            });
+        });
+    }
+</script>
