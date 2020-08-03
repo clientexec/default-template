@@ -40,14 +40,18 @@ if (trim($this->group['descriptionlanguage']) != "") { ?>
         $count_defined_packages = 0;
         $colcount = 0;
         $colSize = 4;
+
         if (count($this->packages) >= 4) {
             $colSize = 3;
         }
+
         $rowCount = 0;
+
         foreach ($this->packages as $package) {
-            if (!is_array($package['pricing']) || count($package['pricing']) ==0) {
+            if (!is_array($package['pricing']) || count($package['pricing']) == 0) {
                 continue;
             }
+
             $count_defined_packages++;
 
             $colcount++;

@@ -22,6 +22,6 @@ $templateOptions[] = array(
 );
 $templateOptions[] = array(
     "name"=> "Show Product List in Dashboard",
-    "description" => $this->user->lang("In the client portal, have the customer's product list appear in the dashboard"),
+    "description" => $this->user->lang("In the client portal, have the client's product list appear in the dashboard"),
     "values" => array("Yes", "No*")
 );

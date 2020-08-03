@@ -88,7 +88,7 @@ $(document).ready(function() {
         }
 
         // handle mass pay (must have at least 2 checked)
-        if ($('#invoices-grid tbody input[type="checkbox"]:checked').length > 1) {
+        if ($('#invoices-grid tbody input[type="checkbox"]:checked').length >= 1) {
             $('#massPayButton').prop('disabled', false);
         } else {
             $('#massPayButton').prop('disabled', true);

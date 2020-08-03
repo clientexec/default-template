@@ -3,8 +3,8 @@ $(document).ready(function(){
 
     $('.forgotpasswordurl').click(function(){
         ce_login.resetpwdwin = new RichHTML.window({
-            width: '400',
-            height: '250',
+            width: '435',
+            height: clientexec.captcha? '350' : '250',
             title: lang('Reset password'),
             url: 'index.php?fuse=home&view=resetpwd',
             actionUrl: 'index.php?fuse=home&action=resetpassword',

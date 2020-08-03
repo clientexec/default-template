@@ -444,7 +444,7 @@ CE.prototype.parseResponse = function (response,display,msg) {
 CE.prototype.msg = function(title, perm){
     $(window).scrollTop(0);
     clearTimeout($('#msg-div').data('timeoutId'));
-    $('#msg-div-inner').html(title);
+    $('#msg-div-inner').text(title);
     $('#msg-div').show().removeClass('hidden');
     if(!perm) {
         timeoutId = setTimeout(function(){ $('#msg-div').fadeOut('fast');}, 2500);

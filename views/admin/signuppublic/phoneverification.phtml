@@ -4,7 +4,7 @@
         <form action="index.php?fuse=admin&controller=signup&action=phoneverificationcheck" method="post">
           <h1><?php echo $this->user->lang("Telephone Verification");?></h1>
           <p class="sub_header">
-            <?php echo $this->user->lang('In order to help prevent fraudulent orders we require new customers to verify their phone number');?>.
+            <?php echo $this->user->lang('In order to help prevent fraudulent orders we require new clients to verify their phone number');?>.
           </p>
           <?php if (!$this->isCalled): ?>
             <p><strong><?php echo $this->user->lang("Please wait, you will be called at")." ". @$this->phoneNumber ." ".$this->user->lang("within 30 seconds.");?> </strong></p>

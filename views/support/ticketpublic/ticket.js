@@ -30,8 +30,8 @@ $(document).ready(function(){
         });
 
         submitticket.cloneAttchInput();
-        ticketview.loadCustomFields();
     }
+    ticketview.loadCustomFields();
 });
 
 $('#close-ticket-button').click(function() {

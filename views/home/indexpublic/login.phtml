@@ -31,15 +31,19 @@
                     <input type="password" name="passed_password" class="form-control">
                     <div class="input-group-addon"><i class="fa fa-key"></i></div>
                 </div>
-                <div>
-                    <a class="forgotpasswordurl"><?php echo $this->user->lang("Forgot your password");?></a>
+                <div class='forgotpassword col-xs-12'>
+                    <div class="row">
+                        <a class="forgotpasswordurl"><?php echo $this->user->lang("Forgot your password");?></a>
+                    </div>
                 </div>
                 <div id="loginbtn" class="col-xs-12 col-xs-offset-0 col-sm-5 col-sm-offset-7">
                     <button class="btn btn-default form-control" type="submit"><?php echo $this->user->lang("Sign In");?></button>
                 </div>
             <?php if ($this->allowRegistration) { ?>
-                <div class="text-right">
-                    <a class="newaccounturl"><?php echo $this->user->lang("Don't have an account?  Register now");?></a>
+                <div class="text-right newaccount col-xs-12">
+                    <div class="row">
+                        <a class="newaccounturl"><?php echo $this->user->lang("Don't have an account? Register now");?></a>
+                    </div>
                 </div>
             <?php }?>
             </div>

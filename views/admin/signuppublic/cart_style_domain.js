@@ -97,7 +97,6 @@ domains.search_domain = function(searchType) {
                 cartParentPackageTerm: cartParentPackageTerm
             },
             function(response){
-                //response = ce.parseResponse(response);
                 domains.response = response;
 
                 if (response.error) {
@@ -110,21 +109,19 @@ domains.search_domain = function(searchType) {
                     error_message = lang("There was an error looking up that domain.  Please try again.");
                 }
 
-
-
                 if ( searchType == 'transfer' ) {
                     if ( searched_domain_status == 1 ) {
                         $(searchResultsDiv).html("<div class='domain_search_notregistered'>"+lang("Good news")+", "+search_results.domainName+" "+lang("is available to transfer")+"</div>");
                     } else if ( searched_domain_status == 0 ) {
                         $(searchResultsDiv).html("<div class='domain_search_alreadyregistered'>"+lang("Sorry")+", "+search_results.domainName+" "+lang("is not available to transfer")+"</div>");
-                    } else  {
+                    } else if (searched_domain_status == -1) {
+                        $(searchResultsDiv).html("<div class='ce-alert alert alert-danger ce-alert-error domain_search_alreadyregistered'><strong>"+lang('Sorry, % is invalid.', search_results.domainName)+"</strong></div>");
+                    } else {
                         $(searchResultsDiv).html("<div class='ce-alert alert alert-danger ce-alert-error domain_search_alreadyregistered'><strong>"+error_message+"</strong></div>");
                         return;
                     }
 
                 }
-
-
 
                 // no errors, and we are searching to register
                 else if ( searchType == 'register' ) {
@@ -132,6 +129,9 @@ domains.search_domain = function(searchType) {
                         $(searchResultsDiv).html("<div class='domain_search_alreadyregistered'>"+lang("Sorry")+", "+search_results.domainName+" "+lang("is already registered")+"</div>");
                     } else if (searched_domain_status == 0) {
                         $(searchResultsDiv).html("<div class='domain_search_notregistered'>"+lang("Good news")+", "+search_results.domainName+" "+lang("is available to register")+"</div>");
+
+                    } else if (searched_domain_status == -1) {
+                        $(searchResultsDiv).html("<div class='ce-alert alert alert-danger ce-alert-error domain_search_alreadyregistered'><strong>"+lang('Sorry, % is invalid.', search_results.domainName)+"</strong></div>");
                     } else {
                         $(searchResultsDiv).html("<div class='ce-alert alert alert-danger ce-alert-error domain_search_alreadyregistered'><strong>"+error_message+"</strong></div>");
                         // only return if there are 0 domains to show.
@@ -207,7 +207,7 @@ domains.search_domain = function(searchType) {
                                             }
 
                                             //default to the same billing cycle as the one selected in the parent package if available
-                                            if (!firstId || (value.period_id*12) == cartParentPackageTerm) {
+                                            if (!firstId || (value.period_id) == cartParentPackageTerm) {
                                                 firstId = value.period_id;
                                                 selected = ' selected';
                                             }
@@ -410,7 +410,7 @@ domains.start_additional_info_check = function(self, product_id)
                     }
                     addon_html += '</select>';
                 } else {
-                    addon_html += '<input type="text" name="'+additional_fields.extra_attributes.tld+'-EA-'+propertyName+'" class="form-control required" />';
+                    addon_html += '<input type="text" name="'+additional_fields.extra_attributes.tld+'-EA-'+propertyName+'" class="form-control" />';
                 }
                 addon_html += '</div>';
 
@@ -455,59 +455,8 @@ domains.start_addons_info_check = function(self)
     //let's check addons
     if (additional_fields) {
         var billing_cycle = $(self).val();
-        billing_cycle = (billing_cycle*12);
-        switch(billing_cycle){
-            case 12:
-                if (additional_fields.addons12) {
-                    var selectedAddons = additional_fields.addons12;
-                }
-                break;
-            case 24:
-                if (additional_fields.addons24) {
-                    var selectedAddons = additional_fields.addons24;
-                }
-                break;
-            case 36:
-                if (additional_fields.addons36) {
-                    var selectedAddons = additional_fields.addons36;
-                }
-                break;
-            case 48:
-                if (additional_fields.addons48) {
-                    var selectedAddons = additional_fields.addons48;
-                }
-                break;
-            case 60:
-                if (additional_fields.addons60) {
-                    var selectedAddons = additional_fields.addons60;
-                }
-                break;
-            case 72:
-                if (additional_fields.addons72) {
-                    var selectedAddons = additional_fields.addons72;
-                }
-                break;
-            case 84:
-                if (additional_fields.addons84) {
-                    var selectedAddons = additional_fields.addons84;
-                }
-                break;
-            case 96:
-                if (additional_fields.addons96) {
-                    var selectedAddons = additional_fields.addons96;
-                }
-                break;
-            case 108:
-                if (additional_fields.addons108) {
-                    var selectedAddons = additional_fields.addons108;
-                }
-                break;
-            case 120:
-                if (additional_fields.addons120) {
-                    var selectedAddons = additional_fields.addons120;
-                }
-                break;
-        }
+        var selectedAddons = additional_fields['addons'+billing_cycle];
+
         if (selectedAddons && selectedAddons.length > 0) {
             addon_html = "<h2>"+lang("Product Add-ons")+"</h2>";
             $.each(selectedAddons, function(i,o) {

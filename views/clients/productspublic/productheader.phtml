@@ -31,7 +31,7 @@
     <h1 class="nomargin smalllineheight"><?php echo $this->product_name;?></h1>
     <?php echo $this->user->lang("Status");?>: <?php echo $this->status_name['statusText'];?><i class="fa fa-circle product-header-divider"></i>
     <?php echo $this->user->lang("Product Id");?>:  #<?php echo $this->product_id;?><i class="fa fa-circle product-header-divider"></i>
-    <?php echo $this->user->lang("Product type");?>: <?php echo $this->product_type_name;?>
+    <?php echo $this->user->lang("Product type");?>: <?php echo $this->user->lang($this->product_type_name);?>
 </div>
 <ul class="nav nav-tabs">
 <?php foreach ($this->tabs as $tab) { ?>

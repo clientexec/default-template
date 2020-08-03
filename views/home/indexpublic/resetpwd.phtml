@@ -6,3 +6,10 @@
     <label><?php echo $this->user->lang("Email");?></label>
     <input type="text" class="customerEmail form-control" data-required="true" data-type="email" name="customerEmail" value="">
 </div>
+
+<?php if ($this->showCaptcha) { ?>
+<div class="col-xs-12 header form-group">
+    <div class="g-recaptcha" data-sitekey="<?php echo $this->captchaPublicKey; ?>"></div>
+    <script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>
+</div>
+<?php } ?>
