@@ -31,7 +31,9 @@
                     <td data-order="<?php echo $ticket['id']; ?>">#<?php echo $ticket['id'];?></td>
                     <td>
                         <a href='index.php?fuse=support&controller=ticket&view=ticket&id=<?php echo $ticket['id'];?>'><?php echo $this->escape($ticket['subject']) ?></a><br/>
-                        <span class="ticket-second-line"><?php echo $this->user->lang("Date Created").': '.$ticket['datesubmitted'];?></span>
+                        <span class="ticket-second-line">
+                            <?php echo $this->user->lang("Date Created: %s", $ticket['datesubmitted']);?>
+                        </span>
                     </td>
                     <td class="text-right"><?php echo $this->user->lang($ticket['ticketStatus']) ?></td>
                 <?php foreach ($ticket['customfields'] as $value) { ?>

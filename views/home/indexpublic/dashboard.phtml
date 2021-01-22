@@ -8,7 +8,11 @@
     <div class="col-xs-12 alert ce-alert ce-alert-error">
       <?php foreach($this->servers_status_messages as $server_status_message) { ?>
           <button type="button" class="close" data-dismiss="alert">&times;</button>
-          <p><strong>Server: <?php echo $server_status_message['name']." (".$server_status_message['sharedip'].")"; ?>:</strong><br/><?php echo $server_status_message['status_message'];?></p>
+          <p>
+            <strong>Server: <?php echo $server_status_message['name']." (".$server_status_message['sharedip'].")"; ?>:</strong>
+            <br/>
+            <?php echo nl2br($server_status_message['status_message']);?>
+        </p>
       <?php } ?>
     </div>
 </div>
@@ -101,7 +105,7 @@
 <?php } ?>
 
 <?php if ($this->templateOptions['Show Product List in Dashboard']['value'] == 'Yes') { ?>
-    <h2><?php echo ucfirst($this->user->lang('Package list')) ?></h2>
+    <h2><?php echo ucfirst($this->user->lang('Package List')) ?></h2>
     <div class="table-responsive">
         <table id="products-grid" class="table table-striped">
             <thead>
@@ -128,7 +132,7 @@
         <?php foreach ($this->invoices as $invoices) { ?>
             <tr>
                 <td><a href="index.php?fuse=billing&controller=invoice&view=invoice&id=<?php echo $invoices['id'];?>"><?php echo $this->user->lang('Invoice #'); ?><?php echo $invoices['id']; ?></a>
-                    <br/><span class="addition_description"><?php echo ($invoices['subscription_id'])? ($this->user->lang("Subscription").": ".$invoices['subscription_id']) : '' ?></span>
+                    <br/><span class="addition_description"><?php echo ($invoices['subscription_id'])? ($this->user->lang("Subscription: %s", $invoices['subscription_id'])) : '' ?></span>
                 </td>
                 <td><?php echo $invoices['balancedue']; ?></td>
                 <td><?php echo $this->dateRenderer($invoices['billdate']) ?></td>

@@ -17,7 +17,7 @@
 <?php if (count($this->category) > 0 && count($this->category['articles']) > 0) { ?>
 <div class=" categoryarticles">
     <div class="articles_header">
-        <h1><?php echo $this->user->lang("Articles for")." ".html_entity_decode($this->category['categoryName'], ENT_QUOTES);?></h1>
+        <h1><?php echo $this->user->lang("Articles for %s", html_entity_decode($this->category['categoryName'], ENT_QUOTES));?></h1>
     </div>
 
     <ul class="articles">
@@ -37,7 +37,7 @@
 
 <?php if (count($this->categories) > 0 &&  count($this->category) > 0) { ?>
 <div class="subcategory-header">
-    <h2><?php echo $this->user->lang("Subcategories of")." ".html_entity_decode($this->category['categoryName'], ENT_QUOTES);?></h2>
+    <h2><?php echo $this->user->lang("Subcategories of %s", html_entity_decode($this->category['categoryName'], ENT_QUOTES));?></h2>
 </div>
 <?php } ?>
 <div id="kbcatergories" class="row">

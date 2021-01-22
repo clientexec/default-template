@@ -83,9 +83,9 @@
                 <?php } ?>
             </tbody>
         </table>
-        <?php if ($this->invoiceBalanceDue > 0 && $this->user->hasPermission('billing_apply_account_credit') && $this->user->getCreditBalance() > 0) { ?>
+        <?php if ($this->invoiceBalanceDue > 0 && $this->user->hasPermission('billing_apply_account_credit') && $this->creditBalance > 0) { ?>
             <button class="ce-btn ce-btn-huge btn-green btn-block btn-apply-credit">
-                <?php echo $this->user->lang("Apply my Credit");?>
+                <?php echo $this->user->lang("Apply my Credit").'<br>['.$this->user->lang("Available: %s", $this->formattedCreditBalance).']';?>
                 <i class="icon-chevron-right pull-right"></i>
             </button>
         <?php } ?>

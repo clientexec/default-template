@@ -70,6 +70,9 @@ $(document).ready(function() {
                         datatbl.data[row][v] = '<a href="index.php?fuse=clients&controller=products&view=product&id=' + value['id'] + '">' + ce.htmlspecialchars(value[v]) + '</a>';
                     } else if (v == 'nextDueDate') {
                         if (value[v].length) {
+                            if (value[v + 'TS'] === undefined) {
+                                value[v + 'TS'] = 0;
+                            }
                             datatbl.data[row][v] = {};
                             datatbl.data[row][v]['display'] = value[v];
                             datatbl.data[row][v]['sort'] = value[v + 'TS'];
@@ -86,7 +89,6 @@ $(document).ready(function() {
                 }
             });
         });
-
         $('#products-grid').DataTable(datatbl);
     });
 });

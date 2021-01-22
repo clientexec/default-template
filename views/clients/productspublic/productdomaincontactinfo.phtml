@@ -19,7 +19,9 @@
     <?php if ($this->user->hasPermission('domains_updatecontactinfo')) { ?>
         <div class="form-group col-xs-12">
             <div class="form-actions container-fluid hidden">
-                <button id="update-button" class="btn btn-default btn-update-payment-method" type="button">Update Contact Information</button>
+                <button id="update-button" class="btn btn-default btn-update-payment-method" type="button">
+                    <?php echo $this->user->lang('Update Contact Information'); ?>
+                </button>
             </div>
         </div>
     <?php } ?>

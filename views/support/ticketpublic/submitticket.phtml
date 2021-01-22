@@ -1,3 +1,5 @@
+<?php echo $this->unescape($this->top_snapin_html); ?>
+
 <?php if (!$this->hasPermission && !$this->loggedin) { ?>
     <div class="alert alert-danger ce-alert ce-alert-error">
         <?php echo $this->user->lang('Guest ticket access is disabled, please '); ?>

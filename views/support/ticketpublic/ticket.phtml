@@ -109,18 +109,19 @@
 <?php } elseif ($this->ticket_can_reopen) { ?>
 <br/>
 <div class="alert ce-alert ce-alert-info">
-    <?php echo $this->user->lang("This ticket has been closed but you may")." <a href='" . $this->urlCsrf(array(
+    <?php echo $this->user->lang('This ticket has been closed but you may %sreopen this ticket%s if you wish to continue the discussion.', '<a href="' . $this->urlCsrf(array(
         'fuse' => 'support',
         'controller' => 'ticket',
         'status' => '1',
         'action' => 'setstatus',
         'id' => $this->metadata['id']
-    )) . "'>".$this->user->lang("reopen this ticket")."</a> ".$this->user->lang("if you wish to continue the discussion.");?>
+    )) . '">', '</a>');
+    ?>
 </div>
 <?php } else { ?>
 <br/>
 <div class="alert ce-alert ce-alert-info">
-    <?php echo $this->user->lang("This ticket has been closed for some time and unable to be reopened.  You may")." <a href='index.php?fuse=support&controller=ticket&view=submitticket'>".$this->user->lang("create a new ticket")."</a> ".$this->user->lang("if you need assistance with an issue.");?>
+    <?php echo $this->user->lang("This ticket has been closed for some time and unable to be reopened.  You may %screate a new ticket%s if you need assistance with an issue.", "<a href='index.php?fuse=support&controller=ticket&view=submitticket'>", '</a>'); ?>
 </div>
 <?php } ?>
 

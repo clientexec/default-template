@@ -20,7 +20,9 @@
     <?php if ( $this->user->hasPermission('domains_editns') ) { ?>
         <div class="form-group col-xs-12">
             <div class="form-actions hidden container-fluid">
-                <button id="update-button" class="btn btn-default btn-update-payment-method" type="button">Update Name Servers</button>
+                <button id="update-button" class="btn btn-default btn-update-payment-method" type="button">
+                    <?php echo $this->user->lang('Update Name Servers'); ?>
+                </button>
             </div>
         </div>
     <?php } ?>

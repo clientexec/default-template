@@ -5,13 +5,13 @@
 </script>
 
 <?php if ($this->show_change_of_billing_options) { ?>
-    <div class="alert alert-info ce-alert ce-alert-info">
+<div class="alert alert-info ce-alert ce-alert-info">
     <?php if ($this->accepts_cc && !$this->cc_added) { ?>
         <p><?php echo $this->user->lang("You have not selected a payment method").". ".$this->user->lang("For any modifications please visit your ")."<a href='index.php?fuse=clients&controller=userprofile&view=paymentmethod'>".$this->user->lang("payment configuration page.")."</a> ".$this->user->lang("Keeping your payment options up to date will prevent any service disruption.");?></p>
     <?php } else { ?>
-        <p><?php echo $this->user->lang("Your payment source is set to")." ".$this->payment_type_name.". ".$this->user->lang("For any modifications please visit your ")."<a href='index.php?fuse=clients&controller=userprofile&view=paymentmethod'>".$this->user->lang("payment configuration page.")."</a> ".$this->user->lang("Keeping your payment options up to date will prevent any service disruption.");?></p>
+        <p><?php echo $this->user->lang("Your default payment source is set to")." ".$this->payment_type_name.". ".$this->user->lang("For any modifications please visit your ")."<a href='index.php?fuse=clients&controller=userprofile&view=paymentmethod'>".$this->user->lang("payment configuration page.")."</a> ".$this->user->lang("Keeping your payment options up to date will prevent any service disruption.");?></p>
     <?php } ?>
-    </div>
+</div>
 <?php } ?>
 
 <div class="form-group col-xs-12">

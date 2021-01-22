@@ -20,12 +20,12 @@ $previous_article_id = 0;
 $next_article_id = 0;
 if ($this->hasArticleComments) {
     if (count($this->ArticleComments) == 1) {
-        $commentsText = '1&nbsp;' . $this->user->lang('Comment');
+        $commentsText = $this->user->lang('1 Comment');
     } else {
-        $commentsText = count($this->ArticleComments) . '&nbsp;' . $this->user->lang('Comments');
+        $commentsText = $this->user->lang('%s Comments', count($this->ArticleComments));
     }
 } else {
-    $commentsText = '0&nbsp;' . $this->user->lang('Comments');
+    $commentsText = $this->user->lang('0 Comments');
 }
 
 $raw_description = $this->unescape($this->articleDescription);
@@ -175,7 +175,9 @@ if ($this->seoLinks) {
             <?php if ($this->gIsAdmin || $this->gCustomerLoggedIn) { ?>
                 <input type="hidden" name="userName" value="<?php echo $this->escape($this->user->getFullName()); ?>">
                 <input type="hidden" name="userEmail" value="<?php echo $this->user->getEmail(); ?>">
-                <div class="alert ce-alert alert-info add-comment-as"><?php echo $this->user->lang("Add a new comment as")." ".$this->escape($this->user->getFullName()) ?></div>
+                <div class="alert ce-alert alert-info add-comment-as">
+                    <?php echo $this->user->lang("Add a new comment as %s", $this->escape($this->user->getFullName())); ?>
+                </div>
             <?php } else { ?>
                 <div class="comment-label"><?php echo $this->user->lang("Your name"); ?></div><input type="text" name="userName" class="comment-name form-control" value="" placeholder="<?php echo $this->user->lang('Your full name') ?>">
                 <div class="comment-label"><?php echo $this->user->lang("Your email address"); ?></div><input type="text" name="userEmail" class="comment-email form-control" value="" placeholder="<?php echo $this->user->lang('Your email address') ?>">

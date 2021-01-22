@@ -21,11 +21,10 @@
     <div class="checkbox">
         <label>
             <input type="checkbox" class="agree required" name="agree" value="1">
-            <?php echo $this->user->lang('I Agree to the'); ?>
             <?php if ($this->termsConditions == '-1') { ?>
-                <a href="<?php echo @$this->termsConditionsUrl;?>" target="_blank"><?php echo $this->user->lang('Terms and Conditions');?></a>
+            <?php echo $this->user->lang('I Agree to the %sTerms and Conditions%s', '<a href="<?php echo @$this->termsConditionsUrl;?>" target="_blank">', '</a>'); ?>
             <?php } else { ?>
-                <a onclick="ce_login.show_tc();" href="javascript:void(0);"><?php echo $this->user->lang('Terms and Conditions');?></a>
+                <?php echo $this->user->lang('I Agree to the %sTerms and Conditions%s', '<a onclick="ce_login.show_tc();" href="javascript:void(0);">', '</a>'); ?>
                 <div id="toc" class="hide"><?php echo $this->unescape($this->termsConditionsText) ?></div>
             <?php } ?>
         </label>

@@ -112,9 +112,9 @@ clientexec.loadKBArticles = function(e, path)
                 $('.subject-article-matches').addClass('hidden');
                 return;
             } else if (data.articles.length == 1) {
-                html = lang("There is")+" "+data.articles.length+" "+lang("article that might answer your question.");
+                html = lang("There is 1 article that might answer your question.");
             } else {
-                html = lang("There are")+" "+data.articles.length+" "+lang("articles that might answer your question.");
+                html = lang("There are % articles that might answer your question.", data.articles.length);
             }
 
             var template = document.getElementById('articles').innerHTML;
