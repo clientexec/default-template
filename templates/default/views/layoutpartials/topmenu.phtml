@@ -1,0 +1,224 @@
+<?php
+
+if (count($this->snapins) > 0) {
+    $pluginMenu = [
+        'tools' => '',
+        'products' => '',
+        'domains' => '',
+        'billing' => '',
+        'support' => '',
+        'profile' => '',
+    ];
+    foreach ($this->snapins as $snapin) {
+        if (!isset($snapin->mapping['topmenu'])) {
+            $snapin->mapping['topmenu'] = [];
+        }
+        foreach ($snapin->mapping['topmenu'] as $hash_key => $map) {
+            if ($map['type'] != "public") {
+                continue;
+            }
+            $li = '<li><a href="index.php?fuse=admin&view=snapin&controller=snapins&plugin=' . $snapin->getInternalName() . '&h=' . urlencode(base64_encode("topmenu:" . $hash_key)) . '">' . $map['title'] . '</a></li>';
+
+            switch ($map['loc']) {
+                case "tools":
+                    $pluginMenu['tools'] .= $li;
+                    break;
+                case "support":
+                    $pluginMenu['support'] .= $li;
+                    break;
+                case "products":
+                    $pluginMenu['products'] .= $li;
+                    break;
+                case "billing":
+                    $pluginMenu['billing'] .= $li;
+                    break;
+                 case "domains":
+                    $pluginMenu['domains'] .= $li;
+                    break;
+                case "profile":
+                    $pluginMenu['profile'] .= $li;
+                    break;
+            }
+        }
+    }
+}
+
+$this->viewSupport = false;
+if ($this->user->hasPermission('support_view') ||
+    $this->user->hasPermission('knowledgebase_view') ||
+    $this->user->hasPermission('support_submit_ticket') ||
+    $pluginMenu['support'] != '') {
+    $this->viewSupport = true;
+}
+
+?>
+
+<nav class="navbar navbar-expand-lg navbar-light col-12 col-sm-8">
+    <div class="logo">
+        <?php if ($this->logoURL) {?>
+        <a href="index.php">
+            <img class="img-fluid" alt="Header Logo" src="<?php echo $this->logoURL ?>" />
+        </a>
+        <?php } else { ?>
+        <h1>
+            <span>
+                <a href="index.php">
+                    <?php echo str_replace(' ', '&nbsp;', $this->user->lang("Client Portal"));?>
+                </a>
+            </span>
+        </h1>
+        <?php } ?>
+    </div>
+    <button class="navbar-toggler float-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse main-menu" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <?php if ($this->loggedin) { ?>
+            <li class="nav-item">
+                <a href="index.php?fuse=home&view=dashboard">
+                    <?php echo $this->user->lang('Dashboard'); ?>
+                </a>
+            </li>
+            <?php } ?>
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?php echo $this->user->lang("Packages");?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <?php if ($this->loggedin) { ?>
+                    <li>
+                        <a href="index.php?fuse=clients&controller=products&view=products">
+                            <?php echo $this->user->lang("My Packages");?>
+                        </a>
+                    </li>
+                    <?php } ?>
+                    <li>
+                        <a href="order.php">
+                            <?php echo $this->user->lang("Order new services");?>
+                        </a>
+                    </li>
+                    <?php if ($this->loggedin && $pluginMenu['products'] != '') { ?>
+                    <?php echo $pluginMenu['products']; ?>
+                    <?php } ?>
+                </ul>
+            </li>
+            <?php if ($this->user->hasPermission('domains_view')) {?>
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?php echo $this->user->lang("Domains");?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <?php if ($this->loggedin) { ?>
+                    <li>
+                        <a href="index.php?fuse=clients&controller=products&view=domains">
+                            <?php echo $this->user->lang("My Domains");?>
+                        </a>
+                    </li>
+                    <?php } ?>
+                    <li>
+                        <a href="<?php echo $this->unescape($this->domainLink); ?>">
+                            <?php echo $this->user->lang("Register a Domain");?>
+                        </a>
+                    </li>
+                    <?php if ($pluginMenu['domains'] != '') { ?>
+                    <?php echo $pluginMenu['domains']; ?>
+                    <?php } ?>
+                </ul>
+            </li>
+            <?php } ?>
+            <?php if ($this->loggedin || $pluginMenu['billing'] != '') { ?>
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?php echo $this->user->lang("Billing");?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <?php if ($this->loggedin) { ?>
+                    <li>
+                        <a href="index.php?fuse=billing&controller=invoice&view=allinvoices&filter=open">
+                            <?php echo $this->user->lang("My Invoices");?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="index.php?fuse=clients&controller=userprofile&view=paymentmethod">
+                            <?php echo $this->user->lang("Edit Payment Method");?>
+                        </a>
+                    </li>
+                    <?php if ($pluginMenu['billing'] != '') { ?>
+                    <?php echo $pluginMenu['billing']; ?>
+                    <?php } ?>
+                    <?php } ?>
+                </ul>
+            </li>
+            <?php } ?>
+            <?php if ($this->viewSupport) { ?>
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?php echo $this->user->lang("Support");?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <?php if ($this->loggedin && $this->user->hasPermission('support_view')) { ?>
+                    <li>
+                        <a href="index.php?fuse=support&controller=ticket&view=alltickets&filter=all">
+                            <?php echo $this->user->lang("My Tickets");?>
+                        </a>
+                    </li>
+                    <?php } ?>
+                    <?php if ($this->user->hasPermission('support_submit_ticket')) { ?>
+                    <li>
+                        <a href="index.php?fuse=support&controller=ticket&view=submitticket">
+                            <?php echo $this->user->lang("Submit a Request");?>
+                        </a>
+                    </li>
+                    <?php } ?>
+                    <?php if ($this->user->hasPermission('knowledgebase_view')) { ?>
+                    <li>
+                        <a href="index.php?fuse=knowledgebase&controller=articles&view=main">
+                            <?php echo $this->user->lang("Knowledge Base");?>
+                        </a>
+                    </li>
+                    <?php } ?>
+                    <?php if ($this->user->hasPermission('clients_view_announcements')) { ?>
+                    <li>
+                        <a href="index.php?fuse=home&controller=announcements&view=announcements">
+                            <?php echo $this->user->lang("Announcements");?>
+                        </a>
+                    </li>
+                    <?php } ?>
+                    <?php if ($pluginMenu['support'] != '') { ?>
+                    <?php echo $pluginMenu['support']; ?>
+                    <?php } ?>
+                </ul>
+            </li>
+            <?php } ?>
+            <?php if ($pluginMenu['tools'] != '') { ?>
+            <li class="nav-item dropdown">
+                <a class="dropdown-toggle" href="javascript:void(0)" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <?php echo $this->user->lang("Plugins");?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <?php echo $pluginMenu['tools']; ?>
+                </ul>
+            </li>
+            <?php } ?>
+        </ul>
+        <div class="d-block d-sm-none header-user-menu pt-3 text-center">
+        <?php
+            echo $this->partial('views/layoutpartials/usermenu.phtml', [
+                'loggedin' => $this->loggedin,
+                'customerProfileURL' => $this->customerProfileURL,
+                'customer' => $this->customer,
+            ]);
+        ?>
+        </div>
+    </div>
+</nav>
+<div class="header-right header-user-menu float-right d-none d-sm-block col-sm-4">
+    <?php
+        echo $this->partial('views/layoutpartials/usermenu.phtml', [
+            'loggedin' => $this->loggedin,
+            'customerProfileURL' => $this->customerProfileURL,
+            'customer' => $this->customer,
+        ]);
+    ?>
+</div>

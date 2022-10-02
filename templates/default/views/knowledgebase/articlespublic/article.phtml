@@ -1,0 +1,280 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="knowledge-base-article-page">
+            <div class="row no-gutters">
+                <?php if ($this->category['is_global_series']) { ?>
+                <div class="col-lg-3 col-md-4">
+                    <div class="knowledge-base-sidebar">
+                        <div class="accordion">
+                            <?php foreach ($this->series as $key => $articles) { ?>
+                            <div class="accordion-item <?php echo $articles['meta']['open']; ?>">
+                                <?php echo $key ;?>
+                            </div>
+                            <div class="data" style="display: <?php echo $articles['meta']['display']; ?>;">
+                                <div class="knowledge-links">
+                                    <?php foreach ($articles['articles'] as $article) { ?>
+                                    <ul>
+                                        <li>
+                                            <a <?php if ($article['art_id']==$this->articleId) { ?> class="active"
+                                                <?php } ?> href="
+                                                <?php echo $article['href']; ?>">
+                                                <?php echo $article['art_title']; ?>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+                <?php if ($this->category['is_global_series']) { ?>
+                <div class="col-lg-9 col-md-8">
+                <?php } else { ?>
+                <div class="col-lg-12">
+                <?php } ?>
+                    <div class="knowledge-base-content-block">
+                        <div class="knowledge-base-search">
+                            <form action="index.php" method="GET" id="support-search" class="support-search-big">
+                                <input type="hidden" name="fuse" value="knowledgebase">
+                                <input type="hidden" name="controller" value="articles">
+                                <input type="hidden" name="view" value="search">
+                                <input type="text" class="knowledge-search-input" name="subject" placeholder="<?php echo $this->user->lang('Have a question? Ask or enter a search term here.'); ?>">
+                                <button type="submit" class="knowledge-search-submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="system-requirements-block">
+                            <h1>
+                                <?php echo $this->articleName; ?>
+                            </h1>
+                            <div class="system-requirements-top">
+                                <ul class="date-comment">
+                                    <li>
+                                        <i class="fas fa-clock"></i>
+                                        <?php echo $this->articleModified; ?>
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-comment-dots"></i>
+                                        <?php echo $this->commentsText; ?>
+                                    </li>
+                                </ul>
+                                <div id="article-content">
+                                    <?php echo $this->unescape($this->articleDescription); ?>
+                                </div>
+                                <?php if ($this->userCanRate) { ?>
+                                <div id="knowledge-stars" data-article-id="<?php echo $this->articleId; ?>">
+                                    <?php if (!$this->alreadyRated) { ?>
+                                    <h4>
+                                        <?php echo $this->user->lang('How helpful was this article to you?'); ?>
+                                    </h4>
+                                    <span class="rating">
+                                        <span class='star' data-rating='5'></span>
+                                        <span class='star' data-rating='4'></span>
+                                        <span class='star' data-rating='3'></span>
+                                        <span class='star' data-rating='2'></span>
+                                        <span class='star' data-rating='1'></span>
+                                    </span>
+                                    <?php } else { ?>
+                                    <div class='alert alert-warning'>
+                                        <?php echo $this->user->lang("You have already rated this article.");?>
+                                    </div>
+                                    <?php
+                                    $rating = explode('.', $this->articleRating1);
+                                    $part1 = $rating[0];
+                                    $part2 = isset($rating[1]) ? $rating[1] : 0;
+                                    for ($x = 1; $x <= $this->limitRate; $x++) {
+                                        if ($x == ($part1 + 1) && $part2 > 0) {
+                                            echo '&nbsp;<i class="fa fa-star-half-alt""></i>';
+                                        } elseif ($x > $part1) {
+                                            echo '&nbsp;<i class="far fa-star""></i>';
+                                        } else {
+                                            echo '&nbsp;<i class="fas fa-star"></i>';
+                                        }
+                                    }
+                                ?>
+                                    <?php } ?>
+                                </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div class="knowledge-next-prev d-flex justify-content-between align-items-center">
+                            <?php if ($this->links['previous']['url'] == '')  { ?>
+                            <a class="knowledge-next-prev-links prev hidden"></a>
+                            <?php } else { ?>
+                            <a href="<?php echo $this->links['previous']['url']; ?>" class="knowledge-next-prev-links prev">
+                                <i class="fas fa-chevron-left"></i>
+                                <div>
+                                    <span>
+                                        <?php echo $this->user->lang('Previous'); ?>
+                                    </span>
+                                    <?php echo $this->links['previous']['name']; ?>
+                                </div>
+                            </a>
+                            <?php } ?>
+                            <?php if ($this->links['next']['url'] != '') { ?>
+                            <a href="<?php echo $this->links['next']['url']; ?>" class="knowledge-next-prev-links next">
+                                <div>
+                                    <span>
+                                        <?php echo $this->user->lang('Next'); ?>
+                                    </span>
+                                    <?php echo $this->links['next']['name']; ?>
+                                </div>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <?php } ?>
+                        </div>
+                    </div>
+                    <?php if ($this->showArticleForm) { ?>
+                    <div class="comment-form">
+                            <form method="GET" action="index.php" class="validate-form">
+                            <input type="hidden" name="fuse" value="knowledgebase">
+                            <input type="hidden" name="action" value="addcomment">
+                            <input type="hidden" name="controller" value="articles">
+                            <input type="hidden" name="articleId" value="<?php echo $this->articleId; ?>">
+                            <input type="hidden" name="sessionHash" value="<?php echo CE_Lib::getSessionHash(); ?>">
+                            <?php if ($this->gIsAdmin || $this->gCustomerLoggedIn) { ?>
+                            <input type="hidden" name="userName" value="<?php echo $this->escape($this->user->getFullName()); ?>">
+                            <input type="hidden" name="userEmail" value="<?php echo $this->user->getEmail(); ?>">
+                            <?php } ?>
+                                <div class="form-group">
+                                    <label for="userComment">
+                                        <?php echo $this->user->lang("Leave a comment"); ?>
+                                    </label>
+                                    <?php if ($this->gIsAdmin || $this->gCustomerLoggedIn) { ?>
+                                        <div class="comment-input">
+                                    <input type="text" name="display_name" id="display_name" class="form-control comment-input" disabled placeholder="Your Name" value="<?php echo $this->user->lang("Add a new comment as %s", $this->escape($this->user->getFullName())); ?>" tabindex="3">
+                                    </div>
+                                    <?php } else { ?>
+                                    <div class="row guest-info">
+                                        <div class="col-sm-6">
+                                            <div class="form-elem">
+                                                <input required type="text" name="userName" class="comment-name form-control" value="" placeholder="<?php echo $this->user->lang('Your full name') ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-elem">
+                                                <input required type="text" name="userEmail" class="comment-email form-control" value="" placeholder="<?php echo $this->user->lang('Your email address') ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php } ?>
+                                </div>
+                                <div class="form-group">
+                                    <textarea required name="userComment" id="userComment" class="form-control input-lg" placeholder="<?php echo $this->user->lang('Your Comment'); ?>"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <?php echo $this->unescape($this->captchaHtml); ?>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit">
+                                        <?php echo $this->user->lang("Add Comment"); ?>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <?php } ?>
+                        <?php if (count($this->ArticleComments) > 0) { ?>
+                        <div class="comment-block">
+                            <?php foreach ($this->ArticleComments as $articleComment) { ?>
+                            <div class="comment-single">
+                                <div class="comment-person-img">
+                                    <img src="<?php echo $articleComment['gravatarURL']; ?>" class="img-responsive" alt="">
+                                </div>
+                                <div class="comment-details">
+                                    <div class="comment-person">
+                                        <?php echo $articleComment['CommentUser']; ?>
+                                    </div>
+                                    <div class="comment-date">
+                                        <i class="fas fa-clock" aria-hidden="true"></i>
+                                        <?php echo $articleComment['dateAdded']; ?>
+                                    </div>
+                                    <p>
+                                        <?php echo nl2br($articleComment['CommentArticle']); ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                        <?php } ?>
+                    <?php if (!$this->showArticleForm) { ?>
+                    <span class="posting-disabled">
+                        <?php echo $this->user->lang("Posting has been disabled.");?>
+                    </span>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+$('.rating .star').bind('click', function() {
+
+    var rate = $(this).data('rating');
+    var articleId = $('#knowledge-stars').data('article-id');
+    $.ajax({
+        url: 'index.php?fuse=knowledgebase&action=rate&controller=articles',
+        data: { rating: rate, articleId: articleId },
+        dataType: 'json',
+        success: function(data) {
+            if (data.error) return;
+            $('#knowledge-stars').html("<span class='alert alert-success'>" + data.message + "</span>");
+        }
+    });
+});
+
+$('#article-content img').each(function(i, o) {
+    // var title = $(o).attr('alt');
+    // if (title === undefined) {
+    //     title = '';
+    // }
+    $(o).addClass('img-fluid');
+    // $(o).wrap('<a class="btn-zoom fancybox fancybox.image" title="' + title + '" rel="article-group" href="' + $(o).attr("src") + '"></a>');
+});
+
+// $(".fancybox").fancybox({
+//     openEffect: 'elastic',
+//     closeEffect: 'elastic',
+//     margin: [20, 60, 20, 60],
+//     helpers: {
+//         overlay: {
+//             css: {
+//                 'background': 'rgba(136, 136, 136, 0.952941)'
+//             }
+//         },
+//         title: {
+//             type: 'over'
+//         }
+//     }
+// });
+
+function scriptPrettify() {
+    // hljs.initHighlightingOnLoad();
+    $('#article-content pre').each(function(i, e) { hljs.highlightBlock(e) });
+}
+
+var script_tag_css = document.createElement('link');
+script_tag_css.setAttribute("rel", "stylesheet");
+script_tag_css.setAttribute("type", "text/css");
+script_tag_css.setAttribute("href", "//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.0/styles/tomorrow-night-eighties.min.css");
+(document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag_css);
+
+var script_tag_prettify = document.createElement('script');
+script_tag_prettify.setAttribute("type", "text/javascript");
+script_tag_prettify.setAttribute("src", "//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.0/highlight.min.js");
+(document.getElementsByTagName("head")[0] || document.documentElement).appendChild(script_tag_prettify);
+if (script_tag_prettify.readyState) {
+    script_tag_prettify.onreadystatechange = function() { // For old versions of IE
+        if (this.readyState == 'complete' || this.readyState == 'loaded') {
+            scriptPrettify();
+        }
+    };
+} else { // Other browsers
+    script_tag_prettify.onload = scriptPrettify;
+}
+</script>

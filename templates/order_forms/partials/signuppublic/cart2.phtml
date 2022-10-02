@@ -1,0 +1,343 @@
+<?php
+    echo $this->partial('../partials/currency.phtml', [
+        'currency' => $this->currency,
+    ]);
+?>
+<section class="cart-pages-wrapper page-wrapper">
+    <div class="container">
+        <?php
+            echo $this->partial('../partials/cartHeader.phtml', [
+                'tempInformation' => $this->tempInformation,
+                'step' => $this->step,
+                'summary' => $this->summary,
+                'bundled' => $this->bundled
+            ]);
+        ?>
+        <div class="sec-head">
+            <h2>
+                <?php echo $this->user->lang('Configure Product'); ?>
+            </h2>
+        </div>
+        <?php
+            echo $this->form()->open(
+                'index.php?fuse=admin&controller=signup&action=saveproductfields',
+                'POST',
+                ['id' => 'submitForm']
+            );
+            echo $this->form()->hidden('formId', 'configureProduct');
+            echo $this->form()->hidden('product', $this->product);
+            echo $this->form()->hidden('couponCode', '');
+            ?>
+        <div class="config-product-section item-wrapper">
+            <div class="cm-box-holder">
+                <div class="form-wrapper pb-2">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3><?php echo $this->package['package']->planname; ?></h3>
+                            <?php if ($this->package['package']->description != '') { ?>
+                            <p>
+                                <?php echo $this->package['package']->description; ?>
+                            </p>
+                            <?php } ?>
+                            <div class="form-elem">
+                                <label>
+                                    <?php echo $this->user->lang('Select Billing Cycle:'); ?>
+                                </label>
+                                <?php if ($this->showSaved) {?>
+                                <div class="d-none saveWrapper">
+                                    <span class="savePercent"></span>
+                                </div>
+                                <?php } ?>
+                                <?php
+                                    echo $this->partial('../partials/selectPaymentTerm.phtml', [
+                                        'hideSetupFees' => $this->hideSetupFees,
+                                        'monthlyPriceBreakdown' => $this->monthlyPriceBreakdown,
+                                        'showDiscountedPricingInBillingCycleSelector' => $this->showDiscountedPricingInBillingCycleSelector,
+                                        'package' => $this->package,
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php if (count($this->customFields) > 0) { ?>
+                    <div class="inline-heading">
+                        <h4>
+                            <?php echo $this->user->lang('Configure Product'); ?>
+                        </h4>
+                    </div>
+                    <div class="row">
+                        <?php foreach ($this->customFields as $customField) { ?>
+                        <?php if ($customField['fieldtype'] == 'break')  { ?>
+                        <div class="w-100"></div>
+                        <?php } else { ?>
+                        <?php if($customField['fieldtype'] == 'subdomain') { ?>
+                        <div class="col-md-12">
+                            <div class="form-elem" id="subDomainGroup">
+                        <?php } else { ?>
+                        <div class="col-md-6">
+                            <div class="form-elem">
+                        <?php } ?>
+                                <?php echo $this->cFHelper()->getLabel($customField); ?>
+                                <?php echo $this->cFHelper()->getMarkup($customField); ?>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        <?php } ?>
+                    </div>
+                    <?php } ?>
+                    <?php if (count($this->packageAddons) > 0) { ?>
+                    <div class="inline-heading">
+                        <h4>
+                            <?php echo $this->user->lang('Product Addons');?>
+                        </h4>
+                    </div>
+                    <div class="row">
+                        <?php
+                        foreach ($this->packageAddons as $addon) {
+                            echo $this->partial('../partials/addonItem.phtml', [
+                                'addon' => $addon,
+                            ]);
+                        }
+                        ?>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+            <?php
+            echo $this->partial('../partials/cartSummary.phtml', [
+                'package' => $this->package,
+                'addons' => $this->packageAddons,
+                'billingcycles' => $this->billingcycles,
+                'couponCode' => $this->couponCode,
+                'hideSetupFees' => $this->hideSetupFees,
+                'acceptCoupons' => $this->acceptCoupons
+            ]);
+        ?>
+        </div>
+        <?php echo $this->form()->close(); ?>
+    </div>
+</section>
+
+<script>
+    $('.paymentTerm').on('change', function () {
+        // disable $ saved
+        if ($('option:selected', this).data('saved') != '-') {
+            $(this).parents('.item-wrapper').find('.savePercent').html(
+                clientexec.lang('You saved %', $('option:selected', this).data('saved'))
+            );
+            $(this).parents('.item-wrapper').find('.saveWrapper').removeClass('d-none');
+        } else {
+            $(this).parents('.item-wrapper').find('.saveWrapper').addClass('d-none');
+        }
+
+    }).change();
+
+  $('.cart-item').on('change', function() {
+    // dynamically update history with each change, allows for easy linking or sharing
+    url = 'step=<?php echo $this->step; ?>&product=<?php echo $this->product; ?>&' + $('.cart-item').map(function () {
+        inputType = $(this).prop('type');
+        if (inputType == 'radio') {
+            if ($(this).is(':checked')) {
+                return $(this).prop('name') + '=' + $(this).val();
+            }
+        } else {
+            return $(this).prop('name') + '=' + $(this).val();
+        }
+    }).get().join('&');
+
+    couponCode = $('#couponCode').val();
+    if( $.trim(couponCode) !== "" ) {
+        url += '&couponCode=' + couponCode;
+    }
+    if ($(this).hasClass('paymentTerm')) {
+        clientexec.mask();
+        window.location.search = url;
+    } else {
+        history.pushState(null, null, window.location.pathname + '?' + url);
+    }
+  });
+
+var password_fields = [];
+<?php
+    if ($this->enforcePassword == true && count($this->passwordFields) > 0) {
+        foreach ($this->passwordFields as $passwordField) { ?>
+password_fields.push("<?php echo $passwordField;?>");
+<?php
+        }
+    }
+?>
+
+
+$('#submitForm').parsley();
+
+$('#continue-button').on('click', function(e) {
+    e.preventDefault();
+    var password_validated = true;
+
+
+    //let's validate remote data
+    if (password_fields.length > 0) {
+        $.each(password_fields, function(index, obj) {
+            $('#parsley-errors-list-' + obj).remove();
+            if ($.trim($('#CT_' + obj).val()) == "") {
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                data: { "password": $('#CT_' + obj).val() },
+                url: 'index.php?controller=signup&fuse=admin&action=testpasswordstrength',
+                async: false,
+                success: function(response) {
+                    json = clientexec.parseResponse(response);
+                    if (!json.valid) {
+                        password_validated = false;
+                         $('#CT_' + obj).after('<ul id="parsley-errors-list-'+ obj +'" class="parsley-errors-list filled" style="display: block;"><li class="parsley-required" style="display: list-item;">'+ json.errorMessage+'</li></ul>');
+                    }
+                }
+            });
+        });
+        // return false;
+
+        if (password_validated && $('#submitForm').parsley('validate')) {
+            $('#submitForm').submit();
+        }
+
+
+    } else if ($('#submitForm').parsley('validate')) {
+        $('#submitForm').submit();
+    }
+
+
+    return false;
+});
+
+$('.subdomain-input').on('keyup', function(){
+    validateSubDomain($(this).attr('id'));
+});
+
+$('.subdomain-select').on('change', function(){
+    validateSubDomain($(this).attr('id').split('-')[0]);
+});
+
+validateSubDomain = function(controlid) {
+
+    $('.parsley-errors-list', '#subDomainGroup').remove();
+
+    //disable continueButton while validating
+    var continueButton = document.getElementById("continue-button");
+    continueButton.disabled = true;
+
+    //subdomain
+    var subDomainNameField = document.getElementById(controlid);
+    var subDomainName = subDomainNameField.value;
+    var subDomainTldField = document.getElementById(controlid+"-tld");
+    var subDomainTld = subDomainTldField.options[subDomainTldField.selectedIndex].value;
+
+    $.post(
+        'index.php?fuse=clients&controller=products&action=isvalidsubdomain',
+        {
+            subDomainName: subDomainName,
+            subDomainTld: subDomainTld
+        },
+        function(response) {
+            var data = clientexec.parseResponse(response);
+            if(data.results === true){
+                //enable continueButton if valid
+                continueButton.disabled = false;
+            }else{
+                switch(data.results){
+                    case 'forbidden':
+                        $('#' + controlid).parent().after('<ul class="parsley-errors-list filled" style="display: block;"><li class="parsley-required" style="display: list-item;">'+'<?php echo str_replace("'", "\\'", $this->user->lang("This subdomain is currently not allowed"));?>'+'</li></ul>');
+                        break;
+                    case 'duplicated':
+                        $('#' + controlid).parent().after('<ul class="parsley-errors-list filled" style="display: block;"><li class="parsley-required" style="display: list-item;">'+'<?php echo str_replace("'", "\\'", $this->user->lang("This subdomain is already in use"));?>'+'</li></ul>');
+                        break;
+                }
+            }
+        }
+    );
+}
+
+$(function() {
+    $('#submitForm').on('submit', function() {
+        $(this).find(':disabled').removeAttr('disabled');
+    });
+});
+
+
+<?php if ($this->bundled) { ?>
+    $(document).ready(function() {
+        $('a:not(.button, .btn)').click(function(e){
+            e.preventDefault();
+            var selectedLink = this;
+
+             $.confirm({
+                theme: 'bootstrap',
+                title: 'Leaving Cart',
+                content: clientexec.lang('Leaving now will cancel this item.  Are you sure you want to leave?'),
+                draggable: false,
+                buttons: {
+                    confirm: {
+                        text: clientexec.lang('Yes'),
+                        action: function () {
+                            confirmDeleteItemFromCart(selectedLink);
+                        }
+                    },
+                    cancel: {
+                        text: clientexec.lang('No')
+                    },
+                }
+            });
+            return false;
+        });
+    });
+
+    confirmDeleteItemFromCart = function(link)
+    {
+        var cartItem = "<?php echo $this->cartParentPackage;?>";
+        if (cartItem != '') {
+            $.ajax({
+                url: 'index.php?fuse=admin&controller=signup&action=deletecartitem',
+                success: function () {
+                    window.location = link;
+                },
+                data: {
+                    cartItem: cartItem
+                },
+                dataType: 'json'
+            });
+      } else {
+        window.location = link;
+      }
+    }
+<?php } ?>
+
+
+</script>
+<style>
+.setupfee .setupfeeprice {
+    font-weight: 600;
+    font-size: 10px;
+}
+.setupfee {
+    font-size: 12px;
+    font-weight: 900;
+    padding: 5px 0 0 20px;
+}
+.saveWrapper {
+    float: right;
+    font-size: 12px;
+    font-weight: 900;
+    color: red;
+}
+
+.input-group [class^='select2'],
+.subdomain [class^='select2'] {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+.select2-container--disabled .select2-selection__arrow {
+    display: none;
+}
+
+</style>

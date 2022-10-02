@@ -1,0 +1,188 @@
+<?php
+
+if ($this->pageTitle == "") {
+    $originalTitle = "Untitled (".$this->gFuse."/".$this->gView.") - ".$this->gCompanyName;
+} else {
+    $originalTitle = $this->pageTitle . " - " . $this->gCompanyName;
+}
+
+if (count($this->gErrorMessages) > 0) {
+    $strErrorMessage = "";
+    foreach ($this->gErrorMessages as $message) {
+        if ($strErrorMessage != '') {
+            $strErrorMessage .= '<br>';
+        }
+        $strErrorMessage .= $message;
+    }
+}
+
+if (count($this->gMessages) > 0) {
+    $strGeneralMessage = "";
+    foreach ($this->gMessages as $message) {
+        if ($strGeneralMessage != '') {
+            $strGeneralMessage .= '<br>';
+        }
+        $strGeneralMessage .= $message;
+    }
+}
+
+if (count($this->gSuccessMessages)>0) {
+    $strSuccessMessage = "";
+    foreach ($this->gSuccessMessages as $message) {
+        if ($strSuccessMessage != '') {
+            $strSuccessMessage .= '<br>';
+        }
+        $strSuccessMessage .= $message;
+    }
+}
+
+?>
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>
+        <?php echo $originalTitle; ?>
+    </title>
+    <?php if ($this->seoDesc !='') {?>
+    <meta name="description" content="<?php echo $this->seoDesc; ?>" />
+    <?php } ?>
+    <?php if ($this->seoKeywords !='') {?>
+    <meta name="keywords" content="<?php echo $this->seoKeywords; ?>" />
+    <?php } ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="<?php echo $this->templateCSS['style']; ?>?ver=<?php echo $this->gInstalledVersion; ?>">
+    <script data-cfasync="false">
+        var clientexec = {};
+        clientexec.sessionHash = "<?php echo $this->gHash; ?>";
+        clientexec.dateFormat = "<?php echo $this->gDateFormat;?>";
+    </script>
+    <script data-cfasync="false" src="<?php echo $this->templateJS['manifest']; ?>?ver=<?php echo $this->gInstalledVersion; ?>"></script>
+    <script data-cfasync="false" src="<?php echo $this->templateJS['vendor']; ?>?ver=<?php echo $this->gInstalledVersion; ?>"></script>
+    <script data-cfasync="false" src="<?php echo $this->templateJS['application']; ?>?ver=<?php echo $this->gInstalledVersion; ?>"> </script>
+    <?php // Only show for doplugin until we can rip this out into webpack ?>
+    <?php if ($this->gCSSFiles != '' && $this->gView == 'doplugin') { ?>
+        <link rel="stylesheet" type="text/css" href="library/utilities/min/index.php?f=<?php echo $this->gCSSFiles;?><?php echo $this->debugMinifier? '&amp;debug=true' : '';?>&ver=<?php echo $this->gInstalledVersion;?>" />
+    <?php } ?>
+    <?php if ($this->gJSFiles != '' && $this->gView == 'doplugin') { ?>
+        <script data-cfasync="false" type="text/javascript" src="library/utilities/min/index.php?f=<?php echo $this->gJSFiles;?><?php echo $this->debugMinifier? '&debug=true' : '';?>&ver=<?php echo $this->gInstalledVersion;?>"></script>
+    <?php } ?>
+    <?php
+        if (!$this->gHideStyle) {
+            echo $this->unescape($this->headHTML);
+        }
+    ?>
+</head>
+
+<body>
+    <?php
+        if ($this->gHideStyle) {
+            echo $this->layout()->CONTENT;
+        } else {
+    ?>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <?php echo $this->unescape($this->bodyHTML); ?>
+    <div class="header">
+        <div class="main-meta">
+            <div class="container">
+                <?php
+                        echo $this->partial('views/layoutpartials/topmenu.phtml', [
+                            'snapins' => $this->snapins,
+                            'user' => $this->user,
+                            'gView' => $this->gView,
+                            'loggedin' => $this->loggedIn,
+                            'overallstyle' => $overallstyle,
+                            'templateOptions' => $this->templateOptions,
+                            'langauges' => CE_Lib::getEnabledLanguages(),
+                            'customerProfileURL' => $this->customerProfileURL,
+                            'domainLink' => $this->domainLink,
+                            'logoURL' => $this->logoURL,
+                            'customer' => $this->customer,
+                        ]);
+                    ?>
+            </div>
+        </div>
+    </div>
+    <?php echo $this->partial('views/layoutpartials/topmessages.phtml', [
+        'strErrorMessage' => $strErrorMessage,
+        'strGeneralMessage' => $strGeneralMessage,
+        'strSuccessMessage' => $strSuccessMessage,
+        'serverStatusMessages' => $this->serverStatusMessages
+    ]); ?>
+    <?php echo $this->unescape($this->clientAreaAllHTML); ?>
+    <?php echo $this->layout()->CONTENT; ?>
+    <footer class="footer">
+        <?php if (!CE_Lib::hasAttribute("nobranding")) { ?>
+        <div class="container">
+            <div class="copyright">
+                <p>
+                    <?php echo $this->user->lang("Powered by"); ?> <a href="http://www.clientexec.com?source=poweredby" target="_new">
+                        <img class="brand-logo" src="templates/default/images/logo_text.png">
+                    </a>
+                </p>
+            </div>
+        </div>
+        <?php
+        }
+
+        if (!$this->gHideStyle) {
+            echo $this->unescape($this->footerHTML);
+        }
+        ?>
+        <?php echo $this->unescape($this->clientAreaFooterHTML); ?>
+    </footer>
+    <script src="library/utilities/language.php?ver=<?php echo $this->gInstalledVersion; ?>&lang=<?php echo $this->gLanguage; ?>"></script>
+    <script>
+        $(window).on('load resize', function() {
+            $("body").css({'padding-top': $(".header").height()});
+        });
+    </script>
+    <?php } ?>
+    <?php if ($this->gHasAccessToLiveChat && !$this->gHideStyle) { ?>
+        <script data-cfasync="false" type="text/javascript">
+            var clientexec = clientexec || {};
+            clientexec.whoisonline = {
+                options: {
+                    enable_location: true,
+                    session_days: 5,
+                    hide_chat:false,
+                    location_cookie_name: 'location_ipinfodb',
+                    ipinfodb_key: '7e2a309e38180caf486102979fdd93a20cb2c5603b45448630f3ad860a2802f7',
+                },
+                log : false
+            }
+           clientexec.protocol = window.location.protocol;
+        </script>
+        <script data-cfasync="false" src="plugins/dashboard/livevisitor/chat/track.php" type="text/javascript"></script>
+    <?php } ?>
+
+    <?php if ($this->maxmind_device_tracking_enabled === true) { ?>
+    <script data-cfasync="false">
+        maxmind_user_id = '<?php echo $this->maxmind_account_id; ?>';
+        (function() {
+            var loadDeviceJs = function() {
+                var element = document.createElement('script');
+                element.src = ('https:' == document.location.protocol ? 'https:' : 'http:') + '//device.maxmind.com/js/device.js';
+                document.body.appendChild(element);
+            };
+            if (window.addEventListener) {
+                window.addEventListener('load', loadDeviceJs, false);
+            } else if (window.attachEvent) {
+                window.attachEvent('onload', loadDeviceJs);
+            }
+        })();
+    </script>
+    <?php } ?>
+</body>
+</html>

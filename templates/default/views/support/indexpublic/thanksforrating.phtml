@@ -1,0 +1,59 @@
+<div class="content-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->headTitle; ?>
+                    </h1>
+                </div>
+                <div class="cs-padding">
+                <?php if ($this->showFeedback) { ?>
+                    <form action='index.php?fuse=support&action=savefeedback' name='formfeedback' method='post'>
+                    <input type="hidden" name="ticketId" value="<?php echo $this->ticketId; ?>">
+                    <input type="hidden" name="hash" value="<?php echo $this->hashCode; ?>">
+                    <div class="form-group">
+                        <?php echo $this->user->lang("Please enter any additional comments about your service below:");?>
+                        <textarea name="message" rows="4" class="form-control"></textarea>
+                    </div>
+                    <?php if ($this->shareTwitter) { ?>
+                    <div class="float-right">
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-text="<?php echo $this->tweet; ?>" data-url="<?php echo $this->companyUrl; ?>">Tweet</a>
+                        <script data-cfasync="false" type="text/javascript">!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+                    </div>
+                    <?php } ?>
+                    <input type="submit" class="app-btns primary" name="send" value="<?php echo $this->user->lang("Share Your Feedback");?>">
+                    </form>
+                    <?php } elseif ($this->showThanks) { ?>
+                         <div>
+                            <?php echo $this->user->lang("Your comments have been submitted."); ?>
+                        </div>
+                         <?php if ($this->shareTwitter) { ?>
+                        <div>
+                            <a href="https://twitter.com/share" class="twitter-share-button" data-text="<?php echo $this->tweet; ?>" data-url="<?php echo $this->companyUrl; ?>">
+                                Tweet
+                            </a>
+                            <script data-cfasync="false" type="text/javascript">!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+                        </div>
+                    <?php } ?>
+                <?php } else { ?>
+                    <div>
+                    <?php if (isset($this->badTicket)) { ?>
+                        <?php echo $this->user->lang("The referred ticket does not exist"); ?>
+                    <?php } ?>
+                    <?php if (isset($this->alreadyRated)) { ?>
+                        <?php echo $this->user->lang("The service on that ticket has already been rated"); ?>
+                    <?php } ?>
+                    <?php if (isset($this->badHash)) { ?>
+                        <?php echo $this->user->lang("The hash provided was invalid"); ?>
+                    <?php } ?>
+                    <?php if (isset($this->badRate)) { ?>
+                        <?php echo $this->user->lang("Nice try but that was an invalid rate"); ?>
+                    <?php } ?>
+                    </div>
+                <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

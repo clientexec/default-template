@@ -1,0 +1,807 @@
+<section class="cart-pages-wrapper">
+    <div class="container">
+        <?php
+            echo $this->partial('../partials/cartHeader.phtml', [
+                'tempInformation' => $this->tempInformation,
+                'step' => $this->step,
+                'summary' => $this->summary,
+                'bundled' => $this->bundled,
+                'hasStep1' => false
+            ]);
+        ?>
+    </div>
+    <div class="domain-page">
+        <div class="head">
+            <h3><?php echo $this->user->lang('Choose a Domain Name'); ?></h3>
+        </div>
+        <div class="domain-section">
+            <div class="cm-holder">
+                <div class="cm-tab-accordion">
+                    <div class="cm-tabs">
+                        <ul class="resp-tabs-list">
+                            <?php if ($this->group['advanced']['disallowRegister'] == '0' || $this->group['advanced']['disallowRegister'] == null) {?>
+                            <li>
+                                <?php echo $this->user->lang('Register Domain'); ?>
+                            </li>
+                            <?php } ?>
+                            <?php if ($this->group['advanced']['allowTransfer'] == 1) { ?>
+                            <li>
+                                <?php echo $this->user->lang('Transfer Domain'); ?>
+                            </li>
+                            <?php } ?>
+                            <?php if ($this->bundled && $this->group['advanced']['allowSelfManage'] == 1) { ?>
+                                <li>
+                                    <?php echo $this->user->lang("Use My Own Domain");?>
+                                </li>
+                            <?php } ?>
+                            <?php if (count($this->subdomains) > 0) { ?>
+                            <li>
+                                <?php echo $this->user->lang('Use a free sub-domain'); ?>
+                            </li>
+                            <?php } ?>
+                        </ul>
+
+                        <div class="resp-tabs-container">
+                            <?php if ($this->group['advanced']['disallowRegister'] == '0' || $this->group['advanced']['disallowRegister'] == null) { ?>
+                            <div>
+                                <div class="need-domain">
+                                    <span class="www-name">www.</span>
+                                    <input pattern="<?php echo REGEXDOMAIN_PARSLEY; ?>" type="text" class="domain-input need-domain-input first_domain_name" placeholder="<?php echo $this->user->lang('Search Domain'); ?>" name="first_domain_name" value="<?php echo $this->domainName; ?>" />
+                                    <div class="domain-dropdown">
+                                        <select name="domain_extension" id="" class="normalSelect2 domain_extension">
+                                            <?php foreach ($this->packages as $package) { ?>
+                                            <option<?php echo ($this->tld == $package['planname']) ? ' selected="selected"' : ''; ?> value="<?php echo $package['id'];?>">
+                                                <?php echo $package['planname'];?>
+                                            </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="domain-bottom pb-4">
+                                    <a href="#" class="continue-btn" id="search-domain-register">
+                                        <?php echo $this->user->lang('Continue'); ?>
+                                    </a>
+                                </div>
+
+
+                                <div id="domainSearchResults" class="text-center"></div>
+                                <div id="domainSearchOptions"></div>
+                            </div>
+                            <?php } ?>
+
+
+
+                            <?php if ($this->group['advanced']['allowTransfer'] == 1) { ?>
+                            <div>
+                                <div class="need-domain">
+                                    <span class="www-name">www.</span>
+                                    <input type="text" class="domain-input transfer_domain" placeholder="<?php echo $this->user->lang('Domain Name'); ?>" id="transfer_extension" name="transfer_domain" value="<?php echo $this->domainName; ?>">
+                                    <div class="domain-dropdown">
+                                        <select name="domain_extension" id="" class="normalSelect2 transfer_extension">
+                                            <?php foreach ($this->packages as $package) { ?>
+                                            <option<?php echo ($this->tld == $package['planname']) ? ' selected="selected"' : ''; ?> value="<?php echo $package['id'];?>">
+                                                <?php echo $package['planname'];?>
+                                            </option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="domain-bottom pb-4">
+                                    <a href="#" class="continue-btn" id="search-domain-transfer">
+                                        <?php echo $this->user->lang('Continue'); ?>
+                                    </a>
+                                </div>
+
+                                <div id="domainTransferSearchResults" class="text-center"></div>
+                                <div id="domainTransferSearchOptions"></div>
+                            </div>
+                            <?php } ?>
+
+                            <?php if ($this->bundled && $this->group['advanced']['allowSelfManage'] == 1) { ?>
+                            <div>
+                                <form id="submitForm">
+                                    <div class="need-domain">
+                                        <span class="www-name">www.</span>
+                                        <input data-parsley-pattern="<?php echo REGEXDOMAIN_PARSLEY; ?>" placeholder="<?php echo $this->user->lang('Domain Name'); ?>" id="self_domain" type="text" name="self_domain" class="domain-input self_domain form-control" data-parsley-required="true" value="<?php echo ($this->domainName != '') ? $this->domainName . '.' . $this->tld : ''; ?>">
+                                    </div>
+                                    <div class="domain-bottom pb-4">
+                                        <a href="#" class="continue-btn" id="self-manage-button">
+                                            <?php echo $this->user->lang('Continue'); ?>
+                                        </a>
+                                    </div>
+
+                                    <div id="domainTransferSearchResults" class="text-center"></div>
+                                    <div id="domainTransferSearchOptions"></div>
+                                </form>
+                            </div>
+                            <?php } ?>
+
+
+                            <?php if (count($this->subdomains) > 0) { ?>
+                            <div>
+                                <div class="need-domain">
+                                    <span class="www-name">www.</span>
+                                    <input data-parsley-pattern="<?php echo REGEXSUBDOMAIN_PARSLEY; ?>" type="text" class="domain-input need-domain-input" placeholder="<?php echo $this->user->lang('Search Domain'); ?>" name="subdomain" id="subdomain" onkeyup="domains.validateSubDomain('subdomain');" data-parsley-required="true" />
+                                    <div class="domain-dropdown">
+                                         <select name="subdomain-tld" id="subdomain-tld" onchange="domains.validateSubDomain('subdomain');" class="normalSelect2">
+                                            <?php foreach ($this->subdomains as $subdomaintld) { ?>
+                                                <option value="<?php echo $subdomaintld; ?>"><?php echo $subdomaintld; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="domain-bottom pb-4">
+                                    <a href="#" class="continue-btn" id="subdomain-button" disabled>
+                                        <?php echo $this->user->lang('Search'); ?>
+                                    </a>
+                                </div>
+                                <div id="subSearchResults" class="text-center"></div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script data-cfasync="false" type="text/javascript">
+domains = {};
+domains.additional_fields = [];
+$(document).ready(function(){
+    domains.productGroup = <?php echo $this->productgroup; ?>;
+    domains.product = null;
+    domains.bundling = <?php echo $this->bundled;?>;
+    domains.hosting_product = null;
+    <?php if ($this->autoSearchType == 'register' || $this->autoSearchType == 'transfer') { ?>
+    <?php if ($this->autoSearchType == 'transfer') { ?>
+    $('.resp-tab-item').click();
+    <?php } ?>
+    <?php if ($this->domainName != '') { ?>
+    domains.search_domain('<?php echo $this->autoSearchType; ?>');
+    <?php } ?>
+    <?php } ?>
+});
+
+var cartParentPackageId = "<?php echo $this->cartParentPackageId;?>";
+var cartParentPackageTerm = "<?php echo $this->cartParentPackageTerm;?>";
+
+$('#search-domain-register').on('click', function(e) {
+    e.preventDefault();
+    domains.search_domain('register');
+});
+
+$('#search-domain-transfer').on('click', function(e) {
+    e.preventDefault();
+    domains.search_domain('transfer');
+});
+
+$('#self-manage-button').on('click', function(e) {
+    e.preventDefault();
+    $('#submitForm').parsley().validate();
+    if ($('#submitForm').parsley().isValid()) {
+        domains.search_domain('self');
+    }
+});
+
+$('#submitForm').on('submit', function(e){
+    e.preventDefault();
+    $('#submitForm').parsley().validate();
+    if ($('#submitForm').parsley().isValid()) {
+        domains.search_domain('self');
+    }
+});
+
+$('#subdomain-button').on('click', function(e) {
+    e.preventDefault();
+    domains.search_domain('subdomain');
+});
+
+
+$("#domainSearchOptions").on("click", ".configure-product", function(event){
+    var product_id = $(this).data('product-id');
+    selected_new_domain = domains.start_additional_info_check(this, product_id, 'register');
+    if (selected_new_domain) {
+        $('.selected-domain-form[data-product-id='+product_id+'] .domain-option-add').append('<i class="fa fa-times-circle-o"></i>');
+    }
+});
+
+$("#domainTransferSearchOptions").on("click", ".configure-product", function(event) {
+    var product_id = $(this).data('product-id');
+    selected_new_domain = domains.start_additional_info_check(this, product_id, 'transfer');
+    if (selected_new_domain) {
+        $('.selected-domain-form[data-product-id='+product_id+'] .domain-option-add').append('<i class="fa fa-times-circle-o"></i>');
+    }
+});
+
+
+domains.search_domain = function(searchType) {
+    if (searchType == 'register') {
+        $('.first_domain_name').val($('.first_domain_name').val().toLowerCase().trim());
+        name = $('.first_domain_name').val().trim();
+        tld = $('.domain_extension').find('option:selected').text().trim();
+        product_id = $('.domain_extension').find('option:selected').val().trim();
+
+        searchOptionsDiv = '#domainSearchOptions';
+        searchResultsDiv = '#domainSearchResults';
+
+    } else if (searchType == 'transfer') {
+        $('.transfer_domain').val($('.transfer_domain').val().toLowerCase().trim());
+        name = $('.transfer_domain').val().trim();
+        tld = $('.transfer_extension').find('option:selected').text();
+        product_id = $('.transfer_extension').find('option:selected').val();
+
+        searchOptionsDiv = '#domainTransferSearchOptions';
+        searchResultsDiv = '#domainTransferSearchResults';
+
+    } else if (searchType == 'subdomain') {
+        if ($('#subdomain').val().trim() == '') {
+            searchResultsDiv = '#subSearchResults';
+            $(searchResultsDiv).html("<div class='alert alert-danger domain_search_alreadyregistered'><strong>"+clientexec.lang("Please enter a valid domain")+"</strong></div>");
+            return;
+        }
+
+        products_data = {};
+        products_data.is_domain = 1;
+        products_data.domainname = $('#subdomain').val().trim() + '.' + $('#subdomain-tld').val();
+        products_data.domainType = 2;
+        products_data.productGroup = domains.productGroup;
+
+        $.ajax({
+            url: 'index.php?fuse=admin&controller=signup&action=updateparentpackage',
+            type: 'POST',
+            data: products_data,
+            success: function (result) {
+                json = clientexec.parseResponse(result);
+                if (!json.error) {
+                    window.location = json.nexturl;
+                }
+            }
+        });
+
+        return;
+    } else if (searchType == 'self') {
+
+        // self-manage, just submit the domain and carry on.
+        products_data = {};
+        products_data.is_domain = 1;
+        products_data.domainname = $('.self_domain').val().trim();
+        products_data.domainType = 2;
+        products_data.productGroup = domains.productGroup;
+
+        $.ajax({
+            url: 'index.php?fuse=admin&controller=signup&action=updateparentpackage',
+            type: 'POST',
+            data: products_data,
+            success: function (result) {
+                json = clientexec.parseResponse(result);
+                if (!json.error) {
+                    window.location = json.nexturl;
+                }
+            }
+        });
+
+        return;
+    }
+
+    if (name == '') {
+        $(searchOptionsDiv).html('');
+        $(searchResultsDiv).html("<div class='alert alert-danger domain_search_alreadyregistered'><strong>"+clientexec.lang("Please enter a valid domain")+"</strong></div>");
+        return;
+    }
+
+    $(searchResultsDiv).html('<i class="fa fa-spinner fa-spin fa-lg"></i>&nbsp;&nbsp;'+clientexec.lang("Searching domain availability..."));
+    $('#domainSearchOptions').html("");
+    $('#domainTransferSearchOptions').html("");
+    // $('.continue-btn').hide();
+
+    $.getJSON('index.php?fuse=admin&controller=signup&action=searchdomain',
+    {
+        name: name,
+        tld: tld.trim(),
+        product:product_id,
+        searchType: searchType,
+        cartParentPackageId: cartParentPackageId,
+        cartParentPackageTerm: cartParentPackageTerm
+    },
+    function(response) {
+        domains.response = response;
+        if (response.error) {
+            $(searchResultsDiv).html("");
+            searched_domain_status = 2;
+            error_message = response.message;
+        } else {
+            search_results  = response.search_results;
+            searched_domain_status = search_results.status;
+            error_message = clientexec.lang("There was an error looking up that domain.  Please try again.");
+        }
+
+        if (searchType == 'register') {
+            if (searched_domain_status == 1) {
+                $(searchResultsDiv).html("<div class='domain_search_alreadyregistered'>"+clientexec.lang("Sorry, % is already registered", search_results.domainName)+"</div>");
+            } else if (searched_domain_status == 0) {
+                $(searchResultsDiv).html("<div class='domain_search_notregistered'>"+clientexec.lang("Good news, % is available to register", search_results.domainName)+"</div>");
+
+            } else if (searched_domain_status == -1) {
+                $(searchResultsDiv).html("<div class='alert alert-danger domain_search_alreadyregistered'><strong>"+clientexec.lang('Sorry, % is invalid.', search_results.domainName)+"</strong></div>");
+            } else {
+                $(searchResultsDiv).html("<div class='alert alert-danger domain_search_alreadyregistered'><strong>"+error_message+"</strong></div>");
+
+                // only return if there are 0 domains to show.
+                if ( search_results.available_count == 0 ) {
+                    return;
+                }
+                // set this to 1, so we can get to the next step
+                searched_domain_status = 1;
+            }
+        } else if ( searchType == 'transfer' ) {
+            if ( searched_domain_status == 1 ) {
+                $(searchResultsDiv).html("<div class='domain_search_notregistered'>"+clientexec.lang("Good news, % is available to transfer", search_results.domainName) + "</div>");
+            } else if ( searched_domain_status == 0 ) {
+                $(searchResultsDiv).html("<div class='domain_search_alreadyregistered'>"+clientexec.lang("Sorry, % is not available to transfer", search_results.domainName) + "</div>");
+            } else if (searched_domain_status == -1) {
+                $(searchResultsDiv).html("<div class='alert alert-danger ce-alert-error domain_search_alreadyregistered'><strong>"+clientexec.lang('Sorry, % is invalid.', search_results.domainName)+"</strong></div>");
+            } else {
+                $(searchResultsDiv).html("<div class='alert alert-danger domain_search_alreadyregistered'><strong>"+error_message+"</strong></div>");
+                return;
+            }
+
+        }
+
+        if ((search_results.available_options.length > 0) &&
+            (search_results.available_count > 0) &&
+            (searched_domain_status == 0 || searched_domain_status == 1)) {
+                $.get('templates/order_forms/default_domains/signuppublic/domainresults.mustache',function(template) {
+                    $.each(response.search_results.available_options, function (index1, value1) {
+                        response.search_results.available_options[index1].index = index1;
+                            $.each(value1.price, function (index2, value2) {
+                                if ( searchType == 'transfer' ) {
+                                    if ( value2.transfer == '' ) {
+                                        // Tranfer periods can be disabled by leaving it blank
+                                        delete response.search_results.available_options[index1].price;
+                                        return;
+                                    }
+                                    periodPrice = value2.formated_transfer;
+                                } else {
+                                    periodPrice = value2.formated_price;
+                                }
+
+                                renewPrice = value2.formated_renew;
+
+                                // if ( ce.isIE()) {
+                                //     periodPrice = periodPrice.replace(/\$/g, '$$$$');
+                                // }
+
+                                response.search_results.available_options[index1].price[index2].priceLang = clientexec.lang('%: %', value2.period, periodPrice);
+
+                                if (renewPrice != periodPrice) {
+                                    renewsAt = clientexec.lang('(renews at %)', renewPrice);
+                                    response.search_results.available_options[index1].price[index2].priceLang += ' ' + renewsAt;
+                                }
+
+                            });
+                        });
+                        items = {
+                            domainType: searchType,
+                            available_options:response.search_results.available_options,
+                            name: name,
+                            translate: function () {
+                                return function(text,render) {
+                                        switch (text) {
+                                                case 'Available Domains':
+                                                    return clientexec.lang("Available Domains");
+                                                case 'Years':
+                                                    return clientexec.lang("Years");
+                                                case 'Add to cart':
+                                                    return clientexec.lang('Add to cart');
+                                        }
+                                }
+                            },
+                            render_additional: function () {
+                                $.each(response.search_results.available_options, function (index, value) {
+                                    domains.additional_fields[value.domain_name] = value.additional_options;
+                                });
+                            }
+                        };
+
+                        $(searchOptionsDiv).html(Mustache.render(template, items));
+                        $('input.domain-option-yrs').each(function() {
+                            var index = $(this).data('index');
+                            var select = $(this).parent().find('select.domain-option-yrs');
+                            var firstId = false;
+                            $.each(response.search_results.available_options[index].price, function(ix, value) {
+                                selected = '';
+                                if ( typeof value === 'undefined' ) {
+                                    return;
+                                }
+
+                                //default to the same billing cycle as the one selected in the parent package if available
+                                if (!firstId || (value.period_id) == cartParentPackageTerm) {
+                                    firstId = value.period_id;
+                                    selected = ' selected';
+                                }
+
+                                select.append('<option value="' + value.period_id + '"' + selected + '>' + value.priceLang + '</option>');
+                            });
+                            select.addClass('normalSelect2');
+                        });
+
+                        suggest_label = '';
+                        if ( searchType == 'register' ) {
+                            if ( searched_domain_status == 1) {
+                                suggest_label = clientexec.lang("But don’t worry, we found these other great domains for you.");
+                            } else if ( response.search_results.available_options.length > 1 ) {
+                                suggest_label = clientexec.lang("We also found additional results for you...");
+                            }
+                        }
+                        $(searchOptionsDiv).prepend("<div class='other-options-available'>"+suggest_label+"</div>");
+                        clientexec.postPageLoad(searchOptionsDiv);
+                    }
+                );
+            }
+
+        });
+    };
+
+
+domains.submit_selected_domains = function()
+{
+    var products_data = {};
+    products_data.products = {};
+    // let's loop through the selected rows and grab any fields
+    $('.selected-domain-form').each(function() {
+        // we might not have any attributes
+        products_data.products[$(this).data('product-id')] = $(this).serializeJSON();
+        products_data.products[$(this).data('product-id')].is_domain = 1;
+        products_data.products[$(this).data('product-id')].domainname = $(this).find('.domain-option-name').html();
+        products_data.products[$(this).data('product-id')].paymentterm = $(this).find('select.domain-option-yrs').val();
+        products_data.products[$(this).data('product-id')].product = $(this).data('product-id');
+        products_data.products[$(this).data('product-id')].domainType = $(this).data('domain-type');
+    });
+
+    $('.selected-domain-form').parsley().validate();
+    if ($('.selected-domain-form').parsley().isValid()) {
+        clientexec.mask();
+        $.ajax({
+            url: 'index.php?fuse=admin&controller=signup&action=savedomainfields',
+            type: 'POST',
+            data: products_data,
+            success: function (result) {
+                json = clientexec.parseResponse(result);
+                if (!json.error) {
+                    window.location = json.nexturl;
+                }
+                clientexec.unMask();
+            }
+        });
+    }
+}
+
+
+/* method to run when add to cart button is clicked (or remove) */
+domains.start_additional_info_check = function(self, product_id, type)
+{
+    $(self).parent().parent().find('select.domain-option-yrs').prop('disabled', 'disabled');
+    domainName = $(self).data('domain-name');
+    var count_domains = $('.domain-option-name').length;
+    //we need to deep copy variable so that we con't override in customfields
+    var additional_fields = domains.additional_fields[domainName];
+    var has_attributes = true;
+
+    if (additional_fields.addons.length == 0 &&
+        additional_fields.customFields.length == 0 &&
+        additional_fields.extra_attributes.length == 0) {
+            has_attributes = false;
+    }
+
+    $('.domainForm[data-domain-name="'+domainName+'"]').addClass('selected-domain-form');
+
+    // if we clicked continue if so submit
+    if (  (count_domains == 1 && !has_attributes) || ($(self).text() == clientexec.lang('Continue')) ) {
+        domains.submit_selected_domains();
+        return false;
+    }
+
+    $(self).addClass('btn-warning').text(clientexec.lang('Continue'));
+
+    // we don't have any attributes for this product
+    if (!has_attributes) {
+        return true;
+    }
+
+    $('form.domainForm[data-domain-name="' + domainName + '"]').show();
+    // custom fields?
+    if (additional_fields && additional_fields.customFields.length > 0) {
+        clientexec.mask();
+        $.ajax({
+            url: 'index.php?fuse=admin&controller=signup&view=customfields&productId=' + product_id + '&searchType=' + type,
+            type: 'GET',
+            success: function (html) {
+                 $('form.domainForm[data-domain-name="' + domainName + '"] .customfields-wrapper').append(html);
+                 clientexec.postPageLoad('.customfields-wrapper');
+                 clientexec.unMask();
+            }
+        });
+    }
+
+    // Extra Attributes?
+    if (additional_fields && additional_fields.extra_attributes.attributes) {
+
+        var addon_html = "<h3>"+clientexec.lang("Additional information required for this domain extension")+"</h3>";
+        addon_html += "<div class='row'>";
+        for(var propertyName in additional_fields.extra_attributes.attributes) {
+                o = additional_fields.extra_attributes.attributes[propertyName];
+                addon_html += "<div class='col-md-6 addon-type customfield_group'><label class='customfield_label control-label'><div class='form-elem'>";
+                if ($.trim(o.description) == "") {
+                    addon_html += o.name;
+                } else if ($.trim(o.popup) == '') {
+                    addon_html += "<span data-toggle='tooltip' data-html='true' data-placement='top' data-title='"+clientexec.lang('Description')+"' data-content='"+o.description+"' class='addon-target'>"+o.name+"</span>";
+                } else {
+                    addon_html += "<span data-toggle='tooltip' data-html='true' data-placement='top' data=title='"+o.description+"' data-content='"+clientexec.htmlspecialchars(o.popup)+"' class='addon-target'>"+o.name+"</span>";
+                }
+                addon_html += "</label>"
+
+                //if we have options
+                if (o.options && !jQuery.isEmptyObject(o.options) ) {
+                    addon_html += '<select name="'+additional_fields.extra_attributes.tld+'-EA-'+propertyName+'" class="form-control normalSelect2 extra-attributes">';
+                    for(var optionName in o.options) {
+                                addon_html += '<option value="'+o.options[optionName].value+'">'+optionName+'</option>';
+                    }
+                    addon_html += '</select>';
+                } else {
+                    requiredHtml = '';
+                    if (o.required == 1) {
+                        requiredHtml = 'data-parsley-required="true"';
+                    }
+                    addon_html += '<input type="text" name="'+additional_fields.extra_attributes.tld+'-EA-'+propertyName+'" class="form-control" '+ requiredHtml + ' />';
+                }
+                addon_html += '</div>';
+                addon_html += '</div>';
+
+        }
+        addon_html += '</div>';
+        $('form.domainForm[data-domain-name="' + domainName + '"] .extra_attributes-wrapper').html(addon_html);
+        clientexec.postPageLoad('.selected-domain-form[data-domain-name="'+domainName+'"] .extra_attributes-wrapper');
+    }
+
+    // Addons?
+    domains.start_addons_info_check($(self).parent().parent().find('select.domain-option-yrs'));
+
+    return true;
+}
+
+domains.start_addons_info_check = function(self)
+{
+    domainName = $(self).parents('form.selected-domain-form').data('domain-name');
+
+    //we need to deep copy variable so that we con't override in customfields
+    var additional_fields = domains.additional_fields[domainName];
+
+    var addon_html = '';
+
+    //let's check addons
+    if (additional_fields) {
+
+        var billing_cycle = $(self).val();
+        var selectedAddons = additional_fields['addons'+billing_cycle];
+
+        if (selectedAddons && selectedAddons.length > 0) {
+
+            addon_html = "<h3>"+clientexec.lang("Product Add-ons")+"</h3>";
+            addon_html += '<div class="row">';
+            $.each(selectedAddons, function(i,o) {
+
+                var innerClass = 'col-sm-6';
+                if (o.addon_type == '1')  {
+                    innerClass = 'col-12';
+                }
+                //o.id
+                //o.desc
+                //o.name
+                //o.prices
+                //o.addon_type
+                //o.taxable
+                addon_html += "<div class='" + innerClass + "'><div class='form-elem'><label class='pb-1'>";
+                if ($.trim(o.desc) == "") {
+                    addon_html += "<b>"+o.name+"</b>";
+                } else {
+                    o.desc = o.desc.replace(/\"/g, "&quot;").replace('<p>', '').replace('</p>', '');
+                    addon_html += '<span data-toggle="tooltip" data-html="true" data-placement="top" data-title="'+o.desc+'"  class="addon-tip">'+o.name+"</span>";
+                }
+                addon_html += "</label>"
+
+                switch (o.addon_type) {
+                    case '2':    // quantity
+                        countAddonOptions = ObjectLength(o.prices);
+
+                        addon_html += '<div class="input-group mb-3">';
+                        addon_html += "<input type='number' min='0' id='addonQuantity_"+o.id+"' name='addonQuantity_"+o.id+"' class='form-control' value='0'>";
+
+                        if (countAddonOptions == 1) {
+                            value = "addon_"+o.id+"_"+o.prices[0].price_id+"_"+o.prices[0].recurringprice_cyle;
+                            addon_html += "<input type='hidden' name='addonSelect_"+o.id+"' value='"+value+"' >";
+
+                            //Removing Addon Name from the Addon Option Name if it is there at the beginning
+                            var prefix = o.name;
+                            var str = o.prices[0].price;
+                            if (str.indexOf(prefix) == 0) {
+                              str = str.slice(prefix.length);
+                            }
+                            addon_html += str;
+                        } else {
+                            addon_html += "<select name='addonSelect_"+o.id+"' class='custom-select normalSelect2'>";
+
+                            $.each(o.prices, function (p_i, p_o) {
+                                value = "addon_"+o.id+"_"+p_o.price_id+"_"+p_o.recurringprice_cyle;
+                                addon_html += "<option value='"+value+"' "+p_o.price_selected+">"+p_o.price+"</option>";
+                            });
+
+                            addon_html += "</select>";
+                        }
+                        addon_html += "</div>";
+                        break;
+                    case '0':    // dropdown
+                        addon_html += "<select name='addonSelect_"+o.id+"' class='form-control normalSelect2'>";
+
+                        $.each(o.prices, function (p_i, p_o) {
+                            value = "addon_"+o.id+"_"+p_o.price_id+"_"+p_o.recurringprice_cyle;
+                            addon_html += "<option value='"+value+"' "+p_o.price_selected+">"+p_o.price+"</option>";
+                        });
+
+                        addon_html += "</select>";
+                        break;
+                    case '1':    // radio buttons
+                        addon_html += '<div class="form-option">';
+                        $.each(o.prices, function (p_i, p_o) {
+                            labelClass = '';
+                            if (p_o.price_selected == 'checked = "true"') {
+                                labelClass = ' selected';
+                            }
+                            addon_html += "<div class='col-12 pb-3'>";
+                            addon_html += "<label class='align-middle" + labelClass + "'>";
+                            value = "addon_"+o.id+"_"+p_o.price_id+"_"+p_o.recurringprice_cyle;
+                            addon_html += "<input class='choose-radio' name='addonSelect_" + o.id + "' type='radio' value='"+value+"' "+p_o.price_selected+" /> "+ '<div class="text">' + p_o.price + '</div>';
+                            addon_html += "</label>";
+                            addon_html += "</div>";
+                        });
+                        addon_html += '</div>';
+                        addon_html += "</div>";
+                        break;
+                }
+                addon_html += '</div></div>';
+            });
+            addon_html += '</div>';
+        }
+    }
+
+    $('.selected-domain-form[data-domain-name="' + domainName + '"] .addons-wrapper').html(addon_html);
+    clientexec.postPageLoad('.selected-domain-form[data-domain-name="' + domainName + '"] .addons-wrapper');
+}
+
+
+domains.validateSubDomain = function(controlid) {
+
+    $('.parsley-errors-list').remove();
+
+    //disable continueButton while validating
+    var continueButton = document.getElementById("subdomain-button");
+    continueButton.disabled = true;
+
+    //subdomain
+    var subDomainNameField = document.getElementById(controlid);
+    var subDomainName = subDomainNameField.value;
+    var subDomainTldField = document.getElementById(controlid+"-tld");
+    var subDomainTld = subDomainTldField.options[subDomainTldField.selectedIndex].value;
+
+    $.post(
+        'index.php?fuse=clients&controller=products&action=isvalidsubdomain',
+        {
+            subDomainName: subDomainName,
+            subDomainTld: subDomainTld
+        },
+        function(response) {
+            var data = clientexec.parseResponse(response);
+            if(data.results === true){
+                //enable continueButton if valid
+                continueButton.disabled = false;
+            }else{
+                switch(data.results){
+                    case 'forbidden':
+                        $('#' + controlid).after('<ul class="parsley-errors-list filled" style="display: block;"><li class="parsley-required" style="display: list-item;">'+'<?php echo str_replace("'", "\\'", $this->user->lang("This subdomain is currently not allowed"));?>'+'</li></ul>');
+                        break;
+                    case 'duplicated':
+                        $('#' + controlid).after('<ul class="parsley-errors-list filled" style="display: block;"><li class="parsley-required" style="display: list-item;">'+'<?php echo str_replace("'", "\\'", $this->user->lang("This subdomain is already in use"));?>'+'</li></ul>');
+                        break;
+                }
+            }
+        }
+    );
+}
+
+function ObjectLength_Modern( object ) {
+    return Object.keys(object).length;
+}
+
+function ObjectLength_Legacy( object ) {
+    var length = 0;
+    for( var key in object ) {
+        if( object.hasOwnProperty(key) ) {
+            ++length;
+        }
+    }
+    return length;
+}
+
+var ObjectLength = Object.keys ? ObjectLength_Modern : ObjectLength_Legacy;
+
+
+<?php if ($this->bundled) { ?>
+    $(document).ready(function() {
+        $('a:not(.button, .btn, .continue-btn, .dropdown-toggle)').click(function(e){
+            e.preventDefault();
+            var selectedLink = this;
+
+             $.confirm({
+                theme: 'bootstrap',
+                title: 'Leaving Cart',
+                content: clientexec.lang('Leaving now will cancel this item.  Are you sure you want to leave?'),
+                draggable: false,
+                buttons: {
+                    confirm: {
+                        text: clientexec.lang('Yes'),
+                        action: function () {
+                            confirmDeleteItemFromCart(selectedLink);
+                        }
+                    },
+                    cancel: {
+                        text: clientexec.lang('No')
+                    },
+                }
+            });
+            return false;
+        });
+    });
+
+    confirmDeleteItemFromCart = function(link)
+    {
+        var cartItem = "<?php echo $this->cartParentPackage;?>";
+        if (cartItem != '') {
+            $.ajax({
+                url: 'index.php?fuse=admin&controller=signup&action=deletecartitem',
+                success: function () {
+                    window.location = link;
+                },
+                data: {
+                    cartItem: cartItem
+                },
+                dataType: 'json'
+            });
+      } else {
+        window.location = link;
+      }
+    }
+<?php } ?>
+
+
+
+</script>
+
+<style>
+.domain_search_notregistered {
+    color: #16a085;
+}
+
+.domain_search_alreadyregistered {
+    color: #e74c3c;
+}
+
+#domainSearchResults,
+#domainTransferSearchResults {
+    font-size: 20px;
+}
+
+.selected-domain-form .domain-option-name {
+    color: #faa732;
+}
+</style>

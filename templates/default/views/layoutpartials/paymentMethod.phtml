@@ -1,0 +1,26 @@
+<?php
+$checked = '';
+$labelClass = ' class="align-middle"';
+if ($this->paymentmethod['paymentTypeOptionSelected'] == 1) {
+    $checked = ' checked';
+    $labelClass = ' class="selected align-middle"';
+}
+
+$accept = [];
+foreach ($this->paymentmethod['weaccept']['options'] as $weAccept) {
+    $accept[] = '<img src="' . $weAccept['img'] . '" id="' . $weAccept['id'] . '" alt="' . $weAccept['alt'] . '">';
+}// useless for now
+
+?>
+<div class="col-12 col-sm-6">
+    <label<?php echo $labelClass; ?>>
+        <input type="radio" name="paymentMethod" value="<?php echo $this->paymentmethod['paymentTypeOptionValue']; ?>" class="payment-option"<?php echo $checked; ?>>
+        <div class="text">
+            <?php
+                echo ($this->paymentmethod['paymentTypeOptionValue'] == "apply_my_credit") ?
+                $this->paymentmethod['paymentTypeOptionLabel'].'['.$this->user->lang("Available: %s", $this->formattedCreditBalance).']' :
+                $this->user->lang("Pay with %s", $this->paymentmethod['paymentTypeOptionLabel']);
+            ?>
+        </div>
+    </label>
+</div>

@@ -1,0 +1,400 @@
+<div class="summary-info">
+    <div class="summary-holder">
+        <div class="head">
+            <h4><?php echo $this->user->lang('Order Summary'); ?></h4>
+        </div>
+        <div class="summery-cont">
+            <ul>
+                <li class="d-flex justify-content-between align-items-center package">
+                    <h5><?php echo $this->package['package']->planname; ?></h5>
+                    <span class="summary-amount"></span>
+                </li>
+                <?php foreach ($this->addons as $addon) { ?>
+                <li class="d-flex justify-content-between align-items-center addon" data-addon-id="<?php echo $addon['id']; ?>">
+                    <p><span><?php echo $addon['namelanguage']; ?></span></p>
+                    <span class="summary-amount"></span>
+                </li>
+                <?php } ?>
+            </ul>
+        </div>
+        <div class="summery-fees">
+            <ul>
+                <?php if ($this->hideSetupFees) { ?>
+                <li class="justify-content-between align-items-center d-none">
+                <?php } else { ?>
+                <li class="justify-content-between align-items-center d-flex">
+                <?php } ?>
+                    <p><?php echo $this->user->lang('Setup Fee:'); ?></p>
+                    <span class="summary-amount setupFeeTotal"></span>
+                </li>
+                <li class="d-none" id="termHolder"></li>
+                <?php if ($this->acceptCoupons) { ?>
+                <li class="d-none" id="discountHolder"></li>
+                <?php } ?>
+            </ul>
+            <?php if ($this->acceptCoupons) { ?>
+            <span class="change-code">
+                <a href="#" data-toggle="modal" data-target="#couponModal">
+                    <?php echo $this->user->lang('(Change Discount Code)'); ?>
+                </a>
+            </span>
+            <?php } ?>
+        </div>
+        <div class="summery-bottom">
+            <p>
+                <span id="dueToday"></span>
+                <?php echo $this->user->lang('Total Due Today'); ?>
+            </p>
+            <input type="submit" class="app-btns primary continue" id="continue-button" value="<?php echo $this->user->lang('Continue'); ?>">
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="couponModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <?php echo $this->user->lang('Coupon Code'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <input placeholder="<?php echo $this->user->lang('Coupon Code'); ?>" type="text" id="couponCode" class="form-control" value="<?php echo $this->couponCode; ?>" />
+                    <input type="hidden" name="item-id" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="couponSubmitButton">
+                    <?php echo $this->user->lang('Submit'); ?>
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <?php echo $this->user->lang('Close');?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    setupFee = {}
+    termFee = {}
+    termNames = {}
+    total = {}
+    discount = 0
+    discountType = ''
+    discountApplyTo = 0
+
+    function addTermFee(term, termId, type, price) {
+        termNames[termId] = term;
+        if (termFee[termId] === undefined) {
+            termFee[termId] = {}
+        }
+
+        termFee[termId][type] = price;
+    }
+
+    function calcDiscount(value) {
+        if (discountType == 'flat') {
+            if (discount > value) {
+                discount = value;
+            } else {
+                value = discount;
+            }
+        } else if (discountType == 'percent') {
+            value = discount * value;
+        }
+
+        return value;
+    }
+
+    function updateTotals() {
+        total['package'] = 0;
+        total['addons'] = 0;
+        total['package_setup'] = 0;
+        total['addons_setup'] = 0;
+
+        var order = <?php echo json_encode(array_values(array_filter($this->billingcycles, function ($v, $k) {
+            return $k == $v;
+        }, ARRAY_FILTER_USE_BOTH))); ?>;
+
+        var setup = 0;
+        var tmp = 0;
+        for( var el in setupFee ) {
+            if( setupFee.hasOwnProperty( el ) ) {
+                fee = parseFloat(setupFee[el]);
+                setup += fee;
+
+                if (el == 'paymentterm') {
+                    total['package_setup'] += fee;
+
+                    if (discountApplyTo & 8) {
+                        // Package Setup coupon
+                        total['package_setup'] -= calcDiscount(fee);
+                    }
+                }
+
+                if (el != 'paymentterm') {
+                    total['addons_setup'] += fee;
+
+                    if (discountApplyTo & 32) {
+                        // Addon setup coupon
+                        tmp += fee;
+                    }
+                }
+            }
+        }
+
+        if (tmp > 0) {
+            total['addons_setup'] -= calcDiscount(tmp);
+        }
+
+        $('.summery-fees .setupFeeTotal').html(accounting.formatMoney(setup, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv);
+        if (parseFloat(setup) > 0 ) {
+            $('.summery-fees .setupFeeTotal').parent().removeClass('d-none').addClass('d-flex');
+        } else if(<?php echo $this->hideSetupFees; ?>) {
+            $('.summery-fees .setupFeeTotal').parent().addClass('d-none').removeClass('d-flex');
+        }
+
+        $('.summery-fees .term').remove();
+        if (termFee) {
+            for( var idx in order) {
+                if (termFee[order[idx]] !== undefined) {
+                    writeTerm(termNames[order[idx]], termFee[order[idx]]);
+                }
+            }
+        }
+
+        gtotal = 0;
+        for( var type in total ) {
+            gtotal += total[type];
+        }
+
+        // calc discount type and apply to total
+        $('.summery-fees .discount').remove();
+        if (discountType != '' && discount > 0) {
+            tooltip = 'Coupon Applies to: ';
+            appliesToCount = 0;
+
+            if (discountApplyTo & 4) {
+                tooltip = tooltip.concat('Package');
+                appliesToCount ++;
+            }
+
+            if (discountApplyTo & 8) {
+                if (appliesToCount > 0) {
+                    tooltip = tooltip.concat(', ');
+                }
+
+                tooltip = tooltip.concat('Package Setup');
+                appliesToCount ++;
+            }
+
+            if (discountApplyTo & 16) {
+                if (appliesToCount > 0) {
+                    tooltip = tooltip.concat(', ');
+                }
+
+                tooltip = tooltip.concat('Addons');
+                appliesToCount ++;
+            }
+
+            if (discountApplyTo & 32) {
+                if (appliesToCount > 0) {
+                    tooltip = tooltip.concat(', ');
+                }
+
+                tooltip = tooltip.concat('Addons Setup');
+                appliesToCount ++;
+            }
+
+            if (discountApplyTo & 64) {
+                if (appliesToCount > 0) {
+                    tooltip = tooltip.concat(', ');
+                }
+
+                tooltip = tooltip.concat('Other');
+                appliesToCount ++;
+            }
+
+            if (discountApplyTo == 0) {
+                tooltip = '';
+                gtotal -= calcDiscount(gtotal);
+            }
+
+            value = '';
+            if (discountType == 'flat') {
+                value =  accounting.formatMoney(discount, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv;
+            } else if (discountType == 'percent') {
+                //due to an issue with javascript multiplying some numbers by 100, we need to better multiply by 1000 and then divide by 10
+                value = ((discount * 1000) / 10) + '%';
+            }
+
+            $('<li class="d-flex justify-content-between align-items-center discount"><p class="tool-tip" data-toggle="tooltip" data-placement="top" title="' + tooltip + '">Discount:</p><span class="summary-amount">' + value + '</span></li>').insertBefore('#discountHolder');
+
+            if (discountType == 'flat') {
+               $('li.discount p.tool-tip').removeClass('tool-tip');
+            }
+
+            clientexec.postPageLoad('.summery-fees');
+        }
+
+        $('#dueToday').html(accounting.formatMoney(gtotal, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv)
+    }
+
+    function writeTerm(term, termFee) {
+        sum = 0;
+        tmp = 0;
+        for( var el in termFee ) {
+            if( termFee.hasOwnProperty( el ) ) {
+                fee = parseFloat(termFee[el]);
+                sum += fee;
+
+                if (el == 'paymentterm') {
+                    total['package'] += fee;
+
+                    if (discountApplyTo & 4) {
+                        total['package'] -= calcDiscount(fee);
+                    }
+                } else {
+                    total['addons'] += fee;
+
+                    if (discountApplyTo & 16) {
+                        tmp += fee;
+                    }
+                }
+            }
+        }
+
+        if (tmp > 0) {
+            total['addons'] -= calcDiscount(tmp);
+        }
+
+        if (sum != 0) {
+            $('<li class="d-flex justify-content-between align-items-center term"><p>' + clientexec.lang(term) + ':</p><span class="summary-amount termTotal">' + (accounting.formatMoney(sum, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv) + '</span></li>').insertBefore('#termHolder');
+        }
+    }
+
+    function gatherFees() {
+        setupFee = {}
+        termFee = {}
+
+        $('.summary-info .package .summary-amount').html(accounting.formatMoney($('.paymentTerm option:selected').data('price'), currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv);
+        // $('.setupfeeprice').html(accounting.formatMoney($('.paymentTerm option:selected').data('setupfee'), currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv);
+
+        setupFee['paymentterm'] = $('.paymentTerm option:selected').data('setupfee');
+        if (setupFee['paymentterm'] == '') {
+            setupFee['paymentterm'] = 0;
+        }
+        addTermFee($('.paymentTerm option:selected').data('term'), $('.paymentTerm option:selected').data('term-id'), 'paymentterm', $('.paymentTerm option:selected').data('price'));
+
+        $('.summary-info .addon').each(function() {
+            $('form *[name="addonSelect_' + $(this).data('addon-id') + '"]').each(function () {
+                if ($(this).hasClass('choose-radio')) {
+                    // radio button
+                    if ($(this).is(':checked')) {
+                        $('.summary-info .addon[data-addon-id="' + $(this).data('addon-id') + '"] .summary-amount').html(accounting.formatMoney($(this).data('price'), currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv);
+
+                        setupFee[$(this).data('addon-id')] = $(this).data('setupfee');
+                        addTermFee($(this).data('term'), $(this).data('term-id'), $(this).data('addon-id'), $(this).data('price'));
+
+                        updateTotals();
+                    }
+
+                } else if ($(this).hasClass('custom-select')) {
+                    let quantity = parseFloat($('input[name="addonQuantity_' + $(this).data('addon-id') + '"]').val());
+                    if (Number.isNaN(quantity)) {
+                        quantity = 0;
+                    }
+                    // custom select with quantity
+                    $('.summary-info .addon[data-addon-id="' + $(this).data('addon-id') + '"] .summary-amount').html(accounting.formatMoney((parseFloat($('option:selected', this).data('price')) * quantity), currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv);
+
+                    $('.summary-info .addon[data-addon-id="' + $(this).data('addon-id') + '"] .summary-amount').html(accounting.formatMoney((parseFloat($('select[name="addonSelect_' + $(this).data('addon-id') + '"] option:selected').data('price')) * quantity), currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv);
+
+                    setupFee[$(this).data('addon-id')] = (parseFloat($('select[name="addonSelect_' + $(this).data('addon-id') + '"] option:selected').data('setupfee')) * quantity);
+                    addTermFee(
+                        $('select[name="addonSelect_' + $(this).data('addon-id') + '"] option:selected').data('term'),
+                        $('select[name="addonSelect_' + $(this).data('addon-id') + '"] option:selected').data('term-id'),
+                        $(this).data('addon-id'),
+                        parseFloat($('select[name="addonSelect_' + $(this).data('addon-id') + '"] option:selected').data('price')) * quantity
+                    );
+
+                } else {
+                    $('.summary-info .addon[data-addon-id="' + $(this).data('addon-id') + '"] .summary-amount').html(accounting.formatMoney($('option:selected', this).data('price'), currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv);
+
+                    setupFee[$(this).data('addon-id')] = $('option:selected', this).data('setupfee');
+                    addTermFee($('option:selected', this).data('term'), $('option:selected', this).data('term-id'), $(this).data('addon-id'), $('option:selected', this).data('price'));
+
+                }
+            });
+        });
+
+        updateTotals();
+
+    }
+
+    $('.cart-item').on('change', function() {
+        if (!$(this).hasClass('paymentTerm')) {
+            gatherFees();
+        }
+    });
+
+    <?php if ($this->acceptCoupons) { ?>
+    $('#couponModal').on('shown.bs.modal', function () {
+        $('#couponCode').focus();
+    });
+
+    $('#couponCode').on('keypress', function(e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            validateCoupon(true);
+        }
+    });
+
+    $('#couponSubmitButton').on('click', function(){
+        validateCoupon(true);
+    });
+
+    function validateCoupon(showError) {
+        code = $('#couponCode').val();
+        if( $.trim(code) !== "" ) {
+            $('#couponModal').modal('hide');
+            $.post('index.php?fuse=admin&controller=signup&action=validatecoupon', {
+                couponCode: code,
+                productId: <?php echo $this->package['package']->id; ?>,
+                billingCycle: $('.paymentTerm').val(),
+            }, function( data ) {
+                // reset discount type in case of invalid coupon
+                discountType = '';
+                json = clientexec.parseResponse(data, showError);
+
+                if (json.success) {
+                    $('input[name="couponCode"]').val(code);
+                    if (json.coupon.type == 1) {
+                        discountType = 'percent';
+                    } else if (json.coupon.type == 0) {
+                        discountType = 'flat';
+                    }
+
+                    discount = json.coupon.discount;
+
+                    discountApplyTo = json.coupon.applicableTo;
+                }
+
+                gatherFees();
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        validateCoupon(false);
+    });
+    <?php } ?>
+
+    $(document).ready(function () {
+        gatherFees();
+    });
+</script>

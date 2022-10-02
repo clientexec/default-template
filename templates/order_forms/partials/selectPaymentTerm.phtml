@@ -1,0 +1,36 @@
+<select data-width="100%" class="normalSelect2 paymentTerm cart-item" name="paymentterm">
+    <?php foreach ($this->package['pricing'] as $price) { ?>
+    <option
+        <?php echo ($price['selected']) ? 'selected' : '' ; ?>
+        value="<?php echo $price['termId']; ?>"
+        data-price="<?php echo implode('.', array_slice($price['price_raw'], 1)); ?>"
+        data-term="<?php echo $price['term']; ?>"
+        data-term-id="<?php echo $price['termId']; ?>"
+        data-setupfee="<?php echo implode('.', array_slice($price['setup_raw'], 1)); ?>"
+        data-saved="<?php echo $price['save']; ?>"
+        class="currency-option"
+    >
+    <?php
+        if ($this->monthlyPriceBreakdown) {
+            if ($this->showDiscountedPricingInBillingCycleSelector && $price['signup_price_monthly'] !== false && $price['signup_price_monthly'] !== $price['price_monthly']) {
+                echo $this->user->lang('%s: %s/mo', $price['term'], $price['signup_price_monthly']);
+                echo ' ' . $this->user->lang('(Normally: %s/mo)', $price['price_monthly']);
+            } else {
+                echo $this->user->lang('%s: %s/mo', $price['term'], $price['price_monthly']);
+            }
+        } else {
+            if ($this->showDiscountedPricingInBillingCycleSelector && $price['signup_price'] !==  false && $price['signup_price'] !== $price['price']) {
+                echo $this->user->lang('%s / %s', $price['signup_price'], $price['term']);
+                echo ' ' . $this->user->lang('(Normally: %s / %s)', $price['price'], $price['term']);
+            } else {
+                echo $this->user->lang('%s / %s', $price['price'], $price['term']);
+            }
+        }
+
+        if (!$this->hideSetupFees && $price['setup_raw'] != '-') {
+            echo ' ' . $this->user->lang('(Setup Fee: %s)', $price['setup']);
+        }
+    ?>
+    </option>
+    <?php } ?>
+</select>

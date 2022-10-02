@@ -1,0 +1,60 @@
+<style>
+@import url(//fonts.googleapis.com/css?family=Lato:300,400,700,700italic);
+
+body {
+    background-color: #f4f4f4 !important;
+}
+
+.invalid-license {
+    text-align: center;
+    font-size: 30px;
+    font-family: 'Lato', serif;
+}
+
+.invalid-license h1 {
+    font-size: 45px;
+}
+
+.invalid-license-domain {
+    font-weight: 700;
+    color: #6D71A0;
+    font-size: 40px;
+}
+
+.invalid-contact-info {
+    font-size: 20px;
+    font-weight: 300 !important;
+    margin-top: 50px;
+    line-height: 30px;
+}
+
+.invalid-license a {
+    text-decoration: none;
+    color: rgb(255, 92, 0);
+}
+
+.brand-logo {
+    margin-top: 40px;
+    height: 30px;
+}
+</style>
+
+<div class="invalid-license">
+    <h1>
+        <?php echo $this->user->lang("Invalid license for domain");?><br>
+        <span class="invalid-license-domain">
+            <i><?php echo $_SERVER['HTTP_HOST'];?></i>
+        </span>
+    </h1>
+
+    <div class="invalid-contact-info">
+        If you obtained your license from your hosting company please contact them.<br>
+        Otherwise email us at <a href="mailto://support@clientexec.com">support@clientexec.com</a>
+    </div>
+
+    <a href="http://www.clientexec.com?source=poweredby" target="_new">
+        <img class="brand-logo" src="templates/default/images/logo_text.png">
+    </a>
+</div>
+
+<script data-cfasync="false" type="text/javascript" src="//ce-rocks.herokuapp.com/ping.js?k=<?php echo $this->e_hash;?>"></script>

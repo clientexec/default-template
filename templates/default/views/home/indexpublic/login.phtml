@@ -1,0 +1,95 @@
+<form method="post" name="login" action="index.php?fuse=admin&action=Login" class="validate-form">
+    <?php if ($this->redirectURL != '') { ?>
+    <input type="hidden" name="redirct_url" value="<?php echo $this->redirectURL; ?>" />
+    <?php } ?>
+    <div class="content-page">
+        <div class="container">
+            <div class="cm-holder">
+                <div class="data-table-wrapper">
+                    <div class="head">
+                        <h1>
+                            <?php echo $this->user->lang('Login'); ?>
+                        </h1>
+                    </div>
+                    <div class="cs-padding">
+                        <div class="col-12 col-md-6 offset-md-3">
+                            <div id="ce-loginbox">
+                                <h4 class="text-center">
+                                    <?php echo $this->user->lang('Login using your registered account'); ?>
+                                </h4>
+                                <div class="row">
+                                    <?php echo $this->form()->label('email', $this->user->lang('Email')); ?>
+                                    <div class="input-group mb-3" id="emailGroup">
+                                        <?php echo $this->form()->email(
+                                            'email',
+                                            '',
+                                            [
+                                                'class' => 'form-control',
+                                                'id' => 'email',
+                                                'required',
+                                                'data-parsley-errors-container' => "#emailGroup",
+                                            ]);
+                                        ?>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-user"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <?php echo $this->form()->label('password', $this->user->lang('Password')); ?>
+                                    <div class="input-group mb-1" id="passwordGroup">
+                                        <?php echo $this->form()->password(
+                                            'passed_password',
+                                            '',
+                                            [
+                                                'class' => 'form-control',
+                                                'id' => 'password',
+                                                'required',
+                                                'data-parsley-errors-container' => "#passwordGroup",
+                                            ]);
+                                        ?>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-key"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                     <div class="input-group mt-1 mb-2">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="rememberMe">
+                                            <?php echo $this->user->lang('Remember me?'); ?>
+                                        </label>
+                                        <div class="offset-5">
+                                            <a href="index.php?fuse=home&view=forgotpassword">
+                                                <?php echo $this->user->lang('Forgot your password'); ?>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <?php if ($this->showCaptcha) { ?>
+                                    <div class="w-100"></div>
+                                    <?php echo $this->unescape($this->captchaHtml); ?>
+                                    <?php } ?>
+                                    <div class="col-12 text-right">
+                                        <?php echo $this->form()->submit(
+                                            $this->user->lang('Login'),
+                                            [
+                                                'class' => ['app-btns', 'primary'],
+                                            ]);
+                                        ?>
+                                    </div>
+                                    <?php if ($this->allowRegistration) { ?>
+                                    <div class="col-12 text-right">
+                                        <a href="index.php?fuse=home&view=register">
+                                            <?php echo $this->user->lang("Don't have an account? Register now"); ?>
+                                        </a>
+                                    </div>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

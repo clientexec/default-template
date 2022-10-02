@@ -1,0 +1,63 @@
+<?php
+    $showDomains = false;
+
+    switch ($this->step) {
+        case 3:
+            $packageClass = 'done';
+            $domainClass = 'd-none';
+            $configureClass = 'done';
+            $checkoutClass = 'now active';
+            $railClass = 'step4';
+            break;
+
+        case 2:
+            $packageClass = 'done';
+            $domainClass = 'd-none';
+            $configureClass = 'now active';
+            $checkoutClass = '';
+            $railClass = 'step2 of3steps';
+            if ($showDomains) {
+                $railClass = 'step3';
+            }
+            break;
+
+        case 0:
+        case 1:
+        default:
+            $packageClass = 'now active';
+            $domainClass = 'd-none';
+            if ($showDomains) {
+            }
+            $configureClass = '';
+            $checkoutClass = '';
+            $railClass = 'd-none';
+            break;
+    }
+?>
+<div class="cart-status-bar">
+    <div class="cart-status-rail">
+        <div class="cart-status-nodes start first-step <?php echo $packageClass; ?>">
+            <span class="cart-status-label">
+                <?php echo $this->user->lang('Select Product'); ?>
+        </span>
+        </div>
+        <?php if ($showDomains) { ?>
+        <div class="cart-status-nodes <?php echo $domainClass; ?>">
+            <span class="cart-status-label">
+                <?php echo $this->user->lang('Select Domain'); ?>
+            </span>
+        </div>
+        <?php } ?>
+        <div class="cart-status-nodes <?php echo $configureClass; ?>">
+            <span class="cart-status-label">
+                <?php echo $this->user->lang('Configure Product'); ?>
+            </span>
+        </div>
+        <div class="cart-status-nodes end <?php echo $checkoutClass; ?>">
+            <span class="cart-status-label">
+                <?php echo $this->user->lang('Checkout'); ?>
+            </span>
+        </div>
+    </div>
+    <div class="inner-rail <?php echo $railClass; ?>"></div>
+</div>

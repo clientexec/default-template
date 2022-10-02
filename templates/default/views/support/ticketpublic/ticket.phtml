@@ -1,0 +1,216 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="ticket-view-page">
+            <div class="ticket-view-head d-flex justify-content-between align-items-center">
+                <h3>
+                    <?php echo $this->user->lang('Ticket #%s - %s', $this->metadata['id'], $this->metadata['subject']); ?>
+                </h3>
+                <p>
+                    <?php echo $this->user->lang('Status'); ?>:
+                    <span class="status <?php echo $this->metadata['statusClass']; ?>">
+                        <?php echo $this->metadata['ticket_status_name']; ?>
+                    </span>
+                </p>
+            </div>
+            <div class="cm-tab-accordion">
+                <div class="cm-tabs">
+                    <ul class="resp-tabs-list inline clearfix">
+                        <li>
+                            <span class="far fa-comment" aria-hidden="true"></span>
+                            <?php echo $this->user->lang('Messages'); ?>
+                        </li>
+                        <?php if (count($this->customFields) > 0) { ?>
+                        <li>
+                            <span class="fas fa-sliders-h" aria-hidden="true"></span>
+                            <?php echo $this->user->lang("Custom Fields"); ?>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                    <div class="resp-tabs-container">
+                        <div>
+                            <div class="ticket-tab-wrapper">
+                                <?php foreach ($this->comments as $comment) { ?>
+                                <?php if ($comment['action'] == 1) { ?>
+                                <?php continue; ?>
+                                <?php } ?>
+                                <div class="ticket-tab-box">
+                                    <span class="ticket-avatar">
+                                        <img src="<?php echo $comment['avatar_url'];?>" class="img-fluid" alt="">
+                                    </span>
+                                    <div class="ticket-tab-box-top  d-flex justify-content-between align-items-center">
+                                        <ul class="ticket-avatar-ul">
+                                            <li>
+                                                <b>
+                                                    <?php echo $comment['authorName'];?>
+                                                </b>
+                                                <?php if (!$comment['isAdmin']) {?>
+                                                <?php echo $comment['authorEmail'];?>
+                                                <?php } ?>
+                                            </li>
+                                            <li>
+                                                <?php echo $this->user->lang('Submitted'); ?>
+                                                <span>
+                                                    <?php echo $comment['createdAt'];?>
+                                                </span>
+                                            </li>
+                                        </ul>
+                                        <?php if ($comment['isAdmin'] == true) {?>
+                                        <span class="staff-span">
+                                            <?php echo $this->user->lang('Staff'); ?>
+                                        </span>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="ticket-tab-box-main" dir="auto">
+                                        <?php foreach ($comment['attachments'] as $attachment) { ?>
+                                        <a target="_blank" href="index.php?fuse=support&controller=ticket&view=getattachment&file_id=<?php echo $attachment['id']; ?>">
+                                            <img class="img-fluid" title="<?php echo $this->escape($attachment['filename']);?>" src="index.php?fuse=support&controller=ticket&view=getattachment&file_id=<?php echo $attachment['id'];?>" />
+                                        </a>
+                                        <br />
+                                        <?php } ?>
+                                        <p>
+                                            <?php
+                                            /* before v5 was released logs stored htmlentities, which need to be interpreted, so we don't escape them here */
+                                            ?>
+                                            <?php if ($comment['createdAt_unix'] < 1396587600) { ?>
+                                            <?php echo nl2br(trim($this->linkify($comment['message'])));?>
+                                            <?php } else { ?>
+                                            <?php echo nl2br(trim($this->linkify($this->escape($comment['message']))));?>
+                                            <?php } ?>
+                                        </p>
+                                        <?php foreach($this->metadata['attachments'] as $attachment) { ?>
+                                        <?php if ($attachment['belongs_to_log_id'] == $comment['logid']) { ?>
+                                        <a href="<?php echo $attachment['realUrl']; ?>" class="ticket-attach">
+                                            <span class="fas fa-paperclip" aria-hidden="true"></span>
+                                            <?php echo $attachment['name']; ?>
+                                        </a>
+                                        <?php } ?>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                                <?php } ?>
+                            </div>
+                            <?php if ($this->metadata['status_system'] != -1) { ?>
+                            <form enctype="multipart/form-data" action="index.php?action=savenewlog&fuse=support&controller=ticket" method="POST" class="validate-form">
+                                <input type="hidden" name="id" value="<?php echo $this->metadata['id'];?>" />
+                                <input type="hidden" name="ticketstatus" value="2" />
+                                <div class="ticket-tab-reply-block">
+                                    <div class="ticket-tab-reply-head d-flex justify-content-between align-items-center">
+                                        <h3>
+                                            <?php echo $this->user->lang('Reply');?>
+                                        </h3>
+                                        <?php if ($this->canCloseTicket == true) { ?>
+                                        <a href="<?php echo $this->closeTicketURL; ?>" class="close-ticket">
+                                            <?php echo $this->user->lang('Close Ticket Without Replying'); ?>
+                                        </a>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="ticket-tab-reply-box">
+                                        <textarea dir="auto" class="ticket-reply" name="message" required></textarea>
+                                    </div>
+
+                                    <div class="ticket-tab-reply-bottom d-flex justify-content-between align-items-center">
+                                        <?php if ($this->maxfilesize > 0 && $this->extns) { ?>
+                                        <div class="ticket-tab-reply-attachments">
+                                            <div id="fileFieldsContainer" class="form-actions">
+                                                <div id="fileFields_" class="d-none file-upload ">
+                                                    <label class="btn-file">
+                                                        <input class="file_upload_input" type="file">
+                                                    </label>
+                                                    <a class="d-none deleteButton">
+                                                        <?php echo $this->user->lang('Delete'); ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <a id="new-file-button" class="attach-more-file" href="#">
+                                                <?php echo $this->user->lang('Add a New File'); ?>
+                                            </a>
+                                            <input type="hidden" name="validExtns" value="<?php echo $this->extns; ?>" />
+                                        </div>
+                                        <?php } ?>
+                                        <button type="submit" class="submit-reply-btn app-btns primary">
+                                            <?php echo $this->user->lang('Submit Reply'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <?php } ?>
+                        </div>
+                        <div>
+                            <div class="ticket-tab-wrapper">
+                                <div class="cs-padding">
+                                    <form id="ticketCustomFieldsForm">
+                                    <div class="row">
+                                        <?php foreach ($this->customFields as $customField) { ?>
+                                        <?php if ($customField['fieldtype'] == 'break')  { ?>
+                                        <div class="w-100"></div>
+                                        <?php } else { ?>
+                                        <div class="col-sm-6">
+                                            <div class="form-elem">
+                                                <?php echo $this->cFHelper()->getLabel($customField); ?>
+                                                <?php echo $this->cFHelper()->getMarkup($customField); ?>
+                                            </div>
+                                        </div>
+                                            <?php } ?>
+                                        <?php } ?>
+                                        <div class="col-md-6">
+                                            <div class="form-elem ">
+                                                <input id="save-custom-fields" type="submit" class="app-btns primary" value="<?php echo $this->user->lang('Save Custom Fields'); ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php if ($this->metadata['status_system'] != -1) { ?>
+            <?php } else if ($this->ticket_can_reopen) { ?>
+<div class="alert alert-info text-center">
+    <?php echo $this->user->lang('This ticket has been closed but you may %sreopen this ticket%s if you wish to continue the discussion.', '<a href="' . $this->urlCsrf(array(
+        'fuse' => 'support',
+        'controller' => 'ticket',
+        'status' => '1',
+        'action' => 'setstatus',
+        'id' => $this->metadata['id']
+    )) . '">', '</a>');
+    ?>
+</div>
+<?php } else { ?>
+<br/>
+<div class="alert alert-info text-center">
+    <?php echo $this->user->lang("This ticket has been closed for some time and unable to be reopened.  You may %screate a new ticket%s if you need assistance with an issue.", "<a href='index.php?fuse=support&controller=ticket&view=submitticket'>", '</a>'); ?>
+</div>
+<?php } ?>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+$('#ticketCustomFieldsForm').on('submit', function(e) {
+    e.preventDefault();
+    $(this).parsley().validate();
+    if ($(this).parsley().isValid()) {
+        $.post('index.php?fuse=support&controller=ticket&action=savecustomfields',{
+            ticketId: <?php echo $this->metadata['id'];?>,
+            customfields: $('#ticketCustomFieldsForm').serializeArray()
+        }, function(t) {
+            data = clientexec.parseResponse(t);
+        });
+    }
+});
+
+if ($('#new-file-button').length) {
+
+    $('input[type=file]').change(support.selectedFile);
+    $('#new-file-button').on('click',function(e){
+        e.preventDefault();
+        support.cloneAttchInput();
+    });
+
+    support.cloneAttchInput();
+}
+</script>

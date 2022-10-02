@@ -1,0 +1,57 @@
+<div class="datatable-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('Requesting cancelation for: %s', $this->packageName); ?>
+                    </h1>
+                </div>
+                <div class="cs-padding">
+                    <form id="cancel-form" action="index.php?fuse=clients&controller=products&action=requestcancellation" method="POST" class="validate-form">
+                        <input type="hidden" name="id" value="<?php echo $this->packageId; ?>" />
+
+
+                        <div class="row">
+                            <div class="form-group col-12">
+                                <label for="message" class="col-form-label">
+                                    <?php echo $this->user->lang('Please describe your reason for this cancelation request'); ?>:
+                                </label>
+                                <textarea data-parsley-required name="reason" rows='10' class="form-control"></textarea>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="form-group col-12 col-md-6">
+                                <label for="type" class="col-form-label">
+                                    <?php echo $this->user->lang('Cancelation Type'); ?>:
+                                </label>
+                                <select name="type" id="type" class="form-control normalSelect2">
+                                    <option value="<?php echo PACKAGE_CANCELLATION_TYPE_IMMEDIATE; ?>"><?php echo $this->user->lang('Immediate'); ?></option>
+                                    <?php if ($this->paidInvoicesCount > 0) { ?>
+                                    <option value="<?php echo PACKAGE_CANCELLATION_TYPE_END_BILLING; ?>"><?php echo $this->user->lang('End of Billing Period'); ?> (<?php echo $this->endOfBillingPeriod; ?>)</option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5 col-12 form-group">
+                                <input id="submit-button" type="submit" class="app-btns primary" value="<?php echo $this->user->lang('Submit Cancelation'); ?>">
+                                <input id="cancel-button" type="button" value="<?php echo $this->user->lang('Go Back'); ?>" class="app-btns secondary" />
+                            </div>
+                        </div>
+                   </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+$('#cancel-button').click(function() {
+    window.location = 'index.php?fuse=clients&controller=products&view=products';
+});
+</script>

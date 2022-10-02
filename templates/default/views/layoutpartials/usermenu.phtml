@@ -1,0 +1,72 @@
+<div class="current-user">
+    <?php if ($this->loggedin) { ?>
+    <a href="javascript:void(0)" class="user-toggle">
+        <span class="avatar">
+            <img src="<?php echo $this->unescape($this->customerProfileURL); ?>" class="img-fluid" alt="">
+        </span>
+        <div class="user-tag">
+            <span>
+                <?php echo $this->user->lang('Welcome'); ?></span>
+            <h5>
+                <?php echo $this->escape($this->customer->getFirstName()) . ' ' . substr($this->escape($this->customer->getLastName()), 0, 1); ?>
+            </h5>
+        </div>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-right">
+        <?php if ($this->user->hasPermission('clients_edit_customers')) { ?>
+        <li>
+            <a href="index.php?fuse=clients&controller=userprofile&view=editprofile">
+                <i class="fas fa-user"></i>
+                <?php echo $this->user->lang("Edit Profile");?>
+            </a>
+        </li>
+        <?php } ?>
+        <li>
+            <a href="index.php?fuse=clients&controller=userprofile&view=editpassword">
+                <i class="fas fa-key"></i>
+                <?php echo $this->user->lang("Change Password");?>
+            </a>
+        </li>
+        <li>
+            <a href="index.php?fuse=clients&controller=userprofile&view=altemails">
+                <i class="fas fa-user-friends"></i>
+                <?php echo $this->user->lang("Manage Contacts");?>
+            </a>
+        </li>
+        <li>
+            <a href="index.php?fuse=clients&controller=userprofile&view=notes">
+                <i class="fas fa-clipboard"></i>
+                <?php echo $this->user->lang("Account Notes");?>
+            </a>
+        </li>
+        <?php if ($this->user->hasPermission('clients_view_emails')) { ?>
+        <li>
+            <a href="index.php?fuse=clients&controller=index&view=emailhistory">
+                <i class="fas fa-envelope"></i>
+                <?php echo $this->user->lang("Email History");?>
+            </a>
+        </li>
+        <?php } ?>
+        <li>
+            <a href="index.php?fuse=admin&action=Logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <?php echo $this->user->lang("Logout"); ?>
+            </a>
+        </li>
+    </ul>
+    <?php } else if ($this->user->isAdmin()) { ?>
+    <div id="admin-notice-login">
+        <a href="<?php echo CE_Lib::getSoftwareURL() . NE_CONTROLLER_ADMIN_DIR; ?>/index.php">
+            <span class="link-admin-loggedin label label-important">
+                <?php echo $this->user->lang("You are currently logged in as admin");?>
+            </span>
+        </a>
+    </div>
+    <?php } else { ?>
+    <div id="login-menu">
+        <a href="index.php?fuse=home&view=login">
+            <?php echo $this->user->lang("Login"); ?>
+        </a>
+    </div>
+    <?php } ?>
+</div>

@@ -1,0 +1,216 @@
+<?php
+
+$showBoxes = $this->templateOptions['Show Action Boxes']['value'];
+
+$cartUrl = "order.php";
+$cartCount = 0;
+if ($this->summary['cartCount'] > 0) {
+    $cartUrl = "order.php?step=3";
+    $cartCount = $this->summary['cartCount'];
+}
+
+?>
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="client-area-page">
+            <?php if ($showBoxes == "Yes") { ?>
+            <div class="client-area-top-block">
+                <div class="row">
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <a href="index.php?fuse=home&view=dashboard">
+                            <div class="client-area-top-box eq-height">
+                                <img src="templates/default/images/main-boxes/manage-account.png" class="img-fluid">
+                                <p>
+                                    <span>
+                                        <?php echo $this->user->lang("Manage Account");?>
+                                    </span>
+                                    <?php echo $this->user->lang("Enter your account area if you are registered");?>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    <?php if ($this->user->hasPermission('knowledgebase_view')) { ?>
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <a href="<?php echo CE_Lib::generateMainKBLink(); ?>">
+                            <div class="client-area-top-box eq-height">
+                                <img src="templates/default/images/main-boxes/kb-search.png" class="img-fluid">
+                                <p>
+                                    <span>
+                                        <?php echo $this->user->lang('Knowledge Base'); ?>
+                                    </span>
+                                    <?php echo $this->user->lang('Browse our Knowledge Base by Topic or Search'); ?>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    <?php } ?>
+                    <?php if ($this->user->hasPermission('support_submit_ticket')) { ?>
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <a href="index.php?fuse=support&controller=ticket&view=submitticket">
+                            <div class="client-area-top-box eq-height">
+                                <img src="templates/default/images/main-boxes/submit-ticket.png" class="img-fluid">
+                                <p>
+                                    <span>
+                                        <?php echo $this->user->lang('Submit an Issue'); ?>
+                                    </span>
+                                    <?php echo $this->user->lang('Having a problem? Our support staff can assist'); ?>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    <?php } ?>
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <a href="<?php echo $cartUrl; ?>">
+                            <div class="client-area-top-box eq-height">
+                                <img src="templates/default/images/main-boxes/order-service.png" class="img-fluid">
+                                <p>
+                                    <span>
+                                        <?php echo $this->user->lang('Order New Service');?>
+                                    </span>
+                                    <?php echo $this->user->lang('Browse the Products & Services we offer'); ?>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    <?php if (count($this->snapins) > 0) { ?>
+                    <?php foreach ($this->snapins as $snapin) { ?>
+                    <?php if (isset($snapin->mapping['publicmain'])) { ?>
+                    <?php foreach ($snapin->mapping['publicmain'] as $hash_key => $map) { ?>
+                    <?php $snapinIconClass = ($map['icon'] != "") ? $map['icon'] : "fa fa-exclamation"; ?>
+                    <?php $snapinIconStyle = ($map['iconstyle'] != "") ? $map['iconstyle'] : ""; ?>
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <a href="<?php echo " index.php?fuse=admin&view=snapin&controller=snapins&h=".urlencode(base64_encode(" publicmain:".$hash_key))."&plugin=".$snapin->getInternalName(); ?>">
+                            <div class="client-area-top-box eq-height">
+                                <?php if ($map['useImage']) { ?>
+                                <img src="<?php echo $snapinIconClass;?>" class="img-fluid">
+                                <?php } else { ?>
+                                <i class="<?php echo $snapinIconClass;?>" style="<?php echo $snapinIconStyle;?>"></i>
+                                <?php } ?>
+                                <p>
+                                    <span>
+                                        <?php echo substr($map['title'], 0, 20);?>
+                                    </span>
+                                    <?php echo $snapin->getVariable('Public Description'); ?>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    <?php } ?>
+                    <?php } ?>
+                    <?php } ?>
+                    <?php } ?>
+                    <?php if ($this->show_series_name != "") { ?>
+                    <!-- GLobal Series -->
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <a href="<?php echo $this->seriesURL; ?>">
+                            <div class="client-area-top-box eq-height">
+                                <img src="templates/default/images/main-boxes/global-series.png" class="img-fluid">
+                                <p>
+                                    <span>
+                                        <?php echo $this->show_series_name;?></span>
+                                    <?php echo $this->show_series_subname;?>
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+            <?php } ?>
+            <div class="client-area-bottom-block">
+                <div class="cm-holder">
+                    <div class="cm-tab-accordion">
+                        <div class="cm-tabs">
+                            <ul class="resp-tabs-list">
+                                <?php if (count($this->announcements) > 0) { ?>
+                                <li>
+                                    <?php echo $this->user->lang('Announcements'); ?>
+                                </li>
+                                <?php } ?>
+                                <?php if ($this->user->hasPermission('knowledgebase_view') && (count($this->faqs) > 0)) { ?>
+                                <li>
+                                    <?php echo $this->user->lang('Frequently Asked Questions'); ?>
+                                </li>
+                                <?php } ?>
+                                <?php if ($this->user->hasPermission('knowledgebase_view') && (count($this->populararticles) > 0)) { ?>
+                                <li>
+                                    <?php echo $this->user->lang('Popular Articles'); ?>
+                                </li>
+                                <?php } ?>
+                            </ul>
+                            <div class="resp-tabs-container">
+                                <?php if (count($this->announcements) > 0) { ?>
+                                <div>
+                                    <div class="client-area-tabs-block">
+                                        <div class="client-area-announcement">
+                                            <ul class="pt-2">
+                                                <?php for ($i = 0; $i < count($this->announcements); $i++) {?>
+                                                <li>
+                                                    <p>
+                                                        <?php echo $this->announcements[$i]['title']; ?>
+                                                    </p>
+                                                    <a href="index.php?fuse=home&controller=announcements&view=announcement&ann_id=<?php echo $this->announcements[$i]['annid']; ?>">
+                                                        <?php echo $this->announcements[$i]['excerpt']; ?> »
+                                                    </a>
+                                                </li>
+                                                <?php } ?>
+                                            </ul>
+                                            <div>
+                                                <a href="index.php?fuse=home&controller=announcements&view=announcements">
+                                                    <?php echo $this->user->lang('View past announcements'); ?> »
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php } ?>
+                                <?php if ($this->user->hasPermission('knowledgebase_view') && (count($this->faqs) > 0)) { ?>
+                                <div>
+                                    <div class="client-area-tabs-block">
+                                        <div class="client-area-faq">
+                                            <div class="accordion pt-1">
+                                                <?php foreach ($this->faqs as $faq) {?>
+                                                <div class="accordion-item">
+                                                    <?php echo $faq['articlename'];?>
+                                                </div>
+                                                <div class="data" style="display: none;">
+                                                    <div class="client-faq-content">
+                                                        <?php echo str_replace(array("../uploads/knowledgebase/", "&lt;br&gt;"), array("uploads/knowledgebase/", "<br>"), $faq['content']); ?>
+                                                    </div>
+                                                </div>
+                                                <?php } ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php } ?>
+                                <?php if ($this->user->hasPermission('knowledgebase_view') && (count($this->populararticles) > 0)) { ?>
+                                <div>
+                                    <div class="client-area-tabs-block">
+                                        <div class="client-area-popular-article">
+                                            <ul class="pt-2">
+                                                <?php foreach ($this->populararticles as $article) { ?>
+                                                <li>
+                                                    <p>
+                                                        <a href="<?php echo $article['article_link']; ?>">
+                                                            <?php echo $article['title']; ?>
+                                                        </a>
+                                                    </p>
+                                                    <a href="<?php echo $article['category_link']; ?>">
+                                                        <?php echo $article['categoryname']; ?> &raquo;
+                                                    </a>
+                                                </li>
+                                                <?php } ?>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

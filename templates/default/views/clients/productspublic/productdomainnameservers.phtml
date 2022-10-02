@@ -1,0 +1,115 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="package-view-page">
+            <?php echo $this->publicproductheader($this->user); ?>
+            <div class="nameservers-block">
+            <?php if ( $this->domainNotRegistered == true ) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("This domain currently isn't registered.");?>
+                </div>
+                <?php } else if ( $this->domainNotActive == true ) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("This domain currently isn't active.");?>
+                </div>
+                <?php } else { ?>
+                <div class="dns-records-box cloneable d-none">
+                    <ul class="dns-records-box-ul">
+                        <li class="name">
+                        </li>
+                        <li class="record">
+                            <input type="text" class="dns-records-input" value="" data-parsley-required="true">
+                        </li>
+                        <?php if ( $this->user->hasPermission('domains_editns') ) { ?>
+                        <li>
+                            <button type="submit" class="dns-records-submit" name="nameserverdelete">
+                                <?php echo $this->user->lang('Delete');?>
+                            </button>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+                <?php if ( count($this->nameservers) > 0 ) { ?>
+                <?php
+                    echo $this->form()->open(
+                        'index.php?fuse=clients&controller=products&action=savedomainnameservers',
+                        'POST',
+                        ['id' => 'nameservers']
+                    );
+                    echo $this->form()->hidden('id', $this->packageId);
+                ?>
+                <?php foreach ($this->nameservers as $nameServer) { ?>
+                <div class="dns-records-box">
+                    <ul class="dns-records-box-ul">
+                        <li class="name">
+                            <?php echo $nameServer['name']; ?>
+                        </li>
+                        <li class="record">
+                            <input name="nameservers[]" type="text" class="dns-records-input nameserver" value="<?php echo $nameServer['value']; ?>" data-parsley-required="true">
+                        </li>
+                        <?php if ( $this->user->hasPermission('domains_editns') ) { ?>
+                        <li>
+                            <button type="submit" class="dns-records-submit" name="nameserverdelete">
+                                <?php echo $this->user->lang('Delete'); ?>
+                            </button>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+                <?php } ?>
+                <?php if ( $this->user->hasPermission('domains_editns') ) { ?>
+                <div class="dns-records-box">
+                    <ul class="dns-records-box-ul">
+                        <li>
+                            <button type="submit" class="dns-records-submit" id="nameserveradd">
+                                <?php echo $this->user->lang('Add Name Server'); ?>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dns-records-updates">
+                    <button type="submit" class="submit-reply-btn app-btns primary">
+                        <?php echo $this->user->lang('Update Name Servers'); ?>
+                    </button>
+                </div>
+                <?php } ?>
+                <?php echo $this->form()->close(); ?>
+                <?php } ?>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.dns-records-box').on('click', 'button[name="nameserverdelete"]', function (e) {
+        e.preventDefault();
+        $(this).parent().parent().parent().remove();
+    });
+
+    $('#nameserveradd').on('click', function(e) {
+        e.preventDefault();
+        var number = $('input.nameserver').length + 1;
+        var nameServer = $('.cloneable').clone(true);
+        nameServer.removeClass('d-none').removeClass('cloneable');
+
+        $('input.dns-records-input', nameServer).addClass('nameserver').prop('name', 'nameservers[]');
+        $('li.name', nameServer).html('Name Server ' + number);
+        $('#nameserveradd').parent().parent().parent().before(nameServer);
+    })
+
+    $('.submit-reply-btn').on('click', function(e){
+        e.preventDefault();
+        if ($('input[name="nameservers[]"]').length < 1) {
+            clientexec.error(clientexec.lang('Please ensure you have at least 2 name servers entered.'));
+            return false;
+        }
+        $('#nameservers').parsley().validate();
+        if ($('#nameservers').parsley().isValid()) {
+            clientexec.mask();
+            $.post('index.php?fuse=clients&controller=products&action=savedomainnameservers', $('#nameservers').serialize(), function(data){
+                json = clientexec.parseResponse(data);
+                clientexec.unMask();
+            });
+        }
+    });
+</script>

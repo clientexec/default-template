@@ -1,0 +1,151 @@
+// GOOOGLE FONTS 
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800&display=swap');
+
+// RESET STYLE
+
+:root{
+    --primary: #012073;
+    --primary-hover: #012891;
+    
+}
+
+body{
+    margin:0;
+    padding:0;
+    padding-top: 82px;
+    position:relative;
+    font-family: 'Nunito', sans-serif;
+    background: #eff1f6;
+}
+
+::selection{background:#3D4E60;color:#FFFFFF;}
+::-moz-selection{background:#3D4E60;color:#FFFFFF;}
+a, input, textarea, button{
+    &:focus{
+    outline:none;text-decoration:none;
+    }
+}
+h1, h2, h3, h4, h5, h6{
+    font-family: 'Nunito', sans-serif;
+    font-weight: 500;
+    color:#283557;
+    -webkit-font-smoothing:antialiased;
+    -moz-font-smoothing:antialiased;
+    -ms-font-smoothing:antialiased;
+    -o-font-smoothing:antialiased;
+}
+h1{
+    font-weight: 700;
+    line-height: normal;
+    margin: 0px 0px 0px 0px;
+    font-size: 30px;
+    &.invert{
+        color: color(text-dark);
+    }
+    @include desktop-xl{
+        
+    }
+   
+    @include desktop{
+        font-size: 3rem;
+        line-height: 2.8rem;
+    }
+    @include tab-landscape{
+        font-size: 48px;
+        line-height: 40px;
+    }
+    @include portrait{
+        font-size: 32px;
+        line-height: 32px;
+    }
+    
+}
+h2{
+    font-size: $h2;
+    font-weight: 700;
+    @include desktop{
+        font-size: 28px;
+    }
+}
+h3{
+    font-size: 24px;
+    font-weight: 500;
+}
+h5{
+    font-size: 1.9em;
+    &.invert{
+        color: color(text-dark);
+    }
+}
+h6{
+    font-size: 24px;
+
+}
+
+
+
+a{color:#3c99df;text-decoration:none;}
+
+
+label{font-weight:normal;}
+p{
+    margin:0 0 15px 0;
+    color:#858b9a;
+    font-size:14px;
+    line-height:normal;
+    font-weight: 400;
+    &.medium{font-size:16px;line-height:26px;}
+    &.large{font-size: 18px;line-height: normal;}
+}
+
+ul{
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+ol{
+    padding:0px;
+    list-style-position:inside;
+}
+ol, li{
+    margin-bottom:0px;
+    list-style:none;
+    position:relative;
+}
+a, input[type="submit"]{
+    transition:all ease-out 0.2s;
+    -webkit-transition:all ease-out 0.2s;
+    -moz-transition:all ease-out 0.2s;
+    -ms-transition:all ease-out 0.2s;
+    -o-transition:all ease-out 0.2s;
+}
+
+.set-as-bg{
+    background-size: cover;
+}
+.make-bg{
+    display: none;
+}
+
+
+
+// CHECKBOX STYLE
+
+.custom-checkbox .custom-control-input:checked~.custom-control-label::before {
+    background-color: color(primary);
+}
+.custom-checkbox .custom-control-input:checked~.custom-control-label{
+    color: color(primary);
+}
+.custom-control-input:checked~.custom-control-label::before {
+    color: #fff;
+    background-color: color(primary);
+}
+.custom-control-label{padding-left: 4px;color: #988aa7;font-size: 18px;display: block;}
+.custom-checkbox .custom-control-label::before{border-radius: 2px;background: #e5e1e8;}
+.custom-control-label::before{width: 20px;height: 20px;top:1px;border: none;}
+.custom-control-label::after{width: 20px;height: 20px;top:1px;}
+
+.custom-control-input:checked~.custom-control-label::before{border-color: transparent;}
+
+

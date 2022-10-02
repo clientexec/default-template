@@ -1,0 +1,452 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="package-view-page">
+            <?php echo $this->publicproductheader($this->user); ?>
+            <div class="product-detail-block">
+                <div class="product-detail-4boxes">
+                    <div class="row">
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                            <div class="product-detail-box same">
+                                <h5><?php echo $this->user->lang('Status'); ?></h5>
+                                <span class="detail-box-active status <?php echo $this->status['statusClassClient']; ?>">
+                                    <?php echo $this->status['statusText']; ?>
+                                </span>
+                                <span class="detail-box-icon">
+                                    <img src="templates/default/images/packages/package-detail-box-status.png" class="img-fluid" alt="">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                            <div class="product-detail-box same">
+                                <h5>
+                                    <?php echo $this->package['nextBillDateText']; ?>
+                                </h5>
+                                <h6>
+                                    <?php echo $this->package['nextBillDate']; ?>
+                                </h6>
+                                <span class="detail-box-icon">
+                                    <img src="templates/default/images/packages/package-detail-box-due-date.png" class="img-fluid" alt="">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                            <div class="product-detail-box same">
+                                <h5>
+                                    <?php echo $this->user->lang('Billing Cycle'); ?>
+                                </h5>
+                                <h6>
+                                    <?php echo $this->user->lang($this->billingCycle); ?>
+                                </h6>
+                                <span class="detail-box-icon">
+                                    <img src="templates/default/images/packages/package-detail-box-cycle.png" class="img-fluid" alt="">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                            <div class="product-detail-box same">
+                                <h5>
+                                    <?php echo $this->user->lang('Recurring Amount'); ?>
+                                </h5>
+                                <h6>
+                                    <?php echo $this->unescape($this->recurringAmount); ?>
+                                </h6>
+                                <span class="detail-box-icon">
+                                    <img src="templates/default/images/packages/package-detail-box-renewal.png" class="img-fluid" alt="">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-detail-bottom">
+                    <div class="row">
+                        <?php foreach ($this->package['customFields'] as $customField) { ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <span>
+                                        <?php echo $customField['name']; ?>:
+                                    </span>
+                                    <?php
+                                        if (isset($customField['password'])) {
+                                            echo $customField['value'];
+                                        } elseif ($customField['value'] == $this->user->lang("Left Blank") && !$customField['isClientChangeable']) {
+                                            echo "<span class='muted'>" . $customField['value'] . "</span>";
+                                        } elseif ($customField['isClientChangeable']) {
+                                            if ($customField['type'] == TYPEPASSWORD || strlen($customField['value']) >= 25) {
+                                                echo '<a href="#" data-value="' . $customField['value'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name'])  . '</a>';
+                                            } else {
+                                                echo '<a href="#" data-value="' . $customField['value'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $customField['value'] . '</a>';
+                                            }
+                                        } elseif ($customField['type'] == TYPEPASSWORD || strlen($customField['value']) >= 25) {
+                                            echo '<a href="#" class="customFieldModal" data-content="' . $customField['value'] . '" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name']) . '</a>';
+                                        } else {
+                                            echo $this->escape($customField['value']);
+                                        }
+                                    ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php } ?>
+
+                        <?php if ($this->package['productType'] == PACKAGE_TYPE_SSL) { ?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="product-detail-features">
+                                    <p>
+                                        <span><?php echo $this->user->lang('Certificate ID'); ?></span>
+                                        <?php echo $this->cert['id']; ?>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <?php if ($this->cert['status'] != '') { ?>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="product-detail-features">
+                                    <p>
+                                        <span><?php echo $this->user->lang('Status'); ?></span>
+                                        <?php echo $this->cert['status']; ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php } ?>
+
+                            <div class="col-lg-4 col-md-6">
+                                <div class="product-detail-features">
+                                    <p>
+                                        <span><?php echo $this->user->lang('Domain'); ?></span>
+                                        <?php echo $this->cert['domain']; ?>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6">
+                                <div class="product-detail-features">
+                                    <p>
+                                        <span><?php echo $this->user->lang('Expiration Date'); ?></span>
+                                        <?php echo $this->cert['expirationDate']; ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="product-detail-features">
+                                    <p>
+                                        <span><?php echo $this->user->lang('Administration Email'); ?></span>
+                                        <?php echo $this->cert['adminEmail']; ?>
+                                    </p>
+                                </div>
+                            </div>
+                        <?php } ?>
+
+                        <?php if ($this->package['productType'] == PACKAGE_TYPE_DOMAIN && $this->cWhois == false) { ?>
+                        <?php if ($this->registrar != '') { ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <span><?php echo $this->user->lang('Registrar'); ?></span>
+                                    <?php echo $this->registrar; ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        <?php if ($this->isTransfer) { ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <span><?php echo $this->user->lang('Transfer Id'); ?></span>
+                                    <?php echo $this->transferId; ?>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <span><?php echo $this->user->lang('Transfer Status'); ?></span>
+                                    <?php echo $this->transferStatus; ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <span><?php echo $this->user->lang('Expiration Date'); ?></span>
+                                    <?php echo $this->expirationDate; ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php if ($this->eppCode && $this->status['statusRaw'] == 'Active') { ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <span><?php echo $this->user->lang('EPP Code'); ?></span>
+                                    <?php echo $this->eppCode; ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php } ?>
+
+                        <?php if ($this->registrarLock != '' && $this->status['statusRaw'] == 'Active') { ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <?php if ($this->canToggleRegLock) { ?>
+                                    <input lass="form-check-input" id="toogle-registrar-lock" type="checkbox"<?php echo $this->regLockValue;?>>
+                                    <label class="form-check-label" for="toogle-registrar-lock">
+                                        <?php echo $this->user->lang('Registrar Lock'); ?>
+                                    </label>
+                                    <?php } else { ?>
+                                    <span><?php echo $this->user->lang('Registrar Lock'); ?></span>
+                                    <?php echo $this->registrarLock; ?>
+                                    <?php } ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php } ?>
+
+                        <?php } ?>
+
+                        <?php foreach ($this->addons as $addon) { ?>
+                            <?php if ($addon['fieldtype'] !== (string)typeHIDDEN) { ?>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <span><?php echo $addon['namelanguage']; ?></span>
+                                    <?php
+                                        $addonQuantity = '';
+                                        $addonQuantityPrice = $addon['optioncustomerprice'];
+                                        $addonQuantitySetupPrice = $addon['optionsetupprice'];
+                                        if ($addon['optioncustomerquantity'] > 1 || $addon['optioncustomerquantity'] == 0) {
+                                            $addonQuantity = $addon['optioncustomerquantity'].' x ';
+                                            $addonQuantityPrice = '@ '.$addon['optioncustomerprice'].'/'.$this->user->lang("each").' = '.$addon['optioncustomerquantityprice'];
+
+                                            if($addon['optionsetupprice'] !== false){
+                                                $addonQuantitySetupPrice = $addon['optionsetupprice'].'/'.$this->user->lang("each").' = '.$addon['optionsetupquantityprice'];
+                                            }
+                                        }
+                                        echo $addonQuantity.$addon['optionnamelanguage'].' '.$addonQuantityPrice.' / '.$addon['optioncycle'];
+                                        if($addonQuantitySetupPrice !== false){
+                                            echo '<br><span style="float:right;">+ '.$addonQuantity.$addonQuantitySetupPrice.' / '.$addon['optionsetup'].'</span><br><br>';
+                                        }
+                                    ?>
+                                </p>
+                            </div>
+                        </div>
+                            <?php } ?>
+                        <?php } ?>
+
+
+                        <?php if ($this->showAutomaticRenewal) { ?>
+                          <div class="col-lg-4 col-md-6">
+                            <div class="product-detail-features">
+                                <p>
+                                    <input lass="form-check-input" id="toogle-automatic-cc-charge" type="checkbox"<?php echo $this->automaticRenewalChecked;?>>
+                                    <label class="form-check-label" for="toogle-automatic-cc-charge">
+                                        <?php echo $this->user->lang('Charge Card Automatically'); ?>
+                                    </label>
+                                </p>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+
+                    <?php if ($this->package['productType'] == PACKAGE_TYPE_SSL) { ?>
+                        <hr>
+                    <div class="row form-group">
+                        <div class="col-12 col-md-12">
+                            <strong><?php echo $this->user->lang("CSR");?></strong>
+                            <textarea name="csr" id="csr" class="form-control" rows="20"><?php echo $this->cert['csr']; ?></textarea>
+                            <br/>
+                            <button class="btn btn-primary" id="updateCSR">
+                                <?php echo $this->user->lang('Update CSR'); ?>
+                            </button>
+                        </div>
+                    </div>
+                    <?php if ($this->cert['cert'] != '') {?>
+                    <div class="row">
+                        <div class="col-12 col-md-12"></div>
+                            <strong><?php echo $this->user->lang("Certificate");?></strong>
+                            <textarea name="cert" class="form-control" rows="35" readonly><?php echo $this->cert['cert']; ?></textarea>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <?php } ?>
+                    <?php if ($this->pluginOutput != '') { ?>
+                    <div class="cs-padding">
+                    <?php echo $this->unescape($this->pluginOutput); ?>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+var productId = <?php echo $this->product_id; ?>;
+
+<?php if ($this->showAutomaticRenewal) { ?>
+$('#toogle-automatic-cc-charge').on('click', function() {
+    $.post('index.php?fuse=clients&controller=products&action=toogleautomaticcccharge', {
+        id: productId
+    },
+    function(data) {
+        clientexec.parseResponse(data);
+    });
+});
+<?php } ?>
+
+
+<?php if ($this->registrarLock != '' && $this->status['statusRaw'] == 'Active') { ?>
+$('#toogle-registrar-lock').on('click', function() {
+    var regLockValue = 0;
+    if ($(this).is(':checked')) {
+        regLockValue = 1;
+    }
+    $.post('index.php?fuse=clients&controller=products&action=updateregistrarlock', {
+        value: regLockValue,
+        id: productId
+    },
+    function(data) {
+        clientexec.parseResponse(data);
+    });
+});
+<?php } ?>
+
+$('#passwordChange').on('click', function(e) {
+    e.preventDefault();
+
+    $.confirm({
+        title: clientexec.lang('Password Change'),
+        content: '' +
+        '<form action="">' +
+        '<div class="form-group">' +
+        '<label>' + clientexec.lang('Please enter a new password') + '</label>' +
+        '<input type="password" class="password form-control" />' +
+        '</div>' +
+        '</form>',
+        buttons: {
+            formSubmit: {
+                text: 'Save',
+                btnClass: 'btn btn-primary',
+                action: function () {
+                    var password = this.$content.find('.password').val();
+                    if( $.trim(password) !== "" ) {
+                        $.post('index.php?fuse=clients&controller=products&action=updatehostingpassword', {
+                            id: productId,
+                            password: password
+                        }, function( data ) {
+                            clientexec.parseResponse(data);
+                        });
+                    }
+                }
+            },
+            cancel: function () {
+            },
+        },
+        onContentReady: function () {
+            var jc = this;
+            this.$content.find('form').on('submit', function (e) {
+                // if the user submits the form by pressing enter in the field.
+                e.preventDefault();
+                jc.$$formSubmit.trigger('click');
+            });
+        }
+    });
+});
+
+$('.customFieldModal').on('click', function(e){
+
+    var content = $(this).data('content');
+    if (content.length > 50) {
+        columnClass = 'medium';
+    } else if (content.legnth > 25) {
+        columnClass = 'small';
+    } else {
+        columnClass = 'xsmall';
+    }
+
+    $.dialog({
+        title: $(this).data('name'),
+        content: content,
+        columnClass: columnClass,
+        containerFluid: true,
+    });
+});
+
+
+$('.customFieldChange').on('click', function(e){
+    e.preventDefault();
+    var fieldName = $(this).data('name');
+    var value = $(this).data('value');
+    if (value.length > 50) {
+        columnClass = 'medium';
+    } else if (value.legnth > 25) {
+        columnClass = 'small';
+    } else {
+        columnClass = 'xsmall';
+    }
+
+    $.confirm({
+        columnClass: columnClass,
+        containerFluid: true,
+        title: '',
+        content: '' +
+        '<form action="">' +
+        '<div class="form-group">' +
+        '<label>' + clientexec.lang('Please enter a new value') + '</label>' +
+        '<input type="text" class="value form-control" value="' + value + '" />' +
+        '</div>' +
+        '</form>',
+        buttons: {
+            formSubmit: {
+                text: 'Save',
+                btnClass: 'btn btn-primary',
+                action: function () {
+                    var value = this.$content.find('.value').val();
+                    $.post('index.php?fuse=clients&controller=products&action=updatecustomfield', {
+                        id: productId,
+                        fieldName: fieldName,
+                        value: value
+                    }, function( data ) {
+                        response = clientexec.parseResponse(data);
+                        if (response.success === true) {
+                            location.reload();
+                        }
+                    });
+                }
+            },
+            cancel: function () {
+            },
+        },
+        onContentReady: function () {
+            var jc = this;
+            this.$content.find('form').on('submit', function (e) {
+                // if the user submits the form by pressing enter in the field.
+                e.preventDefault();
+                jc.$$formSubmit.trigger('click');
+            });
+        }
+    });
+});
+
+</script>
+
+<?php if ($this->package['productType'] == PACKAGE_TYPE_SSL) { ?>
+<script>
+    $('#updateCSR').on('click', function(e) {
+        var csr = $('#csr').val();
+        $.post('index.php?fuse=clients&controller=products&action=updatecsr', {
+            id: productId,
+            csr: csr
+        }, function(data) {
+            clientexec.parseResponse(data);
+        });
+    });
+</script>
+<?php } ?>
+
+<style>
+.jconfirm-content {
+    overflow-wrap: break-word;
+}
+</style>

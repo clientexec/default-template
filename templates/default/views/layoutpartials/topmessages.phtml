@@ -1,0 +1,48 @@
+<?php if (strlen($this->strErrorMessage) > 0 || strlen($this->strSuccessMessage) > 0 || strlen($this->strGeneralMessage) > 0 || count($this->serverStatusMessages) > 0) {?>
+<div id="top-messages">
+    <div class="container">
+        <?php if (strlen($this->strErrorMessage) > 0) { ?>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <?php echo $this->unescape($this->strErrorMessage); ?>
+        </div>
+
+        <?php } ?>
+        <?php if (strlen($this->strGeneralMessage) > 0) { ?>
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <?php echo $this->unescape($this->strGeneralMessage); ?>
+        </div>
+
+        <?php } ?>
+        <?php if (strlen($this->strSuccessMessage) > 0) { ?>
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <?php echo $this->unescape($this->strSuccessMessage); ?>
+        </div>
+
+        <?php } ?>
+
+        <?php if (count($this->serverStatusMessages) > 0 ) { ?>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+              <?php foreach($this->serverStatusMessages as $serverStatusMessage) { ?>
+                  <p>
+                    <strong>Server: <?php echo $serverStatusMessage['name']." (".$serverStatusMessage['sharedip'].")"; ?>:</strong>
+                    <br/>
+                    <?php echo nl2br($serverStatusMessage['status_message']);?>
+                </p>
+              <?php } ?>
+            </div>
+        <?php } ?>
+    </div>
+</div>
+<?php } ?>

@@ -1,0 +1,132 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="package-view-page">
+            <?php echo $this->publicproductheader($this->user); ?>
+            <div class="dns-records-block">
+            <?php if ( $this->domainNotRegistered == true ) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("This domain currently isn't registered.");?>
+                </div>
+                <?php } else if ( $this->domainNotActive == true ) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("This domain currently isn't active.");?>
+                </div>
+                <?php } else if ( $this->hostRecordsNotSupported == true ) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("Managing host records is not supported.");?>
+                </div>
+                <?php } else { ?>
+                <div class="dns-records-box cloneable d-none">
+                    <ul class="dns-records-box-ul">
+                        <li>
+                            <input type="text" class="dns-records-input" value="">
+                        </li>
+                        <li>
+                            <select class="dns-records-input">
+                                <?php foreach ($this->hostTypes as $type) { ?>
+                                <option value="<?php echo $type; ?>"><?php echo $type; ?></option>
+                                <?php } ?>
+                            </select>
+                        </li>
+                        <li>
+                            <input type="text" class="dns-records-input" value="" data-parsley-required="true">
+                        </li>
+                        <?php if ( $this->user->hasPermission('domains_updatedns') ) { ?>
+                        <li>
+                            <button class="dns-records-submit" name="recorddelete">
+                                <?php echo $this->user->lang('Delete');?>
+                            </button>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+                <?php
+                    echo $this->form()->open(
+                        'index.php?fuse=clients&controller=products&action=savedomainhostrecords',
+                        'POST',
+                        ['id' => 'hostrecords']
+                    );
+                    echo $this->form()->hidden('id', $this->packageId);
+                ?>
+                <?php foreach ($this->hostRecords as $record) {  ?>
+                <div class="dns-records-box">
+                   <ul class="dns-records-box-ul">
+                        <li>
+                            <input name="hostname_CT_<?php echo $record['id']; ?>" type="text" class="dns-records-input" value="<?php echo $record['hostname']; ?>" data-parsley-required="true">
+                        </li>
+                        <li>
+                            <select class="dns-records-input normalSelect2" name="hosttype_CT_<?php echo $record['id']; ?>">
+                                <?php foreach ($this->hostTypes as $type) { ?>
+                                <option<?php if ($type == $record['type']) {?> selected="selected"<?php } ?> value="<?php echo $type; ?>"><?php echo $type; ?></option>
+                                <?php } ?>
+                            </select>
+                        </li>
+                        <li>
+                            <input name="hostaddress_CT_<?php echo $record['id']; ?>" type="text" class="dns-records-input" value="<?php echo $record['address']; ?>" data-parsley-required="true">
+                        </li>
+                        <li>
+                            <button class="dns-records-submit" name="recorddelete">
+                                <?php echo $this->user->lang('Delete');?>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <?php } ?>
+                <?php if ( $this->user->hasPermission('domains_updatedns') ) { ?>
+                <div class="dns-records-box">
+                    <ul class="dns-records-box-ul">
+                        <li>
+                            <button type="submit" class="dns-records-submit" id="recordadd">
+                                <?php echo $this->user->lang('Add New Record'); ?>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dns-records-updates">
+                    <button type="submit" class="submit-reply-btn app-btns primary">
+                        <?php echo $this->user->lang('Update Host Records'); ?>
+                    </button>
+                </div>
+                <?php } ?>
+                <?php echo $this->form()->close(); ?>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.dns-records-box').on('click', 'button[name="recorddelete"]', function (e) {
+        e.preventDefault();
+        $(this).parent().parent().parent().remove();
+    });
+
+    $('#recordadd').on('click', function(e) {
+        e.preventDefault();
+        var number = $('input[name*="hostname_CT"').length + 1;
+        var record = $('.cloneable').clone(true);
+        record.removeClass('d-none').removeClass('cloneable');
+
+        $('input.dns-records-input', record).first().prop('name', 'hostname_CT_' + number);
+        $('select', record).first().prop('name', 'hosttype_CT_' + number).addClass('normalSelect2');
+        $('input.dns-records-input', record).last().prop('name', 'hostaddress_CT_' + number);
+
+        $('#recordadd').parent().parent().parent().before(record);
+
+        $('select.normalSelect2[name="hosttype_CT_' + number + '"]').select2({
+            minimumResultsForSearch: -1
+        });
+    })
+
+    $('.submit-reply-btn').on('click', function(e){
+        e.preventDefault();
+        $('#hostrecords').parsley().validate();
+        if ($('#hostrecords').parsley().isValid()) {
+            clientexec.mask();
+            $.post('index.php?fuse=clients&controller=products&action=savedomainhostrecords', $('#hostrecords').serialize(), function(data){
+                json = clientexec.parseResponse(data);
+                clientexec.unMask();
+            });
+        }
+    });
+</script>

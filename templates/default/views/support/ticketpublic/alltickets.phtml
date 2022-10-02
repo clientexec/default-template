@@ -1,0 +1,102 @@
+<div class="datatable-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('Support Tickets'); ?>
+                    </h1>
+                    <div class="knowledge-base-search">
+                        <input type="text" class="knowledge-search-input" placeholder="<?php echo $this->user->lang('Search'); ?>">
+                        <button type="submit" class="knowledge-search-submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive cs-padding">
+                    <div class="form-group col-xs-12">
+                        <div class="btn-group" role="group" id="filter-ul">
+                            <button type="button" class="btn<?php echo ($this->filter == 'open') ? ' btn-primary' : ''; ?>" data-filter="open">
+                                <?php echo $this->user->lang("Open");?>
+                            </button>
+                            <button type="button" class="btn<?php echo ($this->filter == 'closed') ? ' btn-primary' : ''; ?>" data-filter="-1">
+                                <?php echo $this->user->lang("Closed");?>
+                            </button>
+                            <button type="button" class="btn<?php echo ($this->filter == 'all') ? ' btn-primary' : ''; ?>" data-filter="all">
+                                <?php echo $this->user->lang("All");?>
+                            </button>
+                        </div>
+                    </div>
+                    <table id="order-table" class="table support-ticket-list-table">
+                        <thead>
+                            <tr>
+                                <th class="width1">
+                                    <?php echo $this->user->lang('Ticket #'); ?>
+                                </th>
+                                <th class="width2">
+                                    <?php echo $this->user->lang('Subject'); ?>
+                                </th>
+                                <th class="width3">
+                                    <?php echo $this->user->lang('Status'); ?>
+                                </th>
+                                <?php foreach ($this->customCols as $label) { ?>
+                                <th class="width3">
+                                    <?php echo $label ?>
+                                </th>
+                                <?php } ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($this->tickets as $ticket) { ?>
+                            <tr>
+                                <td data-order="<?php echo $ticket['id']; ?>">
+                                    <a href='index.php?fuse=support&controller=ticket&view=ticket&id=<?php echo $ticket['id'];?>'>
+                                        <?php echo '#' . $ticket['id']; ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href='index.php?fuse=support&controller=ticket&view=ticket&id=<?php echo $ticket['id'];?>'>
+                                        <?php echo $this->escape($ticket['subject']) ?>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="status <?php echo $ticket['ticketStatusClass']; ?>">
+                                    <?php echo $ticket['ticketStatus']; ?>
+                                </td>
+                                <?php foreach ($ticket['customfields'] as $value) { ?>
+                                <td>
+                                    <?php echo $this->escape($value) ?>
+                                </td>
+                                <?php } ?>
+                            </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+    var ticketTable = $('.support-ticket-list-table').DataTable({
+        'order': [[ 0, 'desc' ]],
+        'language': {
+            'sEmptyTable': clientexec.lang('No tickets to show'),
+            'zeroRecords': clientexec.lang('No matching tickets found')
+        }
+    });
+
+    $('#filter-ul button').click(function() {
+        window.location = 'index.php?fuse=support&controller=ticket&view=alltickets&filter=' + $(this).data('filter');
+    });
+
+    $('.knowledge-search-submit').on('keyup click', function() {
+        ticketTable.search($('.knowledge-search-input').val()).draw();
+    });
+    $('.knowledge-search-input').keyup(function() {
+        ticketTable.search($(this).val()).draw();
+    });
+});
+</script>

@@ -1,0 +1,142 @@
+<div class="datatable-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('My Domains'); ?>
+                    </h1>
+                    <div class="knowledge-base-search">
+                        <input type="text" class="knowledge-search-input" placeholder="<?php echo $this->user->lang('Search'); ?>">
+                        <button type="submit" class="knowledge-search-submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive cs-padding">
+                    <table id="order-table" class="table product-list-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <?php echo $this->user->lang('Domain'); ?>
+                                </th>
+                                <th class="next-due-date">
+                                    <?php echo $this->user->lang('Due Date'); ?>
+                                </th>
+                                <th>
+                                    <?php echo $this->user->lang('Price'); ?>
+                                </th>
+                                <th class="status-header">
+                                    <?php echo $this->user->lang('Status'); ?>
+                                </th>
+                                <th class="mid">
+                                    <?php echo $this->user->lang('Action'); ?>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach($this->domains as $domain) { ?>
+                            <tr>
+                                <td>
+                                    <span class="product-name">
+                                        <a href="index.php?fuse=clients&controller=products&view=product&id=<?php echo $domain['id']; ?>" class="link1">
+                                            <?php echo $domain['name']; ?>
+                                        </a>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="due-date">
+                                        <?php echo $domain['nextDueDate']; ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="total">
+                                        <?php echo $domain['price']; ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status <?php echo $domain['status_class']; ?>">
+                                        <?php echo str_replace(' ', '&nbsp;', $domain['status']); ?>
+                                    </span>
+                                </td>
+                                <td class="mid">
+                                    <?php if (count($domain['actions']) > 0) { ?>
+                                    <a href="#" class="action">
+                                        <i class="fas fa-cog"></i>
+                                    </a>
+                                    <ul class="cog-drop-down">
+                                       <?php $additionalHTML = ''; ?>
+                                    <?php foreach ($domain['actions']  as $action) { ?>
+                                        <?php if (isset($action['url'])) { ?>
+                                        <li>
+                                            <a href="<?php echo $action['url']; ?>">
+                                                <?php echo $action['name']; ?>
+                                            </a>
+                                        </li>
+                                        <?php } else if (isset($action['link']) && $action['form'] == '') { ?>
+                                            <?php echo $action['link']; ?>
+                                        <?php } else if (isset($action['form']) && $action['form'] != '') { ?>
+                                        <?php echo $action['link']; ?>
+                                        <?php $additionalHTML .= $action['form']; ?>
+                                        <?php } else { ?>
+                                        <li>
+                                            <a data-package-id="<?php echo $package['id']; ?>" class="clickable-action" data-command="<?php echo $action['command']; ?>">
+                                                <?php echo $action['name']; ?>
+                                            </a>
+                                        </li>
+                                        <?php } ?>
+                                    <?php } ?>
+                                    </ul>
+                                    <?php echo $additionalHTML; ?>
+                                    <?php } ?>
+                                </td>
+                            </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    var table = $('.product-list-table').DataTable({
+        language: {
+            emptyTable: clientexec.lang('No domains to show'),
+            zeroRecords: clientexec.lang('No matching domains found')
+        },
+        "columnDefs": [{
+            "targets": 4,
+            "orderable": false
+        }]
+    });
+
+    $('.knowledge-search-submit').on('keyup click', function() {
+        table.search($('.knowledge-search-input').val()).draw();
+    });
+    $('.knowledge-search-input').keyup(function() {
+        table.search($(this).val()).draw();
+    });
+});
+
+$('.clickable-action').on('click', function(e) {
+    e.preventDefault();
+    command = $(this).data('command');
+    packageId = $(this).data('package-id');
+
+    clientexec.mask();
+    $.ajax({
+        url: 'index.php?fuse=clients&action=callpluginaction',
+        success: function(xhr) {
+            clientexec.parseResponse(xhr);
+            clientexec.unMask();
+        },
+        data: {
+            id: packageId,
+            actioncmd: command
+        }
+    });
+})
+</script>

@@ -1,0 +1,32 @@
+<hr/>
+
+<div class="row row-header mt-3">
+    <div class="col-12 col-sm-4 text-center text-sm-left">
+        <h4>{{#translate}}Available Domains{{/translate}}</h4>
+    </div>
+    <div class="col-12 col-sm-4 text-center d-none d-sm-block">
+        <h4>{{#translate}}Years{{/translate}}</h4>
+    </div>
+</div>
+
+{{#available_options}}
+{{#render_additional}}{{/render_additional}}
+<form class='domainForm' data-domain-name="{{domain_name}}" data-product-id="{{product_id}}" data-domain-type="{{domainType}}" method="POST">
+<div class="row domain-option-row mt-1 align-items-center">
+        <div class="col-12 col-sm-4 domain-option-name text-center text-sm-left">{{domain_name}}</div>
+        <div class="col-12 col-sm-4 domain-option-yrs-wrapper text-center mt-3 mb-3 mb-sm-0 mt-sm-0">
+            <select class="form-control domain-option-yrs"></select>
+            <input type="hidden" data-index="{{index}}" class="domain-option-yrs" data-domain-name="{{domain_name}}" data-product-id="{{product_id}}">
+        </div>
+        <div class="col-12 col-sm-4 domain-option-add text-center">
+            <button class="app-btns primary configure-product" data-domain-name="{{domain_name}}" data-product-id="{{product_id}}" type="button">{{#translate}}Add to cart{{/translate}}</button>
+        </div>
+</div>
+<div class="row domain-option-row mt-1">
+        <div class="col-12 customfields-wrapper pt-4"></div>
+        <div class="col-12 extra_attributes-wrapper mt-4"></div>
+        <div class="col-12 addons-wrapper"></div>
+    </div>
+</form>
+{{/available_options}}
+

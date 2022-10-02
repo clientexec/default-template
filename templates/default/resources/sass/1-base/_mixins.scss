@@ -1,0 +1,65 @@
+// IMAGE
+@mixin backgroundImage($url, $prop: no-repeat left top) {
+    background: url('../images/#{$url}') $prop;
+}
+
+// BORDER RADIUS
+
+@mixin border-radius($borderRadius...) {
+    border-radius: $borderRadius;
+    -webkit-border-radius: $borderRadius;
+    -moz-border-radius: $borderRadius;
+    -ms-border-radius: $borderRadius;
+    -o-border-radius: $borderRadius;
+}
+
+// ANIMATION
+
+@mixin animation($animation...) {
+    animation: $animation;
+    -webkit-animation: $animation;
+    -moz-animation: $animation;
+    -ms-animation: $animation;
+    -o-animation: $animation;
+}
+
+// backgroundSize
+@mixin background-size($background-size...) {
+    background-size: $background-size;
+    -webkit-background-size: $background-size;
+    -moz-background-size: $background-size;
+    -ms-background-size: $background-size;
+    -o-background-size: $background-size;
+}
+
+// TRANSFORMS
+
+@mixin transform($transform...) {
+    transform: $transform;
+    -webkit-transform: $transform;
+    -moz-transform: $transform;
+    -ms-transform: $transform;
+    -o-transform: $transform;
+}
+
+@mixin transform-origin($transformOrigin...) {
+    transform-origin: $transformOrigin;
+    -webkit-transform-origin: $transformOrigin;
+    -moz-transform-origin: $transformOrigin;
+    -ms-transform-origin: $transformOrigin;
+    -o-transform-origin: $transformOrigin;
+}
+
+// TRANSITION
+
+@mixin transition($transition...) {
+    transition: $transition;
+    -webkit-transition: $transition;
+    -moz-transition: $transition;
+    -ms-transition: $transition;
+    -o-transition: $transition;
+}
+
+@mixin common_shadow {
+    box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.05);
+}

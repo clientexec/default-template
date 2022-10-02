@@ -1,0 +1,382 @@
+ <div class="content-area upgrade-downgrade-page-wraper">
+    <div class="container">
+        <article class="upgrade-downgrade-page-main">
+            <div class="upgrade-downgrade-top">
+                <p>
+                    <?php echo $this->user->lang('Requesting upgrade/downgrade for: %s', '<span>' . $this->packageName . '</span>'); ?>
+                </p>
+            </div>
+            <form id="upgrade-form" action="index.php?fuse=clients&controller=products&action=requestupgrade" method="POST">
+            <input type="hidden" name="id" value="<?php echo $this->packageId; ?>" />
+            <input type="hidden" name="customerTax" value="<?php echo $this->customerTax; ?>" />
+            <input type="hidden" name="customerTax2" value="<?php echo $this->customerTax2; ?>" />
+            <input type="hidden" name="customerTax2Compound" value="<?php echo $this->customerTax2Compound; ?>" />
+            <input type="hidden" name="upgradeDowngradeStatusValue" value="<?php echo $this->upgradeDowngradeStatus['upgradeValue']; ?>" />
+            <div class="upgrade-downgrade-main">
+                <div class="discription">
+                    <p>
+                        <?php echo $this->upgradeDowngradeStatus['upgradeMessage']; ?>
+                    </p>
+                </div>
+                <div class="upgrade-downgrade-second">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="upgrade-downgrade-second-left">
+                                <label>Select a Product</label>
+                                <select name="upgradePackage" id="upgradePackage" class="normalSelect2 upgrade-downgrade-select" onChange="loadTotalsInfo();" >
+                                    <?php foreach($this->upgradePackages as $package) { ?>
+                                        <option value="<?php echo $package["id"]; ?>" data-taxable="<?php echo $package['taxable']; ?>"><?php echo $this->user->lang($package["plannamelanguage"]); ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="upgrade-downgrade-third">
+                    <h3>
+                        <?php echo $this->user->lang('Choose your Billing Term'); ?>
+                    </h3>
+                    <?php
+                        $firstPackageId = false;
+                        $firstPackageTerm = [];
+                        $packageClass = '';
+                        foreach($this->upgradePackages as $package) {
+                    ?>
+                    <div id="upgradePackageDescription_<?php echo $package["id"]; ?>" class="upgrade-table table-responsive <?php echo $packageClass; ?>">
+                        <table class="table">
+                            <tr>
+                                <th></th>
+                                <th><?php echo $this->user->lang('Term Length'); ?></th>
+                                <th><?php echo $this->user->lang('Renewal Price'); ?></th>
+                                <?php if (!$this->hideSetupFees) { ?>
+                                    <th class="text-right"><?php echo $this->user->lang("Setup Fee");?></th>
+                                <?php } ?>
+                                <th class="text-right" <?php if (!$this->showSaved) {?>style="display:none"<?php } ?>><?php if($this->showSaved) { echo $this->user->lang("You Save");}?></th>
+                            </tr>
+                            <?php foreach ($package['pricing'] as $pricing) { ?>
+                            <?php if (!isset($firstPackageTerm[$package['id']])) {
+                                $firstPackageTerm[$package['id']] = $pricing['termId']; ?>
+                            <?php } ?>
+
+                            <tr>
+                                <td>
+                                    <div class="form-option2">
+                                        <label class="radio-container">
+                                            <input class="priceTerm_<?php echo $package['id'];?>" name="priceTerm_<?php echo $package['id'];?>" type="radio" value="<?php echo $pricing['termId']; ?>" data-subtotal_amount="<?php echo $pricing['subtotal_amount']; ?>" <?php if($pricing['selected'] == 1) { echo " checked";} ?> onChange="loadTotalsInfo();" />
+                                            <span class="radio-checkmark"></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td> <strong><?php echo $pricing['term'];?></strong></td>
+                                <td> <span class="amount-span"><?php echo $pricing['price'];?></span></td>
+                                <?php if (!$this->hideSetupFees) { ?>
+                                    <td class="text-right"><?php echo $pricing['setup'];?></td>
+                                <?php } ?>
+                                <td class="text-right" <?php if (!$this->showSaved) {?>style="display:none"<?php } ?>><?php if($this->showSaved) { echo $pricing['save'];}?></td>
+                            </tr>
+                            <?php } ?>
+                        <tr class="addons-row">
+
+                            <td colspan="4">
+
+                         <?php if (isset($this->packageAddons[$package["id"]]) && is_array($this->packageAddons[$package["id"]]) && count($this->packageAddons[$package["id"]]) > 0) { ?>
+                    <?php $addonStyle = ''; ?>
+                    <?php foreach ($this->packageAddons[$package["id"]] as $packageTerm => $addonOptions) { ?>
+                        <div id="upgradeAddonDescription_<?php echo $package["id"]; ?>_<?php echo $packageTerm; ?>" class="form-group upgradeAddonDescription" <?php echo $addonStyle; ?> >
+                            <?php if (count($addonOptions) > 0) { ?>
+                            <div class="addons-wrapper">
+                                <div class="inline-heading">
+                                    <h4>
+                                        <?php echo $this->user->lang('Product Addons'); ?>
+                                    </h4>
+                                </div>
+
+                                <div class="row">
+                                <?php foreach ($addonOptions as $addon) {
+                                    if (!is_array($addon['prices']) || count($addon['prices']) == 0) {
+                                        continue;
+                                    }
+                                    $divClass = 'col-md-6';
+                                    if ($addon['addon_type'] == '1') {
+                                        $divClass = 'col-12';
+                                    }
+                                ?>
+
+
+
+
+
+                                    <div class="<?php echo $divClass; ?>">
+                                        <div class="form-elem">
+                                            <label>
+                                                <?php if ($addon['desclanguage'] != '') { ?>
+                                                <span data-toggle="popover-hover" data-html="true" data-placement="top" title="<?php echo $this->user->lang("Description");?>" data-content="<?php echo $this->escape($addon['desclanguage']);?>" class="tip-target">
+                                                <?php } ?>
+                                                    <?php echo $this->user->lang($addon['namelanguage']);?>
+                                                <?php if ($addon['desclanguage'] != '') { ?>
+                                                </span>
+                                                <?php } ?>
+                                            </label>
+
+
+                                        <?php switch (@$addon['addon_type']) {
+                                            case '2':    // quantity ?>
+                                                <?php $countAddonOptions = count($addon['prices']); ?>
+                                                <table class="quantity-table" style="width:100%">
+                                                    <tr>
+                                                        <td style="width:75px">
+                                                            <input type="number" min="0" style="width:70px;" id="addonQuantity_<?php echo $package["id"]; ?>_<?php echo $packageTerm; ?>_<?php echo $addon['id']; ?>" name="addonQuantity_<?php echo $package["id"]; ?>_<?php echo $packageTerm; ?>_<?php echo $addon['id']; ?>" class="quantity form-control" value="0" onChange="loadTotalsInfo();">
+                                                        </td>
+                                                        <td>
+                                                            <?php if ($countAddonOptions == 1) { ?>
+                                                                <input type="hidden" name="addonSelect_<?php echo $package["id"]; ?>_<?php echo $packageTerm; ?>_<?php echo $addon['id']; ?>" value="addon_<?php echo $addon['id']; ?>_<?php echo $addon['prices'][0]['price_id']; ?>_<?php echo $addon['prices'][0]['recurringprice_cyle']; ?>" data-subtotal_amount="<?php echo $addon['prices'][0]['item_subtotal_amount']; ?>">
+                                                                <?php
+                                                                    //Removing Addon Name from the Addon Option Name if it is there at the beginning
+                                                                    $prefix = $addon['namelanguage'];
+                                                                    $str = $addon['prices'][0]['pricelanguage'];
+                                                                    if (substr($str, 0, strlen($prefix)) == $prefix) {
+                                                                        $str = substr($str, strlen($prefix));
+                                                                    }
+                                                                    echo $str;
+                                                                ?>
+                                                            <?php } else { ?>
+                                                                <select name="addonSelect_<?php echo $package["id"]; ?>_<?php echo $packageTerm; ?>_<?php echo $addon['id']; ?>" class="normalSelect2 form-control" onChange="loadTotalsInfo();">
+                                                                    <?php foreach ($addon['prices'] as $price) { ?>
+                                                                    <option value="addon_<?php echo $addon['id']; ?>_<?php echo $price['price_id']; ?>_<?php echo $price['recurringprice_cyle']; ?>" data-subtotal_amount="<?php echo $price['item_subtotal_amount']; ?>" <?php echo $price['price_selected']; ?>><?php echo $price['pricelanguage']; ?></option>
+                                                                    <?php } ?>
+                                                                </select>
+                                                            <?php } ?>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <?php break;
+                                            case '0':    // dropdown ?>
+                                                <select name="addonSelect_<?php echo $package["id"]; ?>_<?php echo $packageTerm; ?>_<?php echo $addon['id']; ?>" class="normalSelect2 form-control" onChange="loadTotalsInfo();">
+                                                    <?php foreach ($addon['prices'] as $price) { ?>
+                                                    <option value="addon_<?php echo $addon['id']; ?>_<?php echo $price['price_id']; ?>_<?php echo $price['recurringprice_cyle']; ?>" data-subtotal_amount="<?php echo $price['item_subtotal_amount']; ?>" <?php echo $price['price_selected']; ?>><?php echo $price['pricelanguage']; ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                                </br>
+                                                <?php break;
+                                            case '1':    // radio buttons
+                                            echo '<div class="form-option">';
+                                                foreach ($addon['prices'] as $price) {
+                                                    if (!empty($price['price_selected'])) {
+                                                        $label = '<label class="selected align-middle">';
+                                                    } else {
+                                                         $label = '<label class="align-middle">';
+                                                    }
+                                                ?>
+                                                    <div class="col-12 col-sm-6 pb-3">
+                                                    <?php echo $label; ?>
+                                                        <input type="radio" name="addonSelect_<?php echo $package["id"]; ?>_<?php echo $packageTerm; ?>_<?php echo $addon['id']; ?>" class="choose-radio" id="addonSelect_<?php echo $package["id"]; ?>_<?php echo $packageTerm; ?>_<?php echo $addon['id']; ?>" value="addon_<?php echo $addon['id']; ?>_<?php echo $price['price_id']; ?>_<?php echo $price['recurringprice_cyle']; ?>" data-subtotal_amount="<?php echo $price['item_subtotal_amount']; ?>" style="background:none; border:0px;" <?php echo $price['price_selected']; ?> onChange="loadTotalsInfo();">
+                                                        <span class="text"><?php echo $price['pricelanguage']; ?></span>
+                                                    </label>
+                                                    </div>
+
+                                                <?php }
+                                                echo '</div>';
+                                                break;
+                                        } ?>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                            <?php } ?>
+                        </div>
+                        <?php if ($firstPackageTerm[$package['id']] !== $packageTerm) {
+                            $addonStyle = 'style="display:none"';
+                        } ?>
+                    <?php } ?>
+                <?php } ?>
+
+                                </td>
+                            </tr>
+
+                            <tr class="bootm-white-sections">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <ul class="invoice-miscel-ul">
+                                        <li class="d-flex justify-content-between align-items-center">
+                                            <span class="date">
+                                                <?php echo $this->user->lang("SubTotal"); ?>:
+                                            </span>
+                                            <span class="amount total_subtotal_price"></span>
+                                        </li>
+
+                                          <li class="d-flex justify-content-between align-items-center <?php echo ($this->upgradeDowngradeStatus['upgradeValue'] == 0) ? 'd-none' : ''; ?>">
+                                            <span class="date">
+                                                <?php echo $this->user->lang("Prorated Credit"); ?>:
+                                            </span>
+                                            <span class="amount total_subtotal_couponDiscount"></span>
+                                        </li>
+                                        <li class="d-flex justify-content-between align-items-center total_tax_row">
+                                            <span class="date">
+                                                <?php echo $this->user->lang($this->customerTaxName) . ' (' . (float)$this->customerTax . '%)'; ?>:
+                                            </span>
+                                            <span class="amount total_tax_amount"></span>
+                                        </li>
+                                         <li class="d-flex justify-content-between align-items-center total_tax2_row">
+                                            <span class="date">
+                                                <?php echo $this->user->lang($this->customerTax2Name) . ' (' . (float)$this->customerTax2 . '%)'; ?>:
+                                            </span>
+                                            <span class="amount total_tax2_amount"></span>
+                                        </li>
+                                        <li class="d-flex justify-content-between align-items-center">
+                                            <span class="date">
+                                                <?php echo $this->user->lang('Grand Total'); ?>:
+                                            </span>
+                                            <span class="total_total_pay"></span>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr class="bootm-white-sections">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <div class="cancel-submit-btns d-flex justify-content-between align-items-center">
+                                        <input type="submit" class="cancel-btn" value="Cancel">
+                                        <input type="submit" class="submit-btn" value="Submit">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <?php if ($firstPackageId === false) {
+                            $firstPackageId = $package["id"];
+                            $packageClass = 'd-none';
+                        } ?>
+                    </div>
+                    <?php } ?>
+
+
+
+
+                </div>
+            </div>
+            </form>
+        </article>
+    </div>
+</div>
+
+<script>
+var currency = {};
+currency.symbol = '<?php echo $this->currency["symbol"]; ?>';
+currency.decimalssep = "<?php echo $this->currency['decimalssep']; ?>";
+currency.thousandssep = "<?php echo $this->currency['thousandssep']; ?>";
+currency.alignment = "<?php echo $this->currency['alignment']; ?>";
+currency.precision = "<?php echo $this->currency['precision']; ?>";
+currency.abrv = "<?php echo $this->currency['abrv']; ?>";
+currency.showabrv = "<?php echo $this->currency['showabrv']; ?>";
+
+function loadTotalsInfo()
+{
+    packageId = $("#upgradePackage").val();
+
+    // $(".upgradePackageDescription").hide();
+    $('.upgrade-table').addClass('d-none');
+    $("#upgradePackageDescription_" + packageId).removeClass('d-none');
+
+    packageTerm = $('input[name="priceTerm_' + packageId + '"]:checked').val();
+
+    $(".upgradeAddonDescription").hide();
+    $("#upgradeAddonDescription_" + packageId + '_' + packageTerm).show();
+
+    packageTaxable = Number($('select[name="upgradePackage"] option:selected').data('taxable'));
+
+    // console.log(packageTaxable, packageSubtotalAmount, customerTax);
+
+
+    packageSubtotalAmount = Number($('input[name="priceTerm_' + packageId + '"]:checked').data('subtotal_amount'));
+    customerTax = Number($('input[name="customerTax"]').val());
+    customerTax2 = Number($('input[name="customerTax2"]').val());
+    customerTax2Compound = Number($('input[name="customerTax2Compound"]').val());
+    upgradeDowngradeStatusValue = Number($('input[name="upgradeDowngradeStatusValue"]').val());
+
+    packageAddonsString = $("#upgradeAddonDescription_" + packageId + "_" + packageTerm +" :input").serialize()
+
+    if (packageAddonsString !== '') {
+        packageAddonsArray =  packageAddonsString.split("&");
+        addonQuantity = 1;
+        $.each(packageAddonsArray, function (index, value) {
+            packageAddonName = value.split("=");
+            addonItem = $('input[name="' + packageAddonName[0] + '"]');
+
+            if (addonItem.hasClass("quantity")) {
+                addonQuantity = Number(addonItem.val());
+            } else if (addonItem.is(":radio")) {
+                addonItem = $('input[name="' + packageAddonName[0] + '"]:checked');
+                packageSubtotalAmount += (addonQuantity * Number(addonItem.data('subtotal_amount')));
+                addonQuantity = 1;
+            } else if (addonItem.is(":hidden")) {
+                packageSubtotalAmount += (addonQuantity * Number(addonItem.data('subtotal_amount')));
+                addonQuantity = 1;
+            } else {
+                addonItem = $('select[name="' + packageAddonName[0] + '"] option:selected');
+                packageSubtotalAmount += (addonQuantity * Number(addonItem.data('subtotal_amount')));
+                addonQuantity = 1;
+            }
+        });
+    }
+
+    packageTaxAmount = (packageTaxable * customerTax * packageSubtotalAmount / 100);
+    packageTax2Amount = (packageTaxable * customerTax2 * (packageSubtotalAmount + (customerTax2Compound * packageTaxAmount)) / 100)
+    packageTotal = packageSubtotalAmount + packageTaxAmount + packageTax2Amount - upgradeDowngradeStatusValue;
+
+    if (packageTotal < 0) {
+        packageTotal = 0;
+    }
+
+    $('.total_subtotal_price').html(accounting.formatMoney(packageSubtotalAmount, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment)+currency.showabrv);
+
+    $('.total_subtotal_couponDiscount').html(accounting.formatMoney(upgradeDowngradeStatusValue, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment)+currency.showabrv);
+
+    if (packageTaxAmount > 0) {
+        $('.total_tax_amount').html(accounting.formatMoney(packageTaxAmount, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment)+currency.showabrv);
+        $('.total_tax_row').removeClass('d-none').addClass('d-flex');
+    }else{
+        $('.total_tax_row').addClass('d-none').removeClass('d-flex');
+    }
+
+    if (packageTax2Amount > 0) {
+        $('.total_tax2_amount').html(accounting.formatMoney(packageTax2Amount, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment)+currency.showabrv);
+        $('.total_tax2_row').removeClass('d-none').addClass('d-flex');
+    }else{
+        $('.total_tax2_row').addClass('d-none').removeClass('d-flex');
+    }
+
+    $('.total_total_pay').html(accounting.formatMoney(packageTotal, currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment)+currency.showabrv);
+}
+
+$(document).ready(function() {
+    $('.quantity').each(function() {
+        $(this).keydown(function (e) {
+            // Allow: delete, backspace, tab, escape, enter        Ctrl+A                                     end, home, left, up, right, down
+            if ($.inArray(e.keyCode, [46, 8, 9, 27, 13]) !== -1 || (e.keyCode == 65 && e.ctrlKey === true) || (e.keyCode >= 35 && e.keyCode <= 40)) {
+                     // let it happen, don't do anything
+                     return;
+            }
+
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    $('.cancel-btn').click(function(e) {
+        e.preventDefault();
+        window.location = 'index.php?fuse=clients&controller=products&view=products';
+    });
+
+    $('.submit-btn').click(function(e) {
+        var valid = $('#upgrade-form').parsley( 'validate' );
+    });
+
+    loadTotalsInfo();
+});
+</script>

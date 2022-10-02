@@ -1,0 +1,19 @@
+<?php if (count($this->customFields) > 0) {?>
+<div class="row" id="customfields">
+    <?php foreach ($this->customFields as $customField) { ?>
+    <?php if ($customField['fieldtype'] == 'break')  { ?>
+    <div class="w-100"></div>
+    <?php } else { ?>
+    <div class="col-sm-6">
+        <div class="form-elem">
+            <?php echo $this->cFHelper()->getLabel($customField); ?>
+            <?php echo $this->cFHelper()->getMarkup($customField); ?>
+        </div>
+    </div>
+        <?php } ?>
+    <?php } ?>
+</div>
+<script>
+    clientexec.postPageLoad('#customfields');
+</script>
+<?php } ?>

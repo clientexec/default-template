@@ -1,0 +1,100 @@
+<?php
+if ($this->paymentmethod['paymentTypeOptionValue'] == "paypal") {
+    $this->paymentmethod['description'] = $this->user->lang("Click the button below to log into PayPal and make your payment.");
+} elseif ($this->paymentmethod['iscreditcard']) {
+    $this->paymentmethod['description'] = $this->user->lang("Make a secure payment using your credit card.");
+}
+
+$hidden = '';
+if (!$this->paymentmethod['paymentTypeOptionSelected']) {
+        $hidden = " d-none";
+}
+
+$html = [];
+if (isset($this->paymentmethod['extraFields']) && is_array($this->paymentmethod['extraFields'])) {
+    foreach ($this->paymentmethod['extraFields'] as $field) {
+        if ($field['fieldType'] == "hidden") {
+            $html[] = '<input name="' . $field['fieldName'] . '" type="hidden" value="' . $field['fieldValue'] . '" />';
+            continue;
+        }
+
+        $popupstr = '';
+        if (isset($field['fieldDescription']) && $field['fieldDescription'] != "") {
+            $popupstr = 'data-toggle="popover-hover" data-html="true" data-placement="top" title="Description" data-content="'.addslashes($field['fieldDescription']).'" class="tip-target"';
+        }
+
+
+        if ($field['labelpos'] != "low" && $field['fieldType'] != 'grouplabel') {
+        }
+
+        $colMd = '';
+        if (stripos($field['fieldName'], 'ccNumber') !== false) {
+            $colMd = 'col-md-5';
+        }
+        else if (stripos($field['fieldName'], 'cvv') !== false) {
+            $colMd = 'col-md-2';
+        } else if (stripos($field['fieldName'], 'ccMonth') !== false) {
+            $colMd = 'col-md-3';
+        } elseif ($field['fieldType'] != 'grouplabel') {
+            $colMd = 'col-md-2';
+        }
+        $html[] = '<div class="col-12 ' . $colMd . '">';
+        $html[] = '<div class="form-elem">';
+
+        if ($field['fieldType'] == 'grouplabel') {
+            $html[] = '<hr><label><strong>' . $field['fieldTitle'] . '</strong></label>';
+        } else {
+            $html[] = '<label for="' . $field['fieldName'] . '"' . $popupstr . '>' . $field['fieldTitle'] . '</label>';
+        }
+
+        if ($field['fieldType'] == 'text') {
+            $html[] = '<input id="' . $field['fieldName'] . '" name="' . $field['fieldName'] . '" type="text" value="' . $field['fieldValue'] . '"' . (($field['fieldDisabled']) ? ' disabled' : '') . ' class="form-control" data-parsley-required="true">';
+        } elseif ($field['fieldType'] == 'dropdown' || $field['fieldType'] == 'yesno') {
+            $disabled = '';
+            if ($field['fieldDisabled']) {
+                $disabled = ' disabled';
+            }
+            $html[] = '<select name="' . $field['fieldName'] .'" class="normalSelect2 form-control"' . $disabled . '>';
+
+            if ($field['fieldType'] == 'dropdown') {
+                foreach ($field['fieldValue'] as $value) {
+                    $html[] = '<option value="' . $value['value'] . '">' . $value['text'] . '</option>';
+                }
+            } elseif ($field['fieldType'] == 'yesno') {
+                $html[] = '<option value="1"' . ($field['fieldValue'] == 1) ? ' selected="selected"' : '' . '>' . $this->user->lang('Yes') . '</option>';
+                $html[] = '<option value="0"' . ($field['fieldValue'] == 0) ? ' selected="selected"' : '' . '>' . $this->user->lang('No') . '</option>';
+            }
+
+            $html[] = '</select>';
+        }
+
+        $html[] = '</div>';
+        $html[] = '</div>';
+    }
+}
+
+$padding = '';
+if (count($html) > 0) {
+    $padding = 'px-5';
+}
+
+?>
+
+<input
+    type="hidden"
+    name="<?php echo $this->paymentmethod['paymentTypeOptionValue']."_autopayment"?>"
+    id="<?php echo $this->paymentmethod['paymentTypeOptionValue']."_autopayment"?>"
+    value="<?php echo $this->paymentmethod['autoPayment'];?>"
+/>
+
+<?php if (count($html) > 0) { ?>
+<div class="<?php echo $padding; ?> payment_method_extra_fields<?php echo $hidden ?>" id="<?php echo $this->paymentmethod['paymentTypeOptionValue'];?>-extraFields">
+    <!-- <p class="pl-5">
+        <?php echo $this->paymentmethod['description']; ?>
+    </p>
+ -->
+    <div class="row">
+        <?php echo implode("\n", $html); ?>
+    </div>
+</div>
+<?php } ?>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Dependency Error</title>
+        <link rel="Shortcut Icon" href="favicon.ico" />
+        <link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Quattrocento+Sans:400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <style>
+            @import url(//fonts.googleapis.com/css?family=Lato:300,400,700,700italic);
+
+            body {
+                background-color: #f4f4f4 !important;
+            }
+
+            .invalid-license {
+                text-align: center;
+                font-size: 30px;
+                font-family: 'Lato', serif;
+            }
+
+            .invalid-license-domain {
+                font-weight: 700;
+                color: #6D71A0;
+            }
+
+            .invalid-contact-info {
+                font-size: 20px;
+                font-weight:300 !important;
+                margin-top:50px;
+                line-height: 30px;
+            }
+
+            .invalid-license a {
+                text-decoration: none;
+                color: rgb(255, 92, 0);
+            }
+
+            .brand-logo {
+                margin-top:40px;
+                height: 30px;
+            }
+        </style>
+    </head>
+    <body>
+<?php if (count($errors) > 0) {?>
+<div class="invalid-license">
+    <h1>Fatal Errors:<br>
+    <?php foreach ( $errors as $error ) { ?>
+        <span class="invalid-license-domain"><i><?php echo $error;?></i></span><br/>
+    <?php } ?>
+    </h1>
+
+
+</div>
+<?php } ?>
+
+<?php if (count($missingExtensions) > 0) {?>
+<div class="invalid-license">
+    <h1>Missing PHP Extensions:<br>
+    <?php foreach ( $missingExtensions as $extension ) { ?>
+        <span class="invalid-license-domain"><i><?php echo $extension;?></i></span><br/>
+    <?php } ?>
+    </h1>
+</div>
+<?php } ?>
+<div class="invalid-license">
+    <div class="invalid-contact-info">
+       You may need to contact your web host or systems administrator to address this issue.
+    </div>
+    <a href="http://www.clientexec.com?source=poweredby" target="_new"><img class="brand-logo" src="templates/default/images/logo_text.png"></a>
+</div>
+</body>
+</html>

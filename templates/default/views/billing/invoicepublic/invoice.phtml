@@ -1,0 +1,435 @@
+ <div class="content-area invoice-page-wraper">
+        <div class="container">
+            <?php if ($this->show_change_of_billing_options) { ?>
+            <div class="alert alert-info">
+            <?php if ($this->accepts_cc && !$this->cc_added) { ?>
+                <p><?php echo $this->user->lang("You have not selected a payment method").". ".$this->user->lang("For any modifications please visit your ")."<a href='index.php?fuse=clients&controller=userprofile&view=paymentmethod'>".$this->user->lang("payment configuration page.")."</a> ".$this->user->lang("Keeping your payment options up to date will prevent any service disruption.");?></p>
+            <?php } else { ?>
+                <p><?php echo $this->user->lang("Your default payment source is set to")." ".$this->payment_type_name.". ".$this->user->lang("For any modifications please visit your ")."<a href='index.php?fuse=clients&controller=userprofile&view=paymentmethod'>".$this->user->lang("payment configuration page.")."</a> ".$this->user->lang("Keeping your payment options up to date will prevent any service disruption.");?></p>
+            <?php } ?>
+            </div>
+            <?php } ?>
+            <div class="invoice2-top-block d-flex justify-content-between">
+                <ul class="invoice-from-to">
+                    <li>
+                        <h6>
+                            <?php echo $this->user->lang('Invoice To'); ?>
+                        </h6>
+                        <b><?php echo $this->escape($this->user->getOrganization()) ?></b><br>
+                        <?php echo $this->escape($this->user->getFirstName()) ?> <?php echo $this->escape($this->user->getLastName()) ?><br>
+                        <?php echo $this->escape($this->user->getAddress());?><br>
+                        <?php echo $this->escape($this->user->getCity());?>, <?php echo $this->escape($this->user->getState());?> <?php echo $this->escape($this->user->getZipCode());?><br>
+                        <?php echo $this->escape($this->user->getCountry(true)); ?>
+                    </li>
+                    <?php if ($this->company_address != '') { ?>
+                    <li>
+                        <h6>Invoice From</h6>
+                        <?php echo nl2br($this->company_address);?>
+                    </li>
+                    <?php } ?>
+                </ul>
+                <ul class="invoice2-top-btns">
+                    <li>
+                        <a class="status-btn <?php echo $this->invoice_status_class; ?>">
+                            <?php echo $this->invoice_status_name;?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="invoice2-pdf-btn" id="email-invoice">
+                            <i class="fa fa-envelope-o" aria-hidden="true"></i>
+                            <?php echo $this->user->lang('Email Invoice'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a target="_blank" href="index.php?sessionHash=<?php echo CE_Lib::getSessionHash(); ?>&fuse=billing&controller=invoice&action=generatepdfinvoice&invoiceid=<?php echo $this->invoice_id;?>" class="invoice2-pdf-btn">
+                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                            <?php echo $this->user->lang('Download PDF'); ?>
+                        </a>
+                    </li>
+                    <?php if ($this->invoiceBalanceDue > 0 && $this->user->hasPermission('billing_apply_account_credit') && $this->creditBalance > 0) { ?>
+                        <li>
+                            <a href="#" class="invoice2-pdf-btn" id="btn-apply-credit" data-toggle="tooltip" data-placement="top" title="<?php echo $this->user->lang("Available Credit: %s", $this->formattedCreditBalance); ?>">
+                                <?php echo $this->user->lang("Apply my Credit"); ?>
+                            </a>
+                        </li>
+                    <?php } ?>
+                </ul>
+            </div>
+            <div class="invoice-mid-block invoice2-mid-block">
+                <div class="invoice2-plans-section">
+                    <ul class="d-flex justify-content-between align-items-center">
+                        <li class="eq-height">
+                            <span class="caption"><?php echo $this->title; ?> </span>
+                            <h4>
+                                #<?php echo $this->invoice_id;?>
+                            </h4>
+                        </li>
+                        <li class="eq-height">
+                            <span class="caption"><?php echo $this->user->lang('Amount Due'); ?></span>
+                            <h3><?php echo $this->unescape($this->totalbalance); ?></h3>
+                        </li>
+                        <li class="eq-height">
+                            <?php if ($this->invoice_paid) { ?>
+                            <span class="caption">
+                                <?php echo $this->user->lang("Paid On");?>
+                            </span>
+                            <h4><?php echo $this->invoicePaidOn;?></h4>
+                            <?php } else { ?>
+                            <span class="caption">
+                                <?php echo $this->user->lang("Sent On");?>
+                            </span>
+                            <h4><?php echo $this->invoice_sent_date;?></h4>
+                            <?php } ?>
+                        </li>
+                        <li class="eq-height">
+                            <span class="caption"><?php echo $this->user->lang('Due Date'); ?></span>
+                            <h4>
+                                <?php echo $this->invoice_date;?>
+                            </h4>
+                        </li>
+                    </ul>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th><?php echo $this->user->lang("Description");?></th>
+                                <th><?php echo $this->user->lang("Type");?></th>
+                                <th class="text-right"><?php echo $this->user->lang("Price");?></th>
+                                <?php if (count($this->invoice_tax) > 0) { ?>
+                                <th class="text-right"><?php echo $this->user->lang("Taxes");?></th>
+                                <?php } ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+            <?php
+            $quantityInUse = false;
+            $quantitysubtotalprice = $this->subtotalprice;
+            $quantitytotaltax = $this->totaltax;
+
+            include_once 'modules/billing/models/BillingGateway.php';
+            $billingGateway = new BillingGateway($this->user);
+
+            foreach ($this->items as $invoiceentry) { ?>
+            <tr>
+                <td>
+                    <b><?php echo $this->escape($billingGateway->translateText($invoiceentry['description'], $this->user)); ?></b><br/>
+                    <?php
+                    $addonQuantity = '';
+                    $addonQuantityPrice = $invoiceentry['price'];
+                    $addonQuantityTaxAmount = $invoiceentry['taxamount'];
+
+                    if ($invoiceentry['quantity'] != 1 && $invoiceentry['quantity'] >= 0) {
+                        $addonQuantity = (float)$invoiceentry['quantity'].' x '.$invoiceentry['price'].'/'.$this->user->lang("each");
+                        $addonQuantityPrice = $invoiceentry['quantityprice'];
+                        $addonQuantityTaxAmount = $invoiceentry['taxquantityamount'];
+                        $quantityInUse = true; ?>
+                        <span class="entry-details"><?php
+                            echo nl2br($addonQuantity); ?>
+                        </span><br>
+                    <?php } ?>
+                    <?php if ($invoiceentry['daterange'] != '') { ?>
+                        <span class="entry-details">
+                            <?php echo $invoiceentry['daterange']; ?>
+                        </span><br>
+                    <?php } ?>
+                    <span class="entry-details"><?php
+                        echo nl2br($billingGateway->translateText($invoiceentry['detail'], $this->user));
+                    ?></span>
+                </td>
+                <td>
+                    <b><?php echo $this->user->lang($invoiceentry['billingtypename']);?></b>
+                </td>
+                <td class="text-right">
+                    <span class="amount-span"><?php echo $addonQuantityPrice;?></span>
+                </td>
+                <?php if (count($this->invoice_tax) > 0) { ?>
+                    <td class="text-right">
+                        <span class="amount-span">
+                        <?php
+                        if ($invoiceentry['taxable']) {
+                            echo $addonQuantityTaxAmount;
+                        } else {
+                            echo $this->user->lang('Not Taxable');
+                        } ?>
+                        </span>
+                    </td>
+                <?php } ?>
+            </tr>
+            <?php } ?>
+
+            <?php if ($quantityInUse) {
+                $quantitysubtotalprice = $this->subtotalquantityprice;
+                $quantitytotaltax = $this->totalquantitytax;
+            } ?>
+
+            <?php
+            $taxlabel = "";
+            foreach ($this->invoice_tax as $tax) {
+                if ($taxlabel!="") {
+                    $taxlabel .=" & ";
+                }
+                $taxlabel .= $tax['name']." (".floatval($tax['rate'])."%)";
+            } ?>
+
+                        <tr>
+                            <td></td>
+                            <?php if (count($this->invoice_tax) > 0) { ?>
+                            <td></td>
+                            <?php } ?>
+
+                            <td colspan="2">
+                                <ul class="invoice-miscel-ul">
+
+
+                                   <?php if (count($this->invoice_tax) > 0) { ?>
+                                    <li class="d-flex justify-content-between align-items-center">
+                                        <span class="date">
+                                            <?php echo $this->user->lang("Sub Total");?>
+                                        </span>
+                                        <span class="amount">
+                                            <?php echo $this->unescape($quantitysubtotalprice);?>
+                                        </span>
+                                    </li>
+                                    <li class="d-flex justify-content-between align-items-center">
+                                        <span class="date">
+                                            <?php echo $taxlabel;?>
+                                        </span>
+                                        <span class="amount">
+                                            <?php echo $this->unescape($quantitytotaltax);?>
+                                        </span>
+                                    </li>
+                                    <?php } ?>
+
+                                    <li class="d-flex justify-content-between align-items-center">
+                                        <span class="date">
+                                            <?php echo $this->user->lang("Paid to Date");?>
+                                        </span>
+                                        <span class="amount">
+                                            <?php echo $this->unescape($this->totalpaid);?>
+                                        </span>
+                                    </li>
+                                    <li class="d-flex justify-content-between align-items-center">
+                                        <span class="date">
+                                            <?php echo $this->user->lang("Balance");?>
+                                        </span>
+                                        <span class="amount">
+                                            <?php echo $this->unescape($this->totalbalance);?>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <span class="recorded">
+                    <?php echo $this->unescape(implode("<br/>", $this->pmtSuccessfulTransactions)); ?>
+                </span>
+            </div>
+            <?php if ($this->invoiceNotes != '') { ?>
+                <div class="card bg-light card-body text-center additionalinfo">
+                    <h4><?php echo $this->user->lang("Additional Notes");?>:</h4>
+                    <?php echo $this->invoiceNotes; ?>
+                </div>
+            <?php } ?>
+
+            <div class="invoice-bottom-block invoice2-bottom-block">
+
+    <?php if ($this->showpaybutton && $this->invoiceBalanceDue > 0) { ?>
+    <div class="cs-padding" id="paymentOptions">
+    <form id="payinvoice-form" action="index.php?fuse=billing&controller=invoice&action=payinvoice" method="POST">
+        <input type="hidden" name="id" value="<?php echo $this->invoice_id; ?>">
+       <div class="payment_information_box">
+            <?php if (count($this->paymentMethods) != 0) { ?>
+                <h1 class="make_payment_using"><?php echo $this->user->lang("Choose Your Payment Method");?></h1>
+                <div class="payment-method pb-0">
+                    <div class="select-payment">
+                        <div class="row">
+                        <?php
+                            foreach ($this->paymentMethods as $key) {
+                              echo $this->partial('../layoutpartials/paymentMethod.phtml', [
+                                    'paymentmethod' => $key,
+                                ]);
+                            }
+                        ?>
+                        </div>
+
+                    </div>
+                </div>
+                <?php } else { ?>
+                    <div class="text-center">
+                        <strong><?php echo $this->user->lang('There are no Payment Processors configured!');?></strong>
+                    </div>
+                <?php } ?>
+
+            <!-- Handle the extra fields for payment processors -->
+            <div class="container">
+                <div class="select-payment">
+                    <div class="tab-content">
+                        <?php
+                        foreach ($this->paymentMethods as $key) {
+                            echo $this->partial('../layoutpartials/paymentMethodFields.phtml', [
+                                'paymentmethod' => $key,
+                            ]);
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+            <?php if (count($this->paymentMethods) != 0) { ?>
+                <div class="form-actions col-12 form-group">
+                    <div class="payment-container pl-5 text-center pt-2">
+                    <?php if ($this->user->hasPermission('clients_edit_payment_type')) { ?>
+                        <label class="checkbox inline">
+                            <input type="checkbox" name="makeDefault" id="makeDefault" value="1" checked="true" />
+                            <span class='makeDefaultNoCC'>
+                                <?php echo $this->user->lang("Make this my default payment method"); ?>
+                            </span>
+                            <span class='makeDefaultCC'>
+                                <?php echo $this->user->lang("Make this my default payment method and store my credit card for future payments"); ?>
+                            </span>
+                        </label>
+                    <?php } ?>
+                    <span class='paymentbutton1 d-none'>
+                        <button class="app-btns primary" id="submitButton">
+                            <?php echo $this->user->lang('Pay Invoice'); ?>
+                        </button>
+                    </span>
+                <?php foreach ($this->gatewayForms as $gatewayName => $gatewayForm) { ?>
+                    <div class='paymentbutton2 <?php echo $gatewayName."paymentbutton"; ?> col-12 d-none pt-2'>
+                        <?php echo $this->unescape($gatewayForm); ?>
+                    </div>
+                <?php } ?>
+                </div>
+                </div>
+            <?php } ?>
+            </form>
+            </div>
+            <?php } ?>
+                <ul id="company-info">
+                    <?php if ($this->company_name != '') { ?>
+                    <li>
+                        <p>
+                            <span><?php echo $this->user->lang('Company:'); ?></span>
+                            <?php echo $this->company_name;?>
+                        </p>
+                    </li>
+                    <?php } ?>
+                    <?php if ($this->company_email != '') { ?>
+                    <li>
+                        <p>
+                            <span><?php echo $this->user->lang('Email:'); ?></span>
+                            <a href="mailto:<?php echo $this->company_email;?>"><?php echo $this->company_email;?></a>
+                        </p>
+                    </li>
+                    <?php } ?>
+                    <?php if ($this->company_url != '') { ?>
+                    <li>
+                        <p>
+                            <span><?php echo $this->user->lang('Website:'); ?></span>
+                            <a href="<?php echo $this->company_url;?>"><?php echo $this->company_url;?></a>
+                        </p>
+                    </li>
+                    <?php } ?>
+                </ul>
+
+                <?php if ($this->additionalinfo != '') { ?>
+                <div class="additionalinfo">
+                <?php echo $this->unescape($this->additionalinfo);?>
+                </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+<script>
+invoice = {};
+invoice.id = <?php echo $this->invoice_id;?>;
+invoice.payment_method = "<?php echo $this->payment_method;?>";
+invoice.selected_gateway = '<?php echo @$this->defaultGateway;?>';
+
+$(document).ready(function() {
+    invoice.toggle_gateway(invoice.selected_gateway);
+});
+
+$('#submitButton').on('click', function() {
+    clientexec.mask();
+    paymentSelected = false;
+    $.each($('#payinvoice-form').serializeArray(), function(key, value){
+        if (value['name'] == 'paymentMethod') {
+            paymentSelected = true;
+        }
+    });
+    if (paymentSelected === false) {
+        clientexec.unMask();
+        clientexec.error(clientexec.lang('Please select a payment method.'));
+        return false;
+    }
+    return true;
+});
+
+
+
+$('.btn-pay-invoice').on('click', function() {
+    invoice.showPaymentOptions();
+});
+$('#btn-apply-credit').on('click', function() {
+    invoice.apply_account_credit();
+});
+$('.payment-option').on('change', function () {
+    invoice.toggle_gateway($(this).val());
+});
+
+invoice.apply_account_credit = function() {
+    location.href = "index.php?sessionHash=" + clientexec.sessionHash + "&fuse=billing&controller=invoice&action=applyaccountcredit&id=" + invoice.id;
+}
+
+invoice.toggle_gateway = function(gatewayName) {
+    var el = $('#' + invoice.selected_gateway + '-extraFields');
+    if (el.length > 0) {
+        el.addClass('d-none')
+    }
+    var el = $('#' + gatewayName + '-extraFields');
+    if (el.length > 0) {
+        el.removeClass('d-none')
+        $('.makeDefaultNoCC').addClass('d-none');
+        $('.makeDefaultCC').removeClass('d-none');
+    } else {
+        $('.makeDefaultCC').addClass('d-none');
+        $('.makeDefaultNoCC').removeClass('d-none');
+    }
+    invoice.selected_gateway = gatewayName;
+    $('.payment_method_selected').removeClass('payment_method_selected');
+    $('.payment_method_' + gatewayName).parent().addClass('payment_method_selected');
+
+    if ($('.paymentbutton2').length) {
+        $('.paymentbutton2').addClass('d-none');
+    }
+    if ($('.'+invoice.selected_gateway+'paymentbutton').length) {
+        $('.paymentbutton1').addClass('d-none');
+        $('.' + invoice.selected_gateway + 'paymentbutton').removeClass('d-none').trigger('paymentShow');
+    } else {
+        $('.paymentbutton1').removeClass('d-none');
+    }
+}
+
+$('#email-invoice').on('click', function(e) {
+    clientexec.mask();
+    $.ajax({
+        url: "index.php?fuse=billing&controller=invoice&action=actoninvoice",
+        type: 'POST',
+        data: {
+            items: invoice.id,
+            itemstype: 'invoices',
+            actionbutton: 'inv-send-smart'
+        },
+        success: function(xhr) {
+            clientexec.unMask();
+            clientexec.msg(clientexec.lang('Invoice has been successfully emailed'));
+        }
+    });
+});
+
+</script>

@@ -1,0 +1,83 @@
+<div class="invoice-container">
+    <div class="" id="paymentOptions">
+    <form id="payinvoice-form" action="index.php?fuse=billing&controller=invoice&action=payinvoice" method="POST">
+        <input type="hidden" name="id" value="<?php echo $this->invoice_id; ?>">
+        <input type="hidden" name="hash" value="<?php echo $this->hash; ?>">
+       <div class="payment_information_box">
+                <div class="payment-container">
+                    <label class="radio payment_method_radio_label payment_method_selected">
+                        <input type="hidden" class="paymentMethod payment_method_<?php echo $this->paymentMethod['paymentTypeOptionValue'];?>" name="paymentMethod" checked="checked" value="<?php echo $this->paymentMethod['paymentTypeOptionValue'];?>" /> <span class="make_payment_option"></span>
+                    </label>
+                </div>
+
+            <!-- Handle the extra fields for payment processors -->
+                <input type="hidden" name="<?php echo $this->paymentMethod['paymentTypeOptionValue']."_autopayment"?>" value="0"></input>
+            </div>
+        <div class="form-actions col-xs-12 form-group">
+            <span class='paymentbutton1 hidden'>
+                <button style="margin-left:0px;cursor:pointer;" class="pull-right btn btn-lg btn-default" id="submitButton"><?php echo $this->user->lang('Pay Invoice'); ?></button>
+            </span>
+            <div class='paymentbutton2 <?php echo $this->gatewayFormName."paymentbutton"; ?> text-center col-12 d-none'>
+                <?php echo $this->unescape($this->gatewayForm); ?>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+<script data-cfasync="false" type="text/javascript">
+invoice = {};
+invoice.id = <?php echo $this->invoice_id;?>;
+invoice.payment_method = "<?php echo $this->payment_method;?>";
+invoice.selected_gateway = '<?php echo $this->defaultGateway;?>';
+
+invoice.toggle_gateway = function(gatewayName) {
+    var el = $('#' + invoice.selected_gateway + '-extraFields');
+    if (el.length > 0) {
+        el.addClass('d-none')
+    }
+    var el = $('#' + gatewayName + '-extraFields');
+    if (el.length > 0) {
+        el.removeClass('d-none')
+        $('.makeDefaultNoCC').addClass('d-none');
+        $('.makeDefaultCC').removeClass('d-none');
+    } else {
+        $('.makeDefaultCC').addClass('d-none');
+        $('.makeDefaultNoCC').removeClass('d-none');
+    }
+    invoice.selected_gateway = gatewayName;
+    $('.payment_method_selected').removeClass('payment_method_selected');
+    $('.payment_method_' + gatewayName).parent().addClass('payment_method_selected');
+
+    if ($('.paymentbutton2').length) {
+        $('.paymentbutton2').addClass('d-none');
+    }
+    if ($('.'+invoice.selected_gateway+'paymentbutton').length) {
+        $('.paymentbutton1').addClass('d-none');
+        $('.' + invoice.selected_gateway + 'paymentbutton').removeClass('d-none').trigger('paymentShow');
+    } else {
+        $('.paymentbutton1').removeClass('d-none');
+    }
+}
+
+$('#submitButton').click(function(){
+    clientexec.mask();
+    paymentSelected = false;
+    $.each($('#payinvoice-form').serializeArray(), function(key, value){
+        if ( value['name'] == 'paymentMethod') {
+            paymentSelected = true;
+        }
+    });
+    if ( paymentSelected === false ) {
+        clientexec.unMask();
+        clientexec.error(lang('Please select a payment method.'));
+        return false;
+    }
+    return true;
+});
+
+$(document).ready(function() {
+    invoice.toggle_gateway(invoice.selected_gateway);
+});
+
+</script>

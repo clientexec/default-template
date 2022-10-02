@@ -1,0 +1,33 @@
+<section class="cart-pages-wrapper cart0">
+    <div class="container">
+        <div class="sec-head">
+            <h2>
+                <?php echo $this->user->lang('Select Package Type'); ?>
+            </h2>
+        </div>
+        <div class="product-groups-block">
+            <div class="row">
+                <?php foreach ($this->productGroups as $group) { ?>
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-group-box" data-url="order.php?step=1&productGroup=<?php echo $group['id']; ?>">
+                        <h4>
+                            <a href="order.php?step=1&productGroup=<?php echo $group['id']; ?>">
+                                <?php echo $group['namelanguage']; ?>
+                            </a>
+                        </h4>
+                        <div class="cm-height">
+                            <?php echo $group['descriptionlanguage']; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+$('.product-group-box').on('click', function() {
+    window.location = $(this).data('url');
+});
+</script>

@@ -1,0 +1,63 @@
+/* ================================ MEDIA DEFENITION =============================== */
+// @media (min-width: 1200px){
+//     .container {
+//         max-width: 1192px;
+//     }
+// }
+$desktop-vl:1700px;
+@mixin desktop-vl {
+    @media (max-width: #{$desktop-vl}) {
+       @content;
+    }
+}
+
+$desktop-xl:1600px;
+@mixin desktop-xl {
+    @media (max-width: #{$desktop-xl}) {
+       @content;
+    }
+}
+
+$desktop-large:1360px;
+@mixin desktop-large {
+    @media (max-width: #{$desktop-large}) {
+       @content;
+    }
+}
+$desktop:1200px;
+@mixin desktop {
+    @media (max-width: #{$desktop}) {
+       @content;
+    }
+}
+$tab-landscape:991px;
+@mixin tab-landscape {
+    @media (max-width: #{$tab-landscape}) {
+       @content;
+    }
+}
+$portrait:767px;
+@mixin portrait {
+    @media (max-width: #{$portrait}) {
+       @content;
+    }
+}
+$portrait-small:576px;
+@mixin portrait-small {
+    @media (max-width: #{$portrait-small}) {
+       @content;
+    }
+}
+$mobile:480px;
+@mixin mobile {
+    @media (max-width: #{$mobile}) {
+       @content;
+    }
+}
+$mobile-sm:400px;
+@mixin mobile-sm {
+    @media (max-width: #{$mobile-sm}) {
+       @content;
+    }
+}
+/* ================================ MEDIA DEFENITION ENDS =========================== */

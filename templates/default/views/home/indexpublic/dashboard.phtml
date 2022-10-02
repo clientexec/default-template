@@ -1,0 +1,435 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="dashboard-main">
+            <div class="row">
+                <div class="col-lg-3 col-md-4">
+                    <div class="dashboard-left-bar cm-height">
+                        <div class="dashboard-info-box">
+                            <div class="heading">
+                                <h4>
+                                    <?php echo $this->user->lang('Your Info'); ?>
+                                </h4>
+                            </div>
+                            <p>
+                                <?php echo $this->customer->getFullName(true); ?>
+                                <?php if ($this->customer->getAddress() != '') {?>
+                                <br>
+                                <?php echo $this->customer->getAddress(); ?>
+                                <?php } ?>
+                                <?php if ($this->customer->getCity() != '' && $this->customer->getState() != '' ) {?>
+                                <br>
+                                <?php echo $this->customer->getCity(); ?>,
+                                <?php echo $this->customer->getState(); ?>
+                                <?php } ?>
+                                <?php if ($this->customer->getZipCode() != '') { ?>
+                                <br>
+                                <?php echo $this->customer->getZipCode(); ?>
+                                <?php } ?>
+                                <br>
+                                <?php echo $this->customer->getCountry(true); ?>
+                                <br>
+                            </p>
+                            <ul>
+                                <?php if ($this->user->hasPermission('clients_edit_customers')) { ?>
+                                <li>
+                                    <a href="index.php?fuse=clients&controller=userprofile&view=editprofile">
+                                        <i class="fas fa-user"></i>
+                                        <?php echo $this->user->lang('Edit Profile'); ?>
+                                    </a>
+                                </li>
+                            <?php } ?>
+                                <li>
+                                    <a href="index.php?fuse=clients&controller=userprofile&view=altemails">
+                                        <i class="fas fa-user-friends"></i>
+                                        <?php echo $this->user->lang('Manage Contacts'); ?>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dashboard-info-box no-border">
+                            <ul>
+                                <li>
+                                    <a href="order.php">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <?php echo $this->user->lang('Order New Services'); ?>
+                                    </a>
+                                </li>
+                                <!-- <li><a href="#"><span class="icon-icon-7"></span> Register a New Domain</a></li> -->
+                                <li>
+                                    <a href="index.php?fuse=admin&action=Logout">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <?php echo $this->user->lang('Logout'); ?>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-8">
+                    <div class="dashboard-right-block cm-height">
+                        <div class="dashboard-four-block">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="dash-commen-boxes">
+                                        <i class="fas fa-smile dash-commen-boxe-icon"></i>
+                                        <p>
+                                            <?php echo $this->user->lang('Account Status'); ?>
+                                            <span>
+                                                <?php echo $this->user->convertStatus($this->user->getStatus()); ?>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="dash-commen-boxes yellow-bg">
+                                        <i class="fas fa-cubes dash-commen-boxe-icon-no-weight"></i>
+                                        <p>
+                                            <?php echo $this->user->lang('Total Packages'); ?>
+                                            <span>
+                                                <?php echo $this->user->getTotalProducts(); ?>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="dash-commen-boxes purple-bg">
+                                        <i class="fas fa-life-ring dash-commen-boxe-icon"></i>
+                                        <p>
+                                            <?php echo $this->user->lang('Support Tickets'); ?>
+                                            <span>
+                                                <?php echo count($this->tickets); ?>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6">
+                                    <div class="dash-commen-boxes green-bg">
+                                        <i class="fas fa-wallet dash-commen-boxe-icon-no-weight"></i>
+                                        <p>
+                                            <?php echo $this->user->lang('Account Credit Balance'); ?>
+                                            <span>
+                                                <?php echo $this->user->getFormatedCreditBalance(); ?>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if ( $this->user->hasPermission('support_view') ) { ?>
+                        <div class="cm-holder support-ticket-list-table">
+                            <div class="head padding-bottom d-flex justify-content-between align-items-center">
+                                <h3>
+                                    <?php echo $this->user->lang('Open Support Tickets'); ?>
+                                </h3>
+                                <a href="index.php?fuse=support&controller=ticket&view=alltickets&filter=all" class="view-all-table">
+                                    <?php echo $this->user->lang('View all'); ?>
+                                </a>
+                            </div>
+                            <div class="data-table-wrapper pull-top">
+                                <div class="pending-orders table-responsive">
+                                    <table id="order-table" class="table display">
+                                        <thead>
+                                            <tr>
+                                                <th class="width1">
+                                                    <?php echo $this->user->lang('Ticket #'); ?>
+                                                </th>
+                                                <th class="width2">
+                                                    <?php echo $this->user->lang('Subject'); ?>
+                                                </th>
+                                                <th class="width3">
+                                                    <?php echo $this->user->lang('Status'); ?>
+                                                </th>
+                                                <?php foreach ($this->customCols as $label) { ?>
+                                                <th class="width3">
+                                                    <?php echo $label ?>
+                                                </th>
+                                                <?php } ?>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($this->tickets as $ticket) { ?>
+                                            <tr>
+                                                <td data-order="<?php echo $ticket['id']; ?>">
+                                                    <a href="index.php?fuse=support&controller=ticket&view=ticket&id=<?php echo $ticket['id'];?>">
+                                                        <?php echo '#' . $ticket['id']; ?>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a href="index.php?fuse=support&controller=ticket&view=ticket&id=<?php echo $ticket['id'];?>">
+                                                        <?php echo $this->escape($ticket['subject']) ?>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <span class="status <?php echo $ticket['ticketStatusClass']; ?>">
+                                                        <?php echo $ticket['ticketStatus']; ?>
+                                                    </span>
+                                                </td>
+                                                <?php foreach ($ticket['customfields'] as $value) { ?>
+                                                <td>
+                                                    <?php echo $this->escape($value) ?>
+                                                </td>
+                                                <?php } ?>
+                                            </tr>
+                                            <?php } ?>
+                                            <?php if (count($this->tickets) == 0) { ?>
+                                            <tr>
+                                                <td class="text-center" colspan="<?php echo (4+count($ticket['customfields'])); ?>">
+                                                    <?php echo $this->user->lang('No Open Tickets'); ?>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        <?php if (count($this->invoices) > 0) { ?>
+                        <div class="cm-holder invoice-list-table">
+                            <div class="head padding-bottom d-flex justify-content-between align-items-center">
+                                <h3>
+                                    <?php echo $this->user->lang('Outstanding Invoices'); ?>
+                                </h3>
+                                <a href="index.php?fuse=billing&controller=invoice&view=allinvoices&filter=open" class="view-all-table">
+                                    <?php echo $this->user->lang('View all'); ?>
+                                </a>
+                            </div>
+                            <div class="data-table-wrapper pull-top">
+                                <div class="pending-orders table-responsive">
+                                    <table id="order-table" class="table display">
+                                        <thead>
+                                            <tr>
+                                                <th class="width1">
+                                                    <?php echo $this->user->lang('Description'); ?>
+                                                </th>
+                                                <th class="width2">
+                                                    <?php echo $this->user->lang('Balance Due'); ?>&nbsp;</th>
+                                                <th class="width3">
+                                                    <?php echo $this->user->lang('Due Date'); ?>
+                                                </th>
+                                                <th class="width4">
+                                                    <?php echo $this->user->lang('Status'); ?>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($this->invoices as $invoices) { ?>
+                                            <tr>
+                                                <td>
+                                                    <a href="index.php?fuse=billing&controller=invoice&view=invoice&id=<?php echo $invoices['id'];?>">
+                                                        <?php echo $this->user->lang('Invoice #%s', $invoices['id']); ?>
+                                                    </a>
+
+                                                    <br /><span class="addition_description">
+                                                        <?php echo ($invoices['subscription_id'])? ($this->user->lang("Subscription: %s", $invoices['subscription_id'])) : '' ?></span>
+                                                </td>
+                                                <td>
+                                                    <?php echo $invoices['balancedue']; ?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $this->dateRenderer($invoices['billdate']) ?>
+                                                </td>
+                                                <td>
+                                                    <span class="status <?php echo $invoices['status_class']; ?>">
+                                                        <?php echo $invoices['status_name']; ?>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                            <?php if (count($this->invoices) == 0) { ?>
+                                            <tr>
+                                                <td class="text-center" colspan="4">
+                                                    <?php echo $this->user->lang('No Outstanding Invoices'); ?>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        <?php if ($this->templateOptions['Show Package List in Dashboard']['value'] == 'Yes') { ?>
+                        <div class="cm-holder package-list-table">
+                            <div class="head padding-bottom d-flex justify-content-between align-items-center">
+                                <h3>
+                                    <?php echo $this->user->lang('Packages'); ?>
+                                </h3>
+                                <a href="index.php?fuse=clients&controller=products&view=products" class="view-all-table">
+                                    <?php echo $this->user->lang('View all'); ?></a>
+                            </div>
+                            <div class="data-table-wrapper pull-top">
+                                <div class="pending-orders table-responsive">
+                                    <table id="order-table" class="table display">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <?php echo $this->user->lang('Product/Service'); ?>
+                                                </th>
+                                                <th class="next-due-date">
+                                                    <?php echo $this->user->lang('Due Date'); ?>
+                                                </th>
+                                                <th class="billing-cycle">
+                                                    <?php echo $this->user->lang('Billing Cycle'); ?>
+                                                </th>
+                                                <th>
+                                                    <?php echo $this->user->lang('Total'); ?>
+                                                </th>
+                                                <th class="status-header">
+                                                    <?php echo $this->user->lang('Status'); ?>
+                                                </th>
+                                                <th>
+                                                    <?php echo $this->user->lang('Action'); ?>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach($this->packages as $package) { ?>
+                                            <tr>
+                                                <td>
+                                                    <span class="product-name">
+                                                        <a href="index.php?fuse=clients&controller=products&view=product&id=<?php echo $package['id']; ?>">
+                                                            <?php echo $package['name']; ?>
+                                                        </a>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="due-date">
+                                                        <?php echo $package['nextDueDate']; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="billing-cycle">
+                                                        <?php echo $package['term']; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="total">
+                                                        <?php echo $package['price']; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="status <?php echo $package['status_class']; ?>">
+                                                        <?php echo str_replace(' ', '&nbsp;', $package['status']); ?>
+                                                    </span>
+                                                </td>
+                                                <td class="mid">
+                                                    <?php if (count($package['actions']) > 0) {?>
+                                                    <a class="action">
+                                                        <i class="fas fa-cog"></i>
+                                                    </a>
+                                                    <ul class="cog-drop-down">
+                                                    <?php $additionalHTML = ''; ?>
+                                                    <?php foreach ($package['actions']  as $action) { ?>
+                                                        <?php if (isset($action['url'])) { ?>
+                                                        <li>
+                                                            <a href="<?php echo $action['url']; ?>">
+                                                                <?php echo $action['name']; ?>
+                                                            </a>
+                                                        </li>
+                                                        <?php } else if (isset($action['link']) && $action['form'] == '') { ?>
+                                                            <?php echo $action['link']; ?>
+                                                        <?php } else if (isset($action['form']) && $action['form'] != '') { ?>
+                                                        <?php echo $action['link']; ?>
+                                                        <?php $additionalHTML .= $action['form']; ?>
+                                                        <?php } else { ?>
+                                                        <li>
+                                                            <a data-package-id="<?php echo $package['id']; ?>" class="clickable-action" data-command="<?php echo $action['command']; ?>">
+                                                                <?php echo $action['name']; ?>
+                                                            </a>
+                                                        </li>
+                                                        <?php } ?>
+                                                    <?php } ?>
+                                                    </ul>
+                                                    <?php echo $additionalHTML; ?>
+                                                    <?php } ?>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                            <?php if (count($this->packages) == 0) { ?>
+                                            <tr>
+                                                <td class="text-center" colspan="6">
+                                                    <?php echo $this->user->lang('No Packages'); ?>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        <?php if ($this->templateOptions['Show Domain List in Dashboard']['value'] == 'Yes') { ?>
+                        <div class="cm-holder package-list-table">
+                            <div class="head padding-bottom d-flex justify-content-between align-items-center">
+                                <h3>
+                                    <?php echo $this->user->lang('Domains'); ?>
+                                </h3>
+                                <a href="index.php?fuse=clients&controller=products&view=domains" class="view-all-table">
+                                    <?php echo $this->user->lang('View all'); ?></a>
+                            </div>
+                            <div class="data-table-wrapper pull-top">
+                                <div class="pending-orders table-responsive">
+                                    <table id="order-table" class="table display">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <?php echo $this->user->lang('Domain'); ?>
+                                                </th>
+                                                <th class="next-due-date">
+                                                    <?php echo $this->user->lang('Due Date'); ?>
+                                                </th>
+                                                <th class="billing-cycle">
+                                                    <?php echo $this->user->lang('Price'); ?>
+                                                </th>
+                                                <th class="status-header">
+                                                    <?php echo $this->user->lang('Status'); ?>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach($this->domains as $domain) { ?>
+                                            <tr>
+                                                <td>
+                                                    <span class="product-name">
+                                                        <a href="index.php?fuse=clients&controller=products&view=product&id=<?php echo $domain['id']; ?>">
+                                                            <?php echo $domain['name']; ?>
+                                                        </a>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="due-date">
+                                                        <?php echo $domain['nextDueDate']; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="total">
+                                                        <?php echo $domain['price']; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="status <?php echo $domain['status_class']; ?>">
+                                                        <?php echo str_replace(' ', '&nbsp;', $domain['status']); ?>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                            <?php if (count($this->domains) == 0) { ?>
+                                            <tr>
+                                                <td class="text-center" colspan="4">
+                                                    <?php echo $this->user->lang('No Domains'); ?>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+// FONT SIZE
+$font-xxs: 10px;
+$font-xs: 11px;
+$font-sm: 12px;
+$font-md: 14px;
+$font-lg: 15px;
+$font-xl: 18px;
+
+// Headings
+
+$h1 : 40px;
+$h2 : 36px;
+$h3 : 24px;
+$h4 : 16px;
+$h5 : 14px;
+$h6 : 12px;
+
+//Text Colors
+$heading-color: #384060;
+$text-primary: #282f38;
+$text-body: #838899;
+$text-grey: #8d99a9;
+
+// BG Colors
+
+$bg-primary: #ff780b;
+$bg-primary-light:saturate(lighten($bg-primary, 3.73%), 0.31);
+
+$bg-secondary: #4585cf;
+$bg-secondary-light:saturate(lighten($bg-secondary, 3.73%), 0.31);
+
+$bg-dark: #0b2c85;
+$bg-grey: #eff1f6;
+
+$color-blue: #012890;
+
+$status-green: #5dc48d;
+$status-orange: #e69665;
+$status-red: #e67165;
+$status-blue: #6588e6;
+$status-grey: #A9A9A9;

@@ -1,0 +1,45 @@
+<div id="announcement-page" class="content-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('%s Announcements', $this->companyName);?> &nbsp;
+                        <a href="index.php?fuse=admin&view=RssAnnouncements">
+                            <i class="fas fa-rss"></i>
+                        </a>
+                    </h1>
+                </div>
+                <div id="announcements">
+                    <?php foreach ($this->announcements as $announcement) { ?>
+                    <ul class="announcement">
+                        <li>
+                            <h4>
+                                <div class="announcement-title">
+                                    <a href="index.php?fuse=home&view=announcement&controller=announcements&ann_id=<?php echo $announcement['id'] ?>">
+                                        <?php echo $announcement['title'] ?>
+                                    </a>
+                                </div>
+                            </h4>
+                            <div class="announcement-meta">
+                                <i class="far fa-clock"></i>
+                                <?php echo $announcement['date']." ".$this->user->lang("by");?>
+                                <?php echo $announcement['postedBy']; ?>
+                            </div>
+                        </li>
+                        <li>
+                            <p>
+                                <?php echo $announcement['excerpt']; ?>
+                            </p>
+                        </li>
+                        <li>
+                            <a class="read-more" href="index.php?fuse=home&view=announcement&controller=announcements&ann_id=<?php echo $announcement['id'] ?>">
+                                <?php echo $this->user->lang("Read More");?></a>
+                        </li>
+                    </ul>
+                    <?php }; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

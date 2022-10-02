@@ -1,0 +1,137 @@
+<div class="content-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('Edit Profile'); ?>
+                    </h1>
+                </div>
+                <div class="cs-padding">
+                    <?php
+                    echo $this->form()->open(
+                        'index.php?fuse=clients&controller=userprofile&action=saveprofile',
+                        'POST',
+                        ['class' => 'validate-form']
+                    ); ?>
+                        <div class="row">
+                            <?php foreach ($this->customFields as $customField) { ?>
+                            <?php if ($customField['fieldtype'] == 'break')  { ?>
+                            <div class="w-100"></div>
+                            <?php } else { ?>
+                            <div class="col-sm-6">
+                                <div class="form-elem">
+                                    <?php echo $this->cFHelper()->getLabel($customField); ?>
+                                    <?php echo $this->cFHelper()->getMarkup($customField); ?>
+                                </div>
+                            </div>
+                                <?php } ?>
+                            <?php } ?>
+                            <div class="w-100"></div>
+                            <div class="col-sm-6">
+                                <div class="form-elem">
+                            <?php echo $this->form()->submit(
+                                $this->user->lang('Update Profile'),
+                                ['class' => [
+                                    'app-btns',
+                                    'primary'
+                                    ]
+                                ]); ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php echo $this->form()->close(); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script data-cfasync="false">
+    $(document).ready(function(){
+        currentCountry = '';
+        state_var_id = 'CT_<?php echo $this->stateVarId;?>';
+        country_var_id = 'CT_<?php echo $this->countryVarId;?>';
+        vat_var_id = 'CT_<?php echo $this->vatVarId;?>';
+
+        $("#"+state_var_id).bind('change',function(){
+            validate_vat();
+        });
+        $("#"+country_var_id).bind('change',function(){
+            checkListsStates();
+        });
+        $("#"+vat_var_id).bind('blur',function(){
+            validate_vat();
+        });
+
+        validate_vat();
+    });
+
+    function validate_vat() {
+        if(document.getElementById('vat_validating') != undefined){
+            document.getElementById('vat_validating').style.display = '';
+            document.getElementById('vat_valid').style.display = 'none';
+            document.getElementById('vat_invalid').style.display = 'none';
+            document.getElementById('vat_error').style.display = 'none';
+        }
+        // Get the country and state information to pass to the view
+        var selectedState = document.getElementById(state_var_id).value;
+        var selectedCountry = document.getElementById(country_var_id).options[document.getElementById(country_var_id).selectedIndex].value;
+        if(document.getElementById(vat_var_id)) {
+            var selectedVATNumber = document.getElementById(vat_var_id).value;
+        }
+        $.getJSON('index.php?fuse=billing&action=checkvat&ignoreuser=1&requestVAT=1',
+            { country: selectedCountry, state: selectedState, vat: selectedVATNumber } ,
+            function(response) {
+                respArr = response.responseText.split("|");
+
+                if (document.getElementById('VAT'+vat_var_id)) {
+                    if(selectedCountry == 'GR'){
+                        selectedCountry = 'EL';
+                    }
+                    $("#vat_country").html(selectedCountry);
+                    document.getElementById('vat_validating').style.display = 'none';
+                    if (respArr[3] == '1') {
+                        if(selectedVATNumber != ""){
+                            switch(respArr[0]){
+                                case "-1":
+                                    document.getElementById('vat_error').style.display = '';
+                                    break;
+                                case "0":
+                                    document.getElementById('vat_invalid').style.display = '';
+                                    break;
+                                case "1":
+                                    document.getElementById('vat_valid').style.display = '';
+                                    break;
+                            }
+                        }
+                        $('#VAT' + vat_var_id).parent().show();
+                    } else {
+                        $('#VAT' + vat_var_id).parent().hide();
+                    }
+                }
+            }
+        );
+    }
+
+    function checkListsStates() {
+        // Get the country and state information
+        var selectStates = $('#' + state_var_id);
+        var countryIso = document.getElementById(country_var_id).options[document.getElementById(country_var_id).selectedIndex].value;
+
+        if (currentCountry != countryIso) {
+            selectStates.empty();
+            currentCountry = countryIso;
+
+            $.getJSON('index.php?fuse=admin&controller=signup&action=getstatelist&countryIso='+countryIso, function(response) {
+                for (var k in response.states) {
+                    var option = new Option(response.states[k].name, response.states[k].iso);
+                    selectStates.append(option);
+                }
+
+                selectStates.trigger('change');
+            });
+        }
+    }
+</script>

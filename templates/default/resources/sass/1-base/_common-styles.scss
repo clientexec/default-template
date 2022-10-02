@@ -1,0 +1,505 @@
+//PLEASE WRITE THE STYLE THAT COMMON TO ALL PAGES
+
+// Use This div as parent of H2 Tag to make centralize
+.sec-head{
+    text-align: center;
+}
+// Use this class for Buttons
+.app-btns{
+    display: inline-block;
+    line-height: 56px;
+    font-size: $font-md;
+    font-weight: 800;
+    padding: 0px 35px;
+    border: none;
+    text-decoration: none;
+    color: #FFF;
+    text-transform: uppercase;
+    cursor: pointer;
+    @include desktop{
+        line-height: 48px;
+        padding: 0px 28px;
+        font-size: 12px;
+    }
+    &:hover{
+        color: #FFF;text-decoration: none;
+    }
+    @include border-radius(4px);
+    &.primary{
+        background: $bg-primary;
+        &:hover{
+            background: $bg-primary-light;
+        }
+    }
+    &.secondary{
+        background: $bg-secondary;
+        &:hover{
+            background: $bg-secondary-light;
+        }
+    }
+    &.disabled{
+        background: #6c757d;
+        &:hover{
+            background: #6c757d;
+        }
+    }
+}
+.action-btns{
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size: $font-sm;
+    color: #666e8e;
+    padding: 0px 17px 0px 17px;
+    border: 1px solid #c3c6d1;
+    @include border-radius(6px);
+    font-weight: 700;
+    line-height: 36px;
+    background: #FFF;
+    @include common_shadow();
+    text-decoration: none;
+    @include transition(all ease 0.3s);
+    &:hover{background: #eff1f6;color: #666e8e;}
+    &.icon{
+        padding: 0px 17px 0px 11px;
+    }
+    i{
+        font-size: 18px;margin-right: 7px;
+    }
+
+}
+// Use this class for Normal listing with check bullet
+.cm-listing{
+    ul{
+        li{
+            position: relative;
+            display: block;
+            padding: 8px 0px;
+            text-align: left;
+            padding-left: 34px;
+            color: #55617f;
+            line-height: normal;
+            font-size: 14px;
+            &::before{
+                display: block;
+                position: absolute;
+                width: 20px;height: 20px;
+                content: '';
+                @include backgroundImage('signup/ic-listing-includes.png', no-repeat center center);
+                // background: url(../img/ic-listing-includes.png) no-repeat center center;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                margin: auto;
+            }
+            &.exclude{
+                &::before{
+                    @include backgroundImage('signup/ic-listing-excludes.png', no-repeat center center);
+                    // background: url(../img/ic-listing-excludes.png) no-repeat center center;
+                }
+            }
+        }
+    }
+}
+// FORM SECTIONS
+
+.form-wrapper{
+    display: block;
+    padding: 40px 40px 40px 40px;
+    @include portrait{
+        padding: 30px 25px;
+    }
+    .cm-btns{margin-top: 10px;margin-right: 14px;}
+}
+.form-elem{
+    position: relative;
+    padding-bottom: 20px;
+    label{
+        font-size: 14px;
+        color: #283456;
+        font-weight: 600;
+        // display: block;
+        margin: 0;
+    }
+    .note{
+        font-size: 12px;
+        font-weight: 600;
+        margin: 0;
+        padding-top: 5px;
+        span{
+            color: #535764;
+        }
+    }
+    .select2{
+        width: 100% !important;
+    }
+    .form-control{
+        height: 42px;
+        font-size: 14px;
+        border: 1px solid #dee2ee;
+        @include border-radius(6px);
+        &:focus{box-shadow: none;outline: none;}
+    }
+    .prefix{
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        .prefix-text{
+           background: #eceef3;
+           font-size: 13px;
+           font-weight: 700;
+           color: #81879f;
+           padding: 0px 11px;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           justify-content: center;
+           @include border-radius(6px 0px 0px 6px);
+        }
+        .form-control{
+            @include border-radius(0px 6px 6px 0px);
+        }
+    }
+
+}
+.select2-container--default {
+    .select2-selection--single{
+        width: 100%;
+        height: 42px;
+        border: 1px solid #cbcfe1;
+        border-radius: 6px;
+        &:focus{
+            outline: none;
+            border: none;
+            border: 1px solid #cbcfe1;
+        }
+        .select2-selection__rendered{
+            line-height: 42px;
+            padding-left: 18px;
+            color: #666e8e;
+            font-size: $font-md;
+            padding-right: 28px;
+        }
+        .select2-selection__arrow{
+            height: 100%;
+            right: 10px;
+        }
+    }
+}
+
+
+.status{
+    label{margin-right: 5px;}
+    position: relative;
+    padding-right: 20px;
+    .select2-container--default {
+        text-align: center;
+        &.select2-container--open{
+            &.select2-container--below{
+                .select2-selection--single{
+                    border-bottom-left-radius: 30px;
+                    border-bottom-right-radius: 30px;
+                }
+            }
+        }
+        .select2-selection--single{
+            width: auto;
+            height: 24px;
+            border: none;
+            border-radius: 30px;
+            &:focus{
+                outline: none;
+                border: none;
+                border: none;
+            }
+            .select2-selection__rendered{
+                line-height: 24px;
+                padding: 0px 7px;
+                background: #c7edd3;
+                border-radius: 30px;
+                color: #389555;
+                font-weight: 600;
+                font-size: 12px;
+
+            }
+            .select2-selection__arrow{
+                height: 100%;
+                right: -25px;
+            }
+        }
+    }
+    .normalSelect2{width: auto;}
+}
+
+// MULTI SELECT BOX
+.multiselectWrap{
+    display: block;
+    .select2-container--default {
+        .select2-selection--multiple{
+            border: 1px solid #dee2ee;
+            padding: 10px 4px;
+            padding-top: 4px;
+            .select2-selection__choice{
+                background: #e2e5ee;
+                border: none;
+                font-weight: 600;
+                color: #787597;
+                font-size: 12px;
+                position: relative;
+                padding: 0px 22px 0px 12px;
+                transition: all ease 0.2s;
+                cursor: pointer;
+                &:hover{
+                    background: #cfe8ff;
+                    color: #007aef;
+                    .select2-selection__choice__remove{
+                        color: #007aef;
+                    }
+                }
+            }
+            .select2-selection__choice__remove{
+                border-right: none;
+                position: absolute;
+                right: 5px;
+                top: 0;
+                font-size: 16px;
+                transition: all ease 0.2s;
+                &:hover{
+                    background: none;
+                }
+            }
+        }
+    }
+}
+
+// the element inside this div will centered
+.make-mid{
+    display: block;
+    text-align: center;
+}
+
+.inline-heading{
+    display: block;
+    position: relative;
+    margin-bottom: 15px;
+    &::before{
+        position: absolute;
+        right: 0;
+        width: 98%;
+        border-top: 1px solid #e3e5e9;
+        top: 12px;
+        content: '';
+        height: 1px;
+        display: block;
+    }
+    h4{
+        display: inline-block;
+        position: relative;
+        margin: 0;
+        font-weight: 700;
+        font-size: 16px;
+        color: $text-primary;
+        padding-right: 13px;
+        z-index: 2;
+        background: #FFF;
+
+    }
+}
+.wrap-it{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.form-option{
+    // display: flex;
+    // flex-direction: row;
+    // justify-content: flex-start;
+    padding: 10px 0px;
+    label{
+        margin: 0;
+        position: relative;
+        padding-left: 27px;
+        margin-right: 30px;
+        cursor: pointer;
+        &::before{
+            position: absolute;
+            display: block;
+            width: 22px;
+            height: 22px;
+            background: #d7e0ec;
+            @include border-radius(50%);
+            content: '';
+            left: 0px;
+            top: 0;bottom: 0;
+            margin: auto;
+            box-shadow: inset -3px -3px 7px 0px rgba(0, 0, 0, 0.3);
+            @include transition(all ease 0.3s);
+
+        }
+        &::after{
+            position: absolute;
+            display: block;
+            width: 10px;
+            height: 10px;
+            background: #FFF;
+            @include border-radius(50%);
+            content: '';
+            left: 6px;
+            top: 0;bottom: 0;
+            margin: auto;
+
+
+        }
+        &.selected{
+            &::before{
+                background: #1e6ac8;
+            }
+
+        }
+        .choose-radio{
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+        }
+        .text{
+            color: #666e8e;
+        }
+    }
+}
+
+.form-check-box{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px 0px;
+    label{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        margin: 0;
+        position: relative;
+        margin-right: 30px;
+        cursor: pointer;
+
+
+        .cm-check-box{
+            width: 20px;
+            height: 20px;
+            margin-right: 7px;
+        }
+        .text{
+            color: #666e8e;
+        }
+    }
+}
+// COMMON TO ALL PAGES
+
+// DATE RANGE CALENDAR
+
+
+.daterangepicker{
+    border-color: #e4e4e4;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.1);
+    &.opensleft{
+        &::before{right: 15px;}
+        &::after{right: 16px;}
+    }
+
+    &.ltr{
+
+        .calendar{
+
+        &.left {
+            .calendar-table {padding: 0;padding-right: 3px;}
+        }
+
+    }
+    }
+    select{
+        border: none;
+    }
+    .input-mini{
+        border: none;
+        box-shadow: none;
+        background: #f5f6fc;
+        border-radius: 3px;
+        height: 32px;
+        line-height: 38px;
+        padding: 0px 42px 0px 15px;
+        font-size: 14px;
+        font-weight: 600;
+
+        &.active{border: none;border-radius: 0;}
+    }
+
+    .daterangepicker_input {
+        i{display: none;}
+    }
+    th{
+        font-size: 12px;font-weight: 600; color:#43566d;height: 25px;
+        border-radius: 0;
+        &.month{font-size: 14px;color:$bg-secondary;}
+    }
+    .calendar{
+        td{font-size: 12px;font-weight: 500;background: #f5f6fc;border-radius: 0;
+            &.active{background: $bg-secondary;}
+        }
+    }
+    td{
+        height: 25px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 0;
+        color: #43566d;
+    }
+}
+
+.ranges {
+    li{
+        color: #43566d;
+        font-weight: 600;
+        font-size: 12px;
+        margin-bottom: 5px;
+        background-color: #f5f6fc;
+        &.active,&:hover{
+            background:$bg-secondary;
+            border: 1px solid #dedfea;
+            color: #FFF;
+        }
+    }
+}
+.range_inputs{
+    button{
+        border: none;
+    }
+    .applyBtn{
+
+        background:$bg-secondary;
+        color: #FFF;border:none;
+        &:hover{background: #173a9a;}
+    }
+    .cancelBtn{
+        background: #000;
+        color: #FFF;
+        &:hover{background: #333;}
+    }
+    .btn-success:not(:disabled):not(.disabled):active{background:$bg-secondary;
+        color: #FFF;border:none;}
+}
+.footer {
+    display: block;
+    text-align: center;
+    padding: 20px 0;
+    background: #fff;
+    margin-top: auto;
+    position: relative;
+    p {
+        margin-bottom: 0px;
+        color: #8d959f;
+    }
+}

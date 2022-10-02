@@ -1,0 +1,46 @@
+<?php
+    $continueButtonClass = '';
+    if ($this->package['stockControl'] == 1 && $this->package['stockLevel'] <= 0) {
+        $continueButtonClass = ' disabled';
+    }
+?>
+<div class="hosting-plan-row item-wrapper">
+    <div class="head">
+        <h3>
+            <?php echo $this->package['plannamelanguage']; ?>
+        </h3>
+        <?php
+                if ($this->package['stockLevel'] >= 0) {
+                    if ($this->package['stockControl'] == 1) {
+                        echo '<p>[ '.$this->user->lang("not available").' ]</p>';
+                    } else {
+                        echo '<p>[ '.$this->user->lang("%s available", $this->package['stockLevel']).' ]</p>';
+                    }
+                }
+            ?>
+        <p><?php echo $this->user->lang('Select Billing Cycle:'); ?></p>
+        <?php
+            echo $this->partial('../partials/selectPaymentTerm.phtml', [
+                'package' => $this->package,
+                'hideSetupFees' => $this->hideSetupFees,
+                'monthlyPriceBreakdown' => $this->monthlyPriceBreakdown,
+                'showDiscountedPricingInBillingCycleSelector' => $this->showDiscountedPricingInBillingCycleSelector
+            ]);
+        ?>
+    </div>
+    <?php if ($this->package['descriptionlanguage'] != '') { ?>
+    <div class="hosting-features">
+        <?php echo $this->package['descriptionlanguage'] ;?>
+    </div>
+    <?php } ?>
+    <div class="plan-rate">
+        <?php if ($this->showSaved) { ?>
+        <div class="d-none saveWrapper">
+            <span class="savePercent"></span>
+        </div>
+        <?php } ?>
+        <a href="#" data-param="paymentterm" data-url="<?php echo $this->package['nextUrl']; ?>" class="app-btns primary continue<?php echo $continueButtonClass; ?>">
+            <?php echo $this->user->lang('Continue');?>
+        </a>
+    </div>
+</div>

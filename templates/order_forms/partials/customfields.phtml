@@ -1,0 +1,30 @@
+ <div class="row">
+    <?php foreach ($this->customFields as $customField) { ?>
+    <?php if ($customField['fieldtype'] == 'break')  { ?>
+    <div class="w-100"></div>
+    <?php } else { ?>
+    <?php if($customField['fieldtype'] == 'subdomain') { ?>
+    <div class="col-md-12">
+    <?php } else { ?>
+    <div class="col-md-6">
+    <?php } ?>
+
+        <?php if ($customField['fieldtype'] == typeCHECK) {?>
+        <div class="form-elem form-check pt-4">
+            <?php
+            echo $this->cFHelper()->getMarkup($customField);
+            echo $this->cFHelper()->getLabel($customField);
+            ?>
+        </div>
+        <?php } else { ?>
+        <div class="form-elem">
+            <?php
+            echo $this->cFHelper()->getLabel($customField);
+            echo $this->cFHelper()->getMarkup($customField);
+            ?>
+        </div>
+        <?php } ?>
+    </div>
+    <?php } ?>
+    <?php } ?>
+</div>

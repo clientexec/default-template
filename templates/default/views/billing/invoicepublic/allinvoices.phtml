@@ -1,0 +1,289 @@
+<div class="datatable-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('My Invoices'); ?>
+                    </h1>
+                    <div class="knowledge-base-search">
+                        <input type="text" class="knowledge-search-input" placeholder="<?php echo $this->user->lang('Search'); ?>">
+                        <button type="submit" class="knowledge-search-submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive cs-padding">
+                    <div class="form-group col-xs-12">
+                        <div class="btn-group" role="group" id="filter-ul">
+                            <button type="button" class="btn<?php echo ($this->filter == 'open') ? ' btn-primary' : ''; ?>" data-filter="open">
+                                <?php echo $this->user->lang("Open");?>
+                            </button>
+                            <button type="button" class="btn<?php echo ($this->filter == 'paid') ? ' btn-primary' : ''; ?>" data-filter="paid">
+                                <?php echo $this->user->lang("Paid");?>
+                            </button>
+                            <button type="button" class="btn<?php echo ($this->filter == 'draft') ? ' btn-primary' : ''; ?>" data-filter="draft">
+                                <?php echo $this->user->lang("Draft");?>
+                            </button>
+                            <button type="button" class="btn<?php echo ($this->filter == 'all') ? ' btn-primary' : ''; ?>" data-filter="all">
+                                <?php echo $this->user->lang("All");?>
+                            </button>
+                        </div>
+                    </div>
+                    <table id="order-table" class="table invoice-list-table">
+                        <thead>
+                            <tr>
+                                <th class="min-width" style="width: 2%">
+                                    <input type="checkbox" id="check-all-boxes">
+                                </th>
+                                <th class="min-width">
+                                    #
+                                </th>
+                                <th>
+                                    <?php echo $this->user->lang('Description'); ?>
+                                </th>
+                                <th>
+                                    <?php echo $this->user->lang('Due Date'); ?>
+                                </th>
+                                <th>
+                                    <?php echo $this->user->lang('Due'); ?>
+                                </th>
+                                <th>
+                                    <?php echo $this->user->lang('Total'); ?>
+                                </th>
+                                <th>
+                                    <?php echo $this->user->lang('Status'); ?>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div>
+                        <div class="row invoice-buttons">
+                    <?php if ($this->user->hasPermission('billing_send_invoices')) { ?>
+                            <div class="col-12 col-md-2">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmSendInvoice" id="openConfirmInvoices">
+                                        <?php echo $this->user->lang("Send Invoice(s)"); ?>
+                                    </button>
+
+                            </div>
+                    <?php } ?>
+                    <?php if ($this->user->hasPermission('billing_masspay')) { ?>
+                            <div class="col-12 col-md-2">
+                                <button type="button" class="btn btn-primary" id="massPayButton">
+                                    <?php echo $this->user->lang("Mass Pay"); ?>
+                                </button>
+                            </div>
+                    <?php } ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="confirmSendInvoice">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4><?php echo $this->user->lang('Are you sure you want to send the selected invoice(s)?'); ?></h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="sendInvoice"><?php echo $this->user->lang('Yes'); ?>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><?php echo $this->user->lang('No'); ?></button>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="feedback">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4><?php echo $this->user->lang('Invoice(s) have been successfully sent'); ?></h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal"><?php echo $this->user->lang('Ok'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script data-cfasync="false">
+invoices = {};
+invoices.payment_method = "<?php echo $this->payment_method;?>";
+invoices.filter = '<?php echo $this->filter; ?>';
+
+$(document).ready(function() {
+    var table = $('.invoice-list-table').DataTable({
+        language: {
+            emptyTable: clientexec.lang('No Invoices To Show'),
+        },
+        ajax: {
+            url: 'index.php?fuse=billing&controller=invoice&action=getinvoices&filter=' + invoices.filter,
+            dataSrc: 'invoices'
+        },
+        columns: [{
+            searchable: false,
+            orderable: false,
+            className: 'dt-body-center min-width',
+            data: 'id',
+            render: function(data, type, full, meta) {
+                return '<input type="checkbox" name="id[]" value="' + data + '">';
+            }
+        }, {
+            data: 'id',
+            className: 'dt-body-center min-width'
+
+        }, {
+            data: 'detailed_description',
+            render: function(data, type, full, meta) {
+                return '<span class="invoicepdflink"><a href="index.php?sessionHash=' + clientexec.sessionHash + '&fuse=billing&controller=invoice&action=generatepdfinvoice&invoiceid=' + full.id + '" target="_blank"><i class="fas fa-file-pdf" data-toggle="tooltip" title="' + clientexec.lang('View PDF Invoice') + '"></i></a></span>&nbsp;&nbsp;<a href="index.php?fuse=billing&controller=invoice&view=invoice&id=' + full.id + '">' + clientexec.htmlspecialchars(data) + '</a>';
+            }
+        }, {
+            data: {
+                _: 'billdate',
+                sort: 'billdatesort'
+            }
+        }, {
+            data: 'formatedbalancedue',
+            render: function(data, type, full, meta) {
+                if (data.length >= 18) {
+                    return '<span class="xxlong-currency">' + data + '</span>';
+                } else if (data.length >= 15) {
+                    return '<span class="xlong-currency">' + data + '</span>';
+                } else if (data.length >= 13) {
+                    return '<span class="long-currency">' + data + '</span>';
+                }
+                return data;
+            }
+        }, {
+            data: 'amount',
+            render: function(data, type, full, meta) {
+                if (data.length >= 18) {
+                    return '<span class="xxlong-currency">' + data + '</span>';
+                } else if (data.length >= 15) {
+                    return '<span class="xlong-currency">' + data + '</span>';
+                } else if (data.length >= 13) {
+                    return '<span class="long-currency">' + data + '</span>';
+                }
+                return data;
+            }
+        }, {
+            data: 'status_name',
+            render: function(data, type, full, meta) {
+                return '<span class="status ' + full.status_class + '">' + data + '</span>';
+            }
+        }],
+        order: [
+            [3, 'desc']
+        ]
+    });
+
+    // Handle click on "Select all" control
+    $('#check-all-boxes').on('click', function() {
+        // Get all rows with search applied
+        var rows = table.rows({ 'search': 'applied' }).nodes();
+        $('input[type="checkbox"]', rows).prop('checked', $(this).prop('checked'));
+        if ($('.invoice-list-table tbody input[type="checkbox"]:checked').length) {
+            $('#openConfirmInvoices').prop('disabled', false);
+            $('#massPayButton').prop('disabled', false);
+        } else {
+            $('#openConfirmInvoices').prop('disabled', true);
+            $('#massPayButton').prop('disabled', true);
+        }
+    });
+
+    // Handle click on each checkbox
+    $('.invoice-list-table tbody').on('change', 'input[type="checkbox"]', function() {
+        // If checkbox is not checked
+        if (!$(this).prop('checked')) {
+            $('#check-all-boxes').prop('checked', false);
+        }
+        if ($('.invoice-list-table tbody input[type="checkbox"]:checked').length) {
+            $('#openConfirmInvoices').prop('disabled', false);
+        } else {
+            $('#openConfirmInvoices').prop('disabled', true);
+        }
+
+        // handle mass pay (must have at least 2 checked)
+        if ($('.invoice-list-table tbody input[type="checkbox"]:checked').length >= 1) {
+            $('#massPayButton').prop('disabled', false);
+        } else {
+            $('#massPayButton').prop('disabled', true);
+        }
+    });
+
+    // set default to off
+    if ($('.invoice-list-table tbody input[type="checkbox"]:checked').length) {
+        $('#openConfirmInvoices').prop('disabled', false);
+        $('#massPayButton').prop('disabled', false);
+    } else {
+        $('#openConfirmInvoices').prop('disabled', true);
+        $('#massPayButton').prop('disabled', true);
+    }
+
+    $('#massPayButton').on('click', function() {
+        var selectedInvoices = [];
+        $('.invoice-list-table tbody input[type="checkbox"').each(function() {
+            if ($(this).prop('checked')) {
+                selectedInvoices.push($(this).val());
+            }
+        });
+        clientexec.mask();
+        $.ajax({
+            url: 'index.php?fuse=billing&controller=invoice&action=masspay',
+            type: 'POST',
+            data: {
+                invoices: selectedInvoices,
+            },
+            success: function(xhr) {
+                response = clientexec.parseResponse(xhr);
+                if (response.success == true) {
+                    window.location = 'index.php?fuse=billing&controller=invoice&view=invoice&id=' + response.invoiceId;
+                }
+            }
+        });
+        clientexec.unMask();
+    });
+
+    $('#sendInvoice').click(function() {
+        $('#confirmSendInvoice').modal('hide');
+
+        var selectedInvoices = [];
+        $('.invoice-list-table tbody input[type="checkbox"').each(function() {
+            if ($(this).prop('checked')) {
+                selectedInvoices.push($(this).val());
+            }
+        });
+        $.ajax({
+            url: 'index.php?fuse=billing&controller=invoice&action=actoninvoice',
+            type: 'POST',
+            data: {
+                items: selectedInvoices,
+                itemstype: 'invoices',
+                actionbutton: 'inv-send-smart'
+            },
+            success: function(xhr) {
+                $('#feedback').modal('show');
+                $('.invoice-list-table tbody input[type="checkbox"').each(function() {
+                    $(this).prop('checked', false);
+                });
+                $('#openConfirmInvoices').prop('disabled', true);
+                $('#massPayButton').prop('disabled', true);
+            }
+        });
+    });
+
+    $('#filter-ul button').click(function() {
+        window.location = 'index.php?fuse=billing&controller=invoice&view=allinvoices&filter=' + $(this).data('filter')
+    });
+
+    $('.knowledge-search-submit').on('keyup click', function() {
+        table.search($('.knowledge-search-input').val()).draw();
+    });
+    $('.knowledge-search-input').keyup(function() {
+        table.search($(this).val()).draw();
+    });
+});
+</script>

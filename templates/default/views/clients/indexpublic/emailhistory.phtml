@@ -1,0 +1,94 @@
+<div class="datatable-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('Email History'); ?>
+                    </h1>
+                    <div class="knowledge-base-search">
+                        <input type="text" class="knowledge-search-input" placeholder="Search">
+                        <button type="submit" class="knowledge-search-submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive cs-padding">
+                    <table id="emails-grid" class="table email-history-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>
+                                    <?php echo $this->user->lang('Subject'); ?>
+                                </th>
+                                <th>
+                                    <?php echo $this->user->lang('Date Sent'); ?>
+                                </th>
+                                <th>
+                                    <?php echo $this->user->lang('From'); ?>
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+$(document).ready(function() {
+    var table = $('.email-history-table').DataTable({
+        language: {
+            emptyTable: clientexec.lang('No emails to show'),
+            zeroRecords: clientexec.lang('No matching emails found')
+        },
+        ajax: {
+            url: 'index.php?fuse=clients&controller=index&action=getemails',
+            dataSrc: 'data'
+        },
+        columns: [{
+            'class': 'details-control text-center',
+            'orderable': false,
+            'data': null,
+            'defaultContent': '<i class="fas fa-plus-circle"></i>',
+        }, {
+            data: 'subject'
+        }, {
+            data: 'date'
+        }, {
+            data: 'from'
+        }],
+        order: [
+            [2, 'desc']
+        ],
+    });
+
+    $('.email-history-table tbody').on('click', 'td.details-control', function() {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+
+        if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass('shown');
+            $(this).html('<i class="fas fa-plus-circle"></i>');
+        } else {
+            row.child(format(row.data())).show();
+            tr.addClass('shown');
+            $(this).html('<i class="fas fa-minus-circle"></i>');
+        }
+    });
+
+    $('.knowledge-search-submit').on('keyup click', function() {
+        table.search($('.knowledge-search-input').val()).draw();
+    });
+    $('.knowledge-search-input').keyup(function() {
+        table.search($(this).val()).draw();
+    });
+});
+
+function format(obj) {
+    return obj.content;
+}
+</script>

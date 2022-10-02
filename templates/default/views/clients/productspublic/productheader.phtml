@@ -1,0 +1,105 @@
+<div class="package-side-bar">
+    <ul class="">
+        <?php foreach ($this->tabs as $tab) { ?>
+        <li>
+            <a class="<?php echo $tab['class'];?>" href="index.php?fuse=clients&controller=products&view=<?php echo $tab['view'];?>&id=<?php echo $this->productId;?>">
+                <span class="<?php echo $tab['span']; ?>"></span>
+                <?php echo $tab['name'];?>
+            </a>
+        </li>
+        <?php } ?>
+        <?php foreach ($this->product_tab_snapins as $tab) {
+            $class = "";
+            if (($tab['key'] == $this->productSnapinKey) && ($tab['plugin'] == $this->productSnapinName)) {
+                $class = "active";
+            }
+        ?>
+        <li>
+            <a class="<?php echo $class; ?>" href="index.php?fuse=clients&controller=products&view=productsnapinview&key=<?php echo $tab['key'];?>&name=<?php echo $tab['plugin'];?>&id=<?php echo $this->productId;?>">
+                <span class="overview"></span>
+                <?php echo $tab['title'];?>
+            </a>
+        </li>
+        <?php } ?>
+        <?php foreach ($this->publicPanels as $view => $name) {
+            $class = "";
+            if ($this->activePublicTab == $view) {
+                $class = 'active';
+            }
+        ?>
+        <li>
+            <a class="<?php echo $class; ?>" href="index.php?fuse=clients&controller=products&view=productsnapinview&key=<?php echo $view; ?>&id=<?php echo $this->productId; ?>&publicPanel=1">
+                <span class="overview"></span>
+                <?php echo $name;?>
+            </a>
+        </li>
+        <?php } ?>
+
+
+
+    </ul>
+    <?php if (count($this->pluginActions) > 0) { ?>
+    <ul class="actions-side-bar">
+        <div class="card-deck mb-3 text-center">
+            <div class="card mb-4 box-shadow">
+                <div class="actions-header">
+                    <h4 class="my-0 font-actions">
+                        <?php echo $this->user->lang('Quick Actions'); ?>
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-unstyled">
+                        <?php $additionalHTML = ''; ?>
+                         <?php foreach ($this->pluginActions as $action) { ?>
+                        <?php if (isset($action['url'])) { ?>
+                        <li>
+                            <a href="<?php echo $action['url']; ?>">
+                                <?php echo $action['name']; ?>
+                            </a>
+                        </li>
+                        <?php } else if (isset($action['link']) && $action['form'] == '') { ?>
+                            <?php echo $action['link']; ?>
+                        <?php } else if (isset($action['form']) && $action['form'] != '') { ?>
+                        <?php echo $actionsHtml .= $action['link']; ?>
+                        <?php $additionalHTML .= $action['form']; ?>
+                        <?php } else { ?>
+                        <li>
+                            <a href="#" class="clickable-action" data-command="<?php echo $action['command']; ?>">
+                                <?php echo $action['name']; ?>
+                            </a>
+                        </li>
+                        <?php } ?>
+                    <?php } ?>
+                    </ul>
+                    <?php echo $additionalHTML; ?>
+                </div>
+            </div>
+        </div>
+    </ul>
+    <?php } ?>
+</div>
+
+<h1 class="d-flex justify-content-between align-items-center product-header-title-align">
+    <span><?php echo $this->pageTitle; ?> - <?php echo $this->productName; ?></span>
+</h1>
+
+<script>
+    var packageId = '<?php echo $this->productId; ?>';
+    $('.clickable-action').on('click', function(e) {
+        e.preventDefault();
+        command = $(this).data('command');
+
+        clientexec.mask();
+        $.ajax({
+            url: 'index.php?fuse=clients&action=callpluginaction',
+            success: function(xhr) {
+                clientexec.parseResponse(xhr);
+                clientexec.unMask();
+            },
+            data: {
+                id: packageId,
+                actioncmd: command
+            }
+        });
+    })
+</script>

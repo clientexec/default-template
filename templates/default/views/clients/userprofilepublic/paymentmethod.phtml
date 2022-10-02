@@ -1,0 +1,371 @@
+<script data-cfasync="false">
+    var paymentmethod = {};
+    paymentmethod.selectedplugin = '<?php echo $this->selectedpluginname; ?>';
+    paymentmethod.selectedpluginrealname = '<?php echo $this->selectedpluginrealname; ?>';
+</script>
+<div class="content-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('Edit Payment Method'); ?>
+                    </h1>
+                </div>
+                <div class="cs-padding">
+                    <form action="index.php?fuse=clients&controller=userprofile&action=updatepaymentmethod" class="update-payment-method-frm" id="billingform" name="billingform" method="post">
+                    <div class="row">
+                        <input type="hidden" name="old_selectedplugin" class="old_selectedplugin" value="<?php echo $this->selectedpluginname; ?>" />
+                        <div class="col-sm-6">
+                            <div class="form-elem">
+                                <label>
+                                    <?php echo $this->user->lang("Payment Method");?>
+                                </label>
+                                <select <?php echo (!$this->canEditPaymentType) ? ' readonly="readonly"' : ''; ?> class="paymenttype-list normalSelect2 form-control" name="paymenttype">
+                                    <?php foreach ($this->paymentmethods as $paymentmethod) { ?>
+                                    <option value="<?php echo $paymentmethod['paymentTypeOptionValue']; ?>" <?php echo $paymentmethod['paymentTypeOptionSelected']; ?>>
+                                        <?php echo $paymentmethod['paymentTypeOptionLabel']; ?>
+                                    </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info plugin_description d-none container-fluid"></div>
+                    <div id="use_recurring" class="d-none container-fluid">
+                        <div class="alert ce-alert ce-alert-danger ce-recurring-warning col-12">
+                            <p><b>
+                                    <?php echo $this->user->lang("3rd party subscription");?></b><br />
+                                <?php echo $this->user->lang("Your selected payment method is set to start a subscription after payment of your first invoice.");?>
+                            </p>
+                        </div>
+                    </div>
+                    <div class='form-group col-12 DivBillingProfileID' id='DivBillingProfileID' style='display:none'>
+                        <div class="col-12 col-md-4">
+                        <?php foreach ($this->profile_id_array as $paymenttype => $profile_id) { ?>
+                            <span class='BillingProfileID <?php echo $paymenttype."BillingProfileID"; ?>' id='<?php echo $paymenttype."BillingProfileID"; ?>' style='display:none'></span>
+                        <?php } ?>
+                        <?php if ($this->canEditCreditCard) { ?>
+                            <a class="btn btn-small btn-danger" id='btnDeleteProfileID'>
+                                <span class='buttontext'>
+                                    <?php echo $this->user->lang('Delete Information'); ?>
+                                </span>
+                            </a>
+                            <input type='hidden' class='selected_paymenttype' id='selected_paymenttype' value="<?php echo $this->selectedpluginname; ?>" />
+                        <?php } ?>
+                        </div>
+                    </div>
+                    <?php foreach ($this->gatewayIframes as $gatewayName => $gatewayIframeConfiguration) { ?>
+                    <div class="row">
+                        <div class="col-12 d-none PaymentInformation <?php echo $gatewayName . "PaymentInformation"; ?>" id="<?php echo $gatewayName."PaymentInformation"; ?>">
+                            <label>
+                                <?php echo $this->user->lang("We do not store credit card information for your selected payment type"); ?></label><br /><br />
+                            <iframe class="col-12 PaymentIframe <?php echo $gatewayName."PaymentIframe"; ?>" id="<?php echo $gatewayName."PaymentIframe"; ?>" src ="" <?php echo $gatewayIframeConfiguration; ?> >
+                                <p>
+                                    <?php echo $this->user->lang("Your bcontainer-fluidser does not support iframes"); ?>
+                                </p>
+                            </iframe>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <?php foreach ($this->gatewayForms as $gatewayName => $gatewayForm) { ?>
+                    <div class="row">
+                        <div class="col-12 d-none PaymentInformation <?php echo $gatewayName."PaymentInformation"; ?>" id="<?php echo $gatewayName."PaymentInformation"; ?>">
+                            <label>
+                                <?php echo $this->user->lang("We do not store credit card information for your selected payment type"); ?></label><br /><br />
+                            <?php echo $this->unescape($gatewayForm); ?>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <div id="creditcardinfo" class="d-none row">
+                        <?php if ($this->canEditCreditCard) { ?>
+
+                        <div id="lastfourspan" class="col-sm-6">
+                            <div class="form-elem">
+                                <label>
+                                    <?php echo $this->user->lang("Credit Card Number"); ?>
+                                </label>
+                                <input type="text" id="lastfour" name="ccnumber" size="30" disabled class="form-control">
+                            </div>
+                        </div>
+
+                        <div id="awaitingvalidationspan" class="col-sm-6">
+                            <div class="form-elem">
+                                <label>
+                                    <?php echo $this->user->lang("Credit Card Number"); ?>
+                                </label>
+                                <span class="badge badge-primary" id="awaitingvalidation"></span>
+                                <input type="button" class="btn btn-small btn-danger" id="deleteccbutton" value="<?php echo $this->user->lang("Delete Credit Card");?>">
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-6" id="ccnumberspan">
+                            <div class="form-elem">
+                                <label>
+                                    <?php echo $this->user->lang("Credit Card Number"); ?>
+                                </label>
+                                <input type="text" data-required="true" id="ccnumber" name="ccnumber" parsley-luhn="true" data-luhn="true" size="30" class="form-control">
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+
+                        <div id="newccspan" class="col-sm-6">
+                            <div class="form-elem">
+                                <label>
+                                    <span data-toggle="tooltip" data-trigger="hover" data-placement="right" data-title="<?php echo $this->helpCCChange; ?>" class="tip-target new-card-info">
+                                        <?php echo $this->user->lang("New Credit Card Number"); ?>
+                                    </span>
+                                </label>
+                                <input type="text" id="newccnumber" name="newccnumber" parsley-luhn="true" data-luhn="true" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="w-100"></div>
+                        <div class="col-sm-3 cc-exp">
+                            <div class="form-elem">
+                                <label>
+                                    <?php echo $this->user->lang("Credit Card Expiration Date"); ?>
+                                </label>
+                                <select id="ccmonth" name="ccmonth" class="normalSelect2 form-control">
+                                    <?php foreach ($this->months as $month) { ?>
+                                    <option value="<?php echo $month['monthOptionsValue']; ?>" <?php echo $month['monthOptionsSelected']; ?> >
+                                        <?php echo $month['monthOptionsLabel']; ?>
+                                    </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 cc-exp">
+                            <div class="form-elem">
+                                <label>&nbsp;</label>
+                                <select id="ccyear" name="ccyear" class="normalSelect2 form-control">
+                                    <?php foreach ($this->years as $year) { ?>
+                                    <option value="<?php echo $year['yearOptionsValue']; ?>" <?php echo $year['yearOptionsSelected']; ?> >
+                                        <?php echo $year['yearOptionsLabel']; ?>
+                                    </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="col-sm-3 cc-exp">
+                            <div class="form-elem">
+                                <label>
+                                    <?php echo $this->user->lang("Accepted Credit Cards"); ?>
+                                </label>
+                                <div>
+                                    <img src="images/creditcards/visa.gif" id="visa_logo" alt="" />
+                                    <img src="images/creditcards/mc.gif" id="mastercard_logo" alt="" />
+                                    <img src="images/creditcards/amex1.gif" id="americanexpress_logo" alt="" />
+                                    <img src="images/creditcards/discover.gif" id="discover_logo" alt="" />
+                                    <img src="images/creditcards/laser.gif" id="lasercard_logo" alt="" />
+                                    <img src="images/creditcards/diners.gif" id="dinersclub_logo" alt="" />
+                                    <img src="images/creditcards/switch.gif" id="switch_logo" alt="" />
+                                    <input type="hidden" name="validcc" id="validccbits" value='' />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <?php } else { ?>
+                            <table class="ts2" cellspacing="0">
+                                <tr>
+                                    <td class="label">
+                                        <?php echo $this->user->lang("Credit Card Number"); ?>:
+
+                                        <span id="lastfourspan">
+                                            <span id="lastfour2"></span>
+                                        </span>
+                                        <span id="awaitingvalidationspan">
+                                            <span class="badge badge-primary" id="awaitingvalidation"></span>
+                                            <br />
+                                            <br />
+                                        </span>
+                                        <span id="ccnumberspan">
+                                            <input type=hidden name=c_ccnumber value="<?php echo $this->requiredMsg; ?>" />
+                                            <input type=hidden name=r_ccnumber value="<?php echo $this->ccRequiredMsg; ?>" />
+                                        </span>
+                                        <span id="newccspan"></span>
+                                </tr>
+                            </table>
+
+                        <?php } ?>
+                    </div>
+                    <?php if ($this->canEditCreditCard) { ?>
+                        <div class="col-sm-3">
+                            <div class="d-none" id="btnupdatepaymentmethod">
+                                <input type="submit" class="app-btns primary btn-update-payment-method" value="<?php echo $this->user->lang('Update'); ?>">
+                            </div>
+                        </div>
+                    <?php } ?>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script data-cfasync="false">
+paymentmethod = paymentmethod || {};
+
+$(document).ready(function() {
+    paymentmethod.get_cc_info(paymentmethod.selectedplugin);
+    $('.btn-update-payment-method').on('click', function(e) {
+        if ($('.update-payment-method-frm').parsley('validate')) {
+            $('.update-payment-method-frm').submit();
+        }
+    });
+    $('select.paymenttype-list').on('change', function() {
+        paymentmethod.get_cc_info($(this).val());
+    });
+    $('#deleteccbutton').on('click', function() {
+        paymentmethod.delete_cc();
+    });
+
+    if ($('#btnDeleteProfileID').length > 0) {
+        $('#btnDeleteProfileID').click(function() {
+            paymentmethod.delete_profile_id();
+        });
+    }
+
+    //This code here is to avoid an issue with the Delete button been displayed in a different line, when the div was been displayed by default.
+    if ($('.selected_paymenttype').length > 0 && $('.' + $('.selected_paymenttype')[0].value + 'BillingProfileID').length > 0) {
+        $('.DivBillingProfileID').show();
+    }
+});
+
+paymentmethod.get_cc_info = function(selectedplugin) {
+    $.get('index.php?fuse=admin&action=getpaymentplugindetails', {
+        plugin: selectedplugin
+    }, paymentmethod.process_plugin_details);
+}
+
+paymentmethod.delete_profile_id = function() {
+    paymenttype = $('.selected_paymenttype')[0].value;
+
+    $.post('index.php?fuse=clients&controller=index&action=deleteprofileid&paymenttype=' + paymenttype, {}, function(response) {
+        var data = clientexec.parseResponse(response);
+        if (data.error) {
+            return false;
+        }
+        window.location = 'index.php?fuse=clients&controller=userprofile&view=paymentmethod';
+    });
+}
+
+paymentmethod.delete_cc = function() {
+    $.post('index.php?fuse=clients&controller=index&action=deleteccnumber', {}, function(response) {
+        var data = clientexec.parseResponse(response);
+        if (data.error) {
+            return false;
+        }
+        window.location = 'index.php?fuse=clients&controller=userprofile&view=paymentmethod';
+    });
+}
+
+paymentmethod.process_plugin_details = function(json) {
+    if (json.error) {
+        return false;
+    }
+
+    //show subscription options
+    if (json.usingsubscriptionoptions) {
+        $('#use_recurring').removeClass('d-none');
+    } else {
+        $('#use_recurring').addClass('d-none');
+    }
+
+    //Display Payment Information for special plugins
+    $('#btnupdatepaymentmethod').addClass('d-none');
+    $('.PaymentInformation').addClass('d-none');
+    $('.PaymentIframe').prop('src', '');
+
+    if ($('.' + json.internalname + 'PaymentInformation').length) {
+        if (json.customercurrentpaymenttype == json.internalname) {
+            $('.' + json.internalname + 'PaymentInformation').removeClass('d-none').trigger('paymentShow');
+            if ($('.' + json.internalname + 'PaymentIframe').length > 0) {
+                $('.' + json.internalname + 'PaymentIframe').prop('src', 'index.php?fuse=admin&view=viewpluginurl&plugintoshow=' + json.internalname);
+            } else if (json.openHandler) {
+                window[json.internalname + "OpenHandler"]();
+            }
+        } else {
+            if ($('.update-payment-method-frm').parsley('validate')) {
+                $('.update-payment-method-frm').submit();
+            }
+        }
+    } else {
+        $('#btnupdatepaymentmethod').removeClass('d-none');
+    }
+
+    //showHideProfileID
+    if ($('.selected_paymenttype').length > 0) {
+        $('.selected_paymenttype')[0].value = json.internalname;
+    }
+
+    if ($('.DivBillingProfileID').length > 0) {
+        $('.DivBillingProfileID').hide();
+    }
+
+    if ($('.' + json.internalname + 'BillingProfileID').length > 0) {
+        $('.DivBillingProfileID').show();
+    }
+    //showHideProfileID
+
+    if (json.description.length) {
+        $('.plugin_description').html("<p>" + json.description + "</p>");
+        $('.plugin_description').removeClass('d-none');
+    } else {
+        $('.plugin_description').addClass('d-none');
+    }
+
+    // show cc info
+    if (json.showccoptions) {
+        $('#creditcardinfo').removeClass('d-none');
+    } else {
+        $('#creditcardinfo').addClass('d-none');
+
+        // return because the remaining options are only for cc
+        return;
+    }
+
+    // cc validation field check
+    if (json.awaitingvalidation != "") {
+        $('#awaitingvalidation').html(json.awaitingvalidation);
+        $('#awaitingvalidationspan').removeClass('d-none');
+        $('#ccnumberspan').addClass('d-none');
+        $('#deleteccspan').removeClass('d-none');
+        $('#newccspan').addClass('d-none');
+        $('#lastfourspan').addClass('d-none');
+        $('.cc-exp').addClass('d-none');
+    } else {
+        // console.debug(json.awaitingvalidation);
+        if (json.last4 != "") {
+            $('#newccspan').removeClass('d-none');
+            $('#ccnumberspan').addClass('d-none');
+            $('#lastfourspan').removeClass('d-none');
+            $('#lastfour').val("xxxxxxxxxxxx" + json.last4);
+            $('#lastfour2').text("xxxxxxxxxxxx" + json.last4);
+            $('#deleteccspan').removeClass('d-none');
+        } else {
+            $('#newccspan').addClass('d-none');
+            $('#ccnumberspan').removeClass('d-none');
+            $('#lastfourspan').addClass('d-none');
+            $('#lastfour').val("");
+            $('#lastfour2').text("None");
+            $('#deleteccspan').addClass('d-none');
+        }
+        $('#awaitingvalidationspan').addClass('d-none');
+    }
+
+    //if cc then which cards do we show
+    $('#visa_logo').css('display', json.visastyle);
+    $('#mastercard_logo').css('display', json.mastercardstyle);
+    $('#americanexpress_logo').css('display', json.americanexpressstyle);
+    $('#discover_logo').css('display', json.discoverstyle);
+    $('#lasercard_logo').css('display', json.lasercardstyle);
+    $('#dinersclub_logo').css('display', json.dinersclubstyle);
+    $('#switch_logo').css('display', json.switchstyle);
+
+    //for card validation
+    $('#validccbits').val(json.visabit + json.mcbit + json.amexbit + json.discbit + json.laserbit + json.dinersbit + json.switchbit);
+}
+</script>

@@ -1,0 +1,135 @@
+<?php
+
+$label = $this->user->lang($this->addon['namelanguage']);
+
+if ($this->addon['desclanguage'] != '') {
+    $label = sprintf('<span data-toggle="tooltip" data-html="true" data-placement="top" data-title="%s" class="tool-tip">%s</span>',
+        $this->escape(str_replace(['<p>', '</p>'], '', $this->addon['desclanguage'])),
+        $this->user->lang($this->addon['namelanguage'])
+    );
+}
+
+$options = [];
+$selected = '';
+
+if (in_array($this->addon['addon_type'], [0, 2])) {
+    foreach ($this->addon['prices'] as $price) {
+        $value = 'addon_' . $this->addon['id'] . '_' . $price['price_id'] . '_' . $price['recurringprice_cyle'];
+
+        if (!empty($price['price_selected'])) {
+            $selected = $value;
+        }
+
+        $options[] = [
+            $value,
+            $price['pricelanguage'],
+            [
+                'class' => 'currency-option-addon',
+                'data-price' => $price['item_price'],
+                'data-setupfee' => $price['item_setup'],
+                'data-term' => $price['term_name'],
+                'data-term-id' => $price['recurringprice_cyle'],
+            ]
+        ];
+    }
+}
+
+
+switch ($this->addon['addon_type']) {
+
+    case '0': // dropdown
+        $html = $this->form()->select(
+            'addonSelect_' . $this->addon['id'],
+            $options,
+            $selected,
+            [
+                'class' => 'form-control normalSelect2 cart-item addonItem',
+                'data-addon-id' => $this->addon['id'],
+            ]
+        );
+        $class = 'col-sm-6';
+        break;
+
+    case '1': // radio buttons
+        $html = [
+            '<div class="form-option">'
+        ];
+
+        foreach ($this->addon['prices'] as $price) {
+            $html[] = '<div class="col-12 pb-3">';
+            if (!empty($price['price_selected'])) {
+                // checked and wow just wow matteh
+                $html[] = '<label class="selected align-middle">';
+            } else {
+                // not default selected label
+                $html[] = '<label class="align-middle">';
+            }
+
+            $attributes =  [
+                'class' => 'choose-radio cart-item addonItem',
+                'data-price' => $price['item_price'],
+                'data-setupfee' => $price['item_setup'],
+                'data-addon-id' => $this->addon['id'],
+                'data-term' => $price['term_name'],
+                'data-term-id' => $price['recurringprice_cyle'],
+            ];
+            if (!empty($price['price_selected'])) {
+                $attributes['checked'] = 'true';
+            }
+            $html[] = $this->form()->radio('
+                addonSelect_' . $this->addon['id'],
+                'addon_' .
+                $this->addon['id'] .
+                '_' .
+                $price['price_id'] .
+                '_' .
+                $price['recurringprice_cyle'],
+                $attributes
+            );
+            $html[] = '<div class="text">' . $price['pricelanguage'] . '</div>';
+            $html[] = '</label>';
+            $html[]  ='</div>';
+        }
+        $html[] = '</div>';
+        $class = 'col-12';
+
+        $html = implode("\n", $html);
+        break;
+
+    case '2': // quantity
+        $html = [
+            '<div class="input-group mb-3">',
+            $this->form()->number(
+                'addonQuantity_' . $this->addon['id'],
+                $this->addon['price_selected'],
+                [
+                    'class' => 'form-control cart-item addonItem',
+                    'min' => '0',
+                    'data-addon-id' => $this->addon['id'],
+                ]
+            ),
+            $this->form()->select(
+                'addonSelect_' . $this->addon['id'],
+                $options,
+                $selected,
+                [
+                    'class' => 'custom-select normalSelect2 cart-item',
+                    'data-addon-id' => $this->addon['id'],
+                ]
+            ),
+            '</div>',
+        ];
+        $class = 'col-sm-6';
+
+        $html = implode("\n", $html);
+        break;
+
+}
+?>
+<div class="<?php echo $class; ?>">
+    <div class="form-elem">
+        <label class="pb-1"><?php echo $label; ?></label>
+
+        <?php echo $html; ?>
+    </div>
+</div>

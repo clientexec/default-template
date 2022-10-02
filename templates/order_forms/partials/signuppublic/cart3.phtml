@@ -1,0 +1,775 @@
+<?php
+    $submitButtonDisabled = '';
+    if ($this->termsConditions) {
+        // $submitButtonDisabled = ' disabled';
+    }
+?>
+
+<section class="cart-pages-wrapper">
+    <div class="container">
+    <?php
+        echo $this->partial('../partials/cartHeader.phtml', [
+            'tempInformation' => $this->tempInformation,
+            'step' => $this->step,
+            'summary' => $this->summary,
+            'bundled' => $this->bundled
+        ]);
+    ?>
+    <form name="customerdata" class="customerdata validate-form" action="order.php?fuse=admin&controller=signup&action=process" method="POST" id="submitForm">
+        <div id="loggedInBox" class="text-center alert alert-success <?php if (!$this->loggedIn || !$this->user->isRegistered()) { ?> d-none <?php }?>">
+
+            <strong>
+                <?php echo $this->user->lang("Logged in as %s %s (%s)", $this->gUserFirstName, $this->gUserLastName, $this->gCustomerEmail);?>
+            </strong>
+            <br/>
+            <?php echo $this->user->lang("If you wish to add this order under a new account please log out before completing this transaction.");?>
+        </div>
+        <div class="cm-box-holder customer-details">
+            <div class="head border-btm">
+                <a href="order.php" class="float-right btn btn-light">
+                    <?php echo $this->user->lang("Continue Shopping"); ?>
+                </a>
+                <h3 class="mb-1"><?php echo $this->user->lang('Order Summary'); ?></h3>
+            </div>
+            <div class="order-summary-wrapper">
+            <?php $proRateDate = ''; ?>
+            <?php foreach ($this->cartItems as $item) { ?>
+                <div class="summary-row">
+                    <div class="title">
+
+                        <h4>
+                        <?php
+                            if (isset($item['isBundle']) && is_array($item['isBundle']) && count($item['isBundle']) > 0) {
+                                $isBundle = 'true';
+                            } else {
+                                $isBundle = 'false';
+                            }
+                            if ($item['groupType'] == 3) {
+                                echo $this->escape($item['domainName']) ?> x <?php echo $item['term'];
+                                if (isset($item['titleText'])) {
+                                    echo "(".$item['titleText'].")";
+                                }
+                            } else {
+                                echo $item['groupNameLanguage']." / ".$item['namelanguage'];
+                                if (isset($item['titleText'])) {
+                                    echo $item['titleText'];
+                                }
+                            }
+                        ?>
+                        </h4>
+                        <?php
+                            if ($item['associatedDomain'] != false) {
+                                echo $this->escape($item['associatedDomain']);
+                            }
+                        ?>
+
+                        <?php if ($item['hasAddons']) {?>
+                            <div class="addons-wrapper">
+                                <a onclick="cart.toggle_addons('<?php echo $item['cartItemId'];?>');">
+                                    <br />
+                                    <span id="toggle_addon_icon_<?php echo $item['cartItemId'];?>">
+                                        <i class="fa fa-plus"></i>
+                                    </span>
+                                    <span id="toggle_addon_text_<?php echo $item['cartItemId'];?>">
+                                        <?php echo $this->user->lang('Show Product Addons');?>
+                                    </span>
+                                </a>
+                                <div id="addons-<?php echo $item['cartItemId'];?>" style="display:none;">
+                                    <?php $showQuantityNote = false;
+                                    foreach ($item['addons'] as $addon) {
+                                        $quantityText = '';
+                                        if ($addon['isQuantity']) {
+                                            $quantityText = '. <b>'.$this->user->lang('Quantity').': '.$addon['addonQuantity'].'**</b>';
+                                            $showQuantityNote = true;
+                                        } ?>
+                                        <?php echo $addon['namelanguage']; ?> - <?php echo $addon['itemlanguage']; ?><?php echo $quantityText; ?><br/>
+                                    <?php }
+                                    if ($showQuantityNote) {
+                                        echo '<b><i>** '.$this->user->lang('Prices are per unit purchased.').'</i></b>';
+                                    } ?>
+                                </div>
+                            </div>
+                            <?php } ?>
+
+                    </div>
+                    <div class="actions">
+                        <?php if (!isset($item['hidden']['delete'])) { ?>
+                        <button class="action-btns icon remove-button" type="button" data-cart-item-id="<?php echo $item['cartItemId'];?>" data-is-bundle="<?php echo $isBundle; ?>">
+                            <i class="fas fa-trash-alt"></i>
+                            <?php echo $this->user->lang('Remove'); ?>
+                        </button>
+                        <?php } ?>
+                        <?php if ($this->acceptCoupons) { ?>
+                        <button data-item-id="<?php echo $item['cartItemId']; ?>" data-toggle="modal" data-target="#couponModal" class="action-btns icon" type="button">
+                            <i class="fas fa-tags"></i>
+                            <?php
+                                if ($item['hasCoupon']) {
+                                    echo $this->user->lang('Update Coupon');
+                                } else {
+                                    echo $this->user->lang('Apply Coupon');
+                                }
+                            ?>
+                        </button>
+                        <?php } ?>
+                    </div>
+                    <div class="rate-box">
+                        <h5>
+                            <?php if (@$item['newTotal'] && $item['newTotal'] != $item['totalFormatted']) { ?>
+                                <span class="strok">
+                                    <?php echo $item['totalFormatted']; ?>
+                                </span>
+                                <span class="standout">
+                                    <?php echo $item['newTotal']; ?>
+                                </span>
+                            <?php } else {
+                                echo $item['totalFormatted'];
+                                }
+
+                            if (isset($item['isProRated']) && $item['isProRated']) {
+                                echo "*";
+                                $proRateDate = $item['proRateDate'];
+                            }
+                            ?>
+                        </h5>
+                        <p class="pt-1">
+                            <small>
+                        <?php
+
+                            if (@$item['newSetup']) {
+                                if ($item['setupFormatted'] != $item['newSetup']) {
+                                    echo '<span style="text-decoration: line-through;"> '.$item['setupFormatted'] .' '.$this->user->lang('Setup Fee').'</span> <br/> <span style="color:red;">'.$item['newSetup'].' '.$this->user->lang('Setup Fee').'</span>';
+                                } else {
+                                    echo $this->user->lang('Setup Fee')." ".$item['newSetup'];
+                                }
+                            } elseif (@$item['setupFormatted']) {
+                                echo $this->user->lang('Setup Fee')." ".$item['setupFormatted'];
+                            }
+                        ?>
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            <?php } ?>
+                <div class="summary-total">
+                    <ul>
+                        <li>
+                            <?php echo $this->user->lang('SubTotal'); ?> (<span class="total_item_count"></span>):
+                            <span class="val total_subtotal_price"></span>
+                        </li>
+                        <li class="total_coupon_discount_row d-none">
+                            <?php echo $this->user->lang('Discounts'); ?>:
+                            <span class="val total_subtotal_couponDiscount"></span>
+                        </li>
+                        <li>
+                            <span class="total_tax_name"></span>
+                            <span class="val total_tax_amount"></span>
+                        </li>
+                        <li>
+                            <span class="total_tax2_name"></span>
+                            <span class="val total_tax2_amount"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="discount-applied">
+                <ul>
+                    <li>
+                        <?php echo $this->user->lang('Grand Total'); ?>:
+                        <span class="val total_total_pay"></span>
+                    </li>
+                    <li>
+                    <?php
+                        if ($proRateDate != '') {
+                            echo "* ".$this->user->lang("Prorated to")." ".$proRateDate;
+                        }
+                    ?>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <?php if (!$this->loggedIn || !$this->user->isRegistered()) { ?>
+        <div class="cm-box-holder customer-details">
+            <div class="head pb-0">
+                <h3><?php echo $this->user->lang('Customer Details'); ?></h3>
+                <div class="info-bar">
+                    <p class="d-none d-lg-block">
+                        <?php echo $this->user->lang('Please enter your new profile and billing details below to continue'); ?>
+                    </p>
+                    <?php if ($this->user->isAnonymous()) { ?>
+                    <div class="alert-box already-registered-btn">
+                        <a href="index.php?fuse=home&view=login"><?php echo $this->user->lang('Existing Customer? Login Here'); ?></a>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+            <div class="form-wrapper pb-2">
+                <div class="row">
+                <?php foreach ($this->customFields as $customField) { ?>
+                    <?php if ($customField['fieldtype'] == 'break')  { ?>
+                    <div class="w-100"></div>
+                    <?php } else { ?>
+                    <div class="col-md-6">
+                        <div class="form-elem">
+                            <?php echo $this->cFHelper()->getLabel($customField); ?>
+                            <?php echo $this->cFHelper()->getMarkup($customField); ?>
+                        </div>
+                    </div>
+                    <?php } ?>
+                <?php } ?>
+                <?php if ($this->showCaptcha) { ?>
+                    <div class="col-12">
+                        <label class="customfield_label">
+                            <?php echo $this->unescape($this->captchaHtml); ?>
+                        </label>
+                    </div>
+                <?php } ?>
+                </div>
+            </div>
+        </div>
+        <?php } ?>
+        <input id="payment_information_display" type="hidden" name="payment_information_display" value="0">
+        <input id="hidePaymentMethods" type="hidden" name="hidePaymentMethods" value="<?php echo $this->hidePaymentMethods; ?>">
+        <input id="totalPay_raw" type="hidden" name="totalPay_raw" value="0">
+        <input id="creditBalance_raw" type="hidden" name="creditBalance_raw" value="<?php echo $this->creditbalance; ?>">
+
+        <div class="cm-box-holder customer-details">
+            <div id="payment_information_box" class="pl-5 pr-5">
+                <?php if (count($this->paymentmethods) != 0) { ?>
+                <div class="head border-btm">
+                    <h3 class="mb-0"><?php echo $this->user->lang('Choose Your Payment Method');?></h3>
+                </div>
+                <div class="payment-method pb-0">
+                    <div class="select-payment">
+                        <div class="row">
+                            <div class="col-12 pl-5 credit_balance_option d-none pb-2">
+                                <input class="mr-3 credit_balance_checkbox" type="checkbox" name="applymycredit" checked="checked" disabled />
+                                <span class="text">
+                                    <?php echo $this->user->lang("Apply my credit of %s and pay the rest with:", $this->formattedCreditBalance);?>
+                                </span>
+                            </div>
+
+                        <div class="col-12 col-sm-6 credit_balance_payment_option d-none">
+                            <label class="payment_method_radio_label payment_method_selected payment-option">
+                                <input type="radio" class="payment_method_apply_my_credit payment-option" onclick="cart.toggle_gateway(this.value);" name="paymentMethod" checked="checked" value="apply_my_credit" />
+                                    <div class="text">
+                                        <?php echo $this->user->lang("Apply my Credit").'<div class="avoid"> ['.$this->user->lang("Available: %s", $this->formattedCreditBalance).']';?></div>
+                                    </div>
+                            </label>
+                        </div>
+                        <?php
+                            foreach ($this->paymentmethods as $key) {
+                              echo $this->partial('../../default/views/layoutpartials/paymentMethod.phtml', [
+                                    'paymentmethod' => $key,
+                                ]);
+                            }
+                        ?>
+                        </div>
+
+                    </div>
+                <?php } else { ?>
+                    <strong><?php echo $this->user->lang('There are no Payment Processors configured!');?></strong>
+                <?php } ?>
+            </div>
+
+                <!-- Handle the extra fields for payment processors -->
+
+            <div class="container">
+                <div class="select-payment">
+                    <div class="tab-content">
+                        <?php
+                        foreach ($this->paymentmethods as $key) {
+                            echo $this->partial('../../default/views/layoutpartials/paymentMethodFields.phtml', [
+                                'paymentmethod' => $key,
+                            ]);
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+
+
+            <?php if ($this->automaticCCCharge) { ?>
+            <div class="pb-0 pl-5 ml-3 text-center" id="autochargeccblock">
+                <label class="checkbox mb-0">
+                    <input type="checkbox" name="autochargecc" id="autochargecc" checked>
+                    <?php echo $this->user->lang('I authorize that future charges for these packages will be automatically charged.'); ?>
+                </label>
+            </div>
+            <?php } ?>
+        </div>
+
+        <?php if ($this->termsConditions) { ?>
+        <div class="pb-0 pl-5 ml-3 pt-2 text-center" id="toc-div">
+            <label>
+                <input
+                data-parsley-required-message="<?php echo $this->user->lang('Please agree to our Terms and Conditions.'); ?>"
+                type="checkbox"
+                data-parsley-required="true"
+                name="agree"
+                value="1"
+                onclick="cart.agree_tc()",
+                id="tocAgree"
+            >
+            <?php
+                if ($this->termsConditions == '-1') {
+                    echo $this->user->lang(
+                        'I Agree to the %sTerms and Conditions%s',
+                        '<a href="' . $this->termsConditionsUrl . '" target="_blank">',
+                        '</a>'
+                    );
+                } else {
+                    echo $this->user->lang(
+                        'I Agree to the %sTerms and Conditions%s',
+                        '<a data-toggle="modal" data-target="#terms-modal" href="javascript:void(0);">',
+                        '</a>'
+                    );
+                }
+                ?>
+            </label>
+        </div>
+
+        <?php } ?>
+
+        <div class="make-mid mt-3 pb-3">
+        <?php if (count($this->paymentmethods) != 0) { ?>
+                <span class='paymentbutton1'>
+                    <button class="app-btns primary" onclick="cart.submit_form(<?php echo $this->loggedIn; ?>);"  id="submitButton"></button>
+                </span>
+            <?php foreach ($this->gatewayForms as $gatewayName => $gatewayForm) { ?>
+                <div class='paymentbutton2 <?php echo $gatewayName."paymentbutton"; ?> col-12 d-none pt-2'>
+                    <?php echo $this->unescape($gatewayForm); ?>
+                </div>
+            <?php } ?>
+            <?php } ?>
+            </div>
+        </div>
+    </form>
+    </div>
+</section>
+
+<div class="modal" tabindex="-1" role="dialog" id="terms-modal" aria-labelledby="terms-modal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><?php echo $this->user->lang('Terms and Conditions'); ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><?php echo $this->unescape($this->termsConditionsText); ?></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="couponModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <?php echo $this->user->lang('Coupon Code'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="couponForm">
+                    <input placeholder="Coupon Code" type="text" id="couponCode" class="form-control" data-parsley-required="true" />
+                    <input type="hidden" name="item-id" id="coupon-item-id" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="couponSubmitButton">
+                    <?php echo $this->user->lang('Submit'); ?>
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <?php echo $this->user->lang('Close');?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script data-cfasync="false" type="text/javascript">
+cart = {};
+paymentDescs = {};
+$(document).ready(function() {
+    <?php if ($this->user->isAnonymous()) { ?>
+    cart.main_button_text = "<?php echo $this->user->lang('Place Order and Create Account');?>";
+    <?php } else { ?>
+    cart.main_button_text = "<?php echo $this->user->lang('Place Order');?>";
+    <?php } ?>
+    mainForm = document.forms['customerdata'];
+    cart.selected_gateway = '<?php echo @$this->defaultGateway;?>';
+
+    cart.state_var_id = 'CT_<?php echo $this->state_var_id;?>';
+    $("#"+cart.state_var_id).bind('change',function(){
+        validate_vat();
+    });
+
+    cart.country_var_id = 'CT_<?php echo $this->country_var_id;?>';
+    $("#"+cart.country_var_id).bind('change',function(){
+        cart.checkListsStates();
+    });
+
+    cart.vat_var_id = 'CT_<?php echo $this->vat_var_id;?>';
+    $("#"+cart.vat_var_id).bind('blur',function(){
+        validate_vat();
+    });
+
+    validate_vat();
+
+    <?php foreach ($this->paymentmethods as $key) { ?>
+    paymentDescs['<?php echo $key['paymentTypeOptionValue']; ?>'] = '<?php echo $key['description']; ?>';
+    <?php } ?>
+    <?php if (count($this->paymentmethods) == 1 && @$this->defaultGateway == '') { ?>
+    cart.toggle_gateway('<?php echo $this->paymentmethods[0]['paymentTypeOptionValue']; ?>');
+    <?php } else { ?>
+    cart.toggle_gateway(cart.selected_gateway);
+    <?php } ?>
+
+});
+</script>
+
+<script data-cfasync="false">
+currentCountry = '';
+gatewayNameSelected = '';
+validate_vat = function() {
+    cart.update_pricing();
+}
+
+$('.payment-option').on('change', function () {
+    cart.toggle_gateway($(this).val());
+});
+
+cart.checkListsStates = function() {
+    // Get the country and state information
+    var selectStates = $('#' + cart.state_var_id);
+    var countryIso = $('#' + cart.country_var_id).val();
+
+    if (currentCountry != countryIso) {
+        selectStates.empty();
+        currentCountry = countryIso;
+
+        $.getJSON('index.php?fuse=admin&controller=signup&action=getstatelist&countryIso='+countryIso, function(response) {
+            for (var k in response.states) {
+                var option = new Option(response.states[k].name, response.states[k].iso);
+                selectStates.append(option);
+            }
+
+            selectStates.trigger('change');
+        });
+    }
+}
+
+cart.update_pricing = function() {
+    if(document.getElementById('vat_validating') != undefined){
+        document.getElementById('vat_validating').style.display = '';
+        document.getElementById('vat_valid').style.display = 'none';
+        document.getElementById('vat_invalid').style.display = 'none';
+        document.getElementById('vat_error').style.display = 'none';
+    }
+
+    // Get the country and state information to pass to the view
+    var selectedState = $('#' + cart.state_var_id).val();
+    var selectedCountry = $('#' + cart.country_var_id).val();
+    var selectedVATNumber = $('#' + cart.vat_var_id).val();
+
+    $.getJSON('index.php?fuse=admin&controller=signup&action=getfinalpricinginfo',
+        { state: selectedState, country: selectedCountry, vatNumber: selectedVATNumber } ,
+        function(response) {
+            response = clientexec.parseResponse(response);
+
+            $('.get_total_image').removeClass('d-none');
+            $('#taxInformation').addClass('d-none');
+
+            label_count = (response.itemcount > 1) ? clientexec.lang("% Items", response.itemcount) : clientexec.lang("1 Item");
+            $('.total_item_count').text(label_count);
+            $('.total_subtotal_price').html(response.totals.subTotal);
+            if (response.totals.couponDiscount) {
+              $('.total_subtotal_couponDiscount').html(response.totals.couponDiscount);
+              $('.total_coupon_discount_row').removeClass('d-none');
+            }
+            if (response.totals.taxRequired && response.totals.taxAmount) {
+              $('.total_tax_name').text(response.totals.taxName);
+              $('.total_tax_amount').html(response.totals.taxAmount);
+              $('.total_tax_row').removeClass('d-none');
+            }else{
+              $('.total_tax_row').addClass('d-none');
+            }
+            if (response.totals.taxRequired && response.totals.tax2Amount) {
+              $('.total_tax2_name').text(response.totals.tax2Name);
+              $('.total_tax2_amount').html(response.totals.tax2Amount);
+              $('.total_tax2_row').removeClass('d-none');
+            }else{
+              $('.total_tax2_row').addClass('d-none');
+            }
+
+            //what if we don't have any taxes
+            if (response.totals.taxableitems == 0) {
+              $('.total_tax_row').addClass('d-none');
+              $('.total_tax2_row').addClass('d-none');
+            }
+
+            $('.total_total_pay').html(response.totals.totalPay);
+            $('.get_total_image').addClass('d-none');
+            $('#taxInformation').removeClass('d-none');
+
+            document.getElementById('totalPay_raw').value = response.totals.totalPay_raw;
+
+            if ($('.paymentbutton2').length > 0) {
+                $('.paymentbutton2').addClass('d-none');
+            }
+
+            if (parseFloat(response.totals.totalPay_raw) == 0 && document.getElementById('hidePaymentMethods').value == 1) {
+                $('#payment_information_box').addClass('d-none');
+                $('#toc-div').addClass('make-mid').addClass('pt-3');
+                document.getElementById('payment_information_display').value = 0;
+                $('#submitButton').text(cart.main_button_text);
+                $('.customButton').text(cart.main_button_text);
+                if ($('.'+gatewayNameSelected+'paymentbutton').length > 0) {
+                    $('.'+gatewayNameSelected+'paymentbutton').addClass('d-none');
+                    $('.paymentbutton1').removeClass('d-none');
+                }
+            } else {
+                $('#payment_information_box').removeClass('d-none');
+                document.getElementById('payment_information_display').value = 1;
+                if ($('.'+gatewayNameSelected+'paymentbutton').length > 0) {
+                    $('.paymentbutton1').addClass('d-none');
+                    $('.'+gatewayNameSelected+'paymentbutton').removeClass('d-none').trigger('paymentShow');
+                }
+            }
+
+            if(document.getElementById('totalPay_raw') != undefined
+              && document.getElementById('creditBalance_raw') != undefined
+              && parseFloat(document.getElementById('totalPay_raw').value) > 0.00
+              && parseFloat(document.getElementById('totalPay_raw').value) <= parseFloat(document.getElementById('creditBalance_raw').value)){
+                $('.credit_balance_checkbox').prop('checked', false);
+                $('.credit_balance_option').addClass('d-none');
+                $('.credit_balance_checkbox').prop('disabled', true);
+                $('.credit_balance_payment_option').removeClass('d-none');
+                $('.payment_method_apply_my_credit').click();
+                $('.payment_method_apply_my_credit').prop('checked', true);
+                cart.toggle_gateway('apply_my_credit');
+            }else{
+                $('.credit_balance_payment_option').addClass('d-none');
+                if(parseFloat(document.getElementById('creditBalance_raw').value) > 0){
+                    $('.credit_balance_checkbox').prop('disabled', false);
+                    $('.credit_balance_option').removeClass('d-none');
+                    $('.credit_balance_checkbox').prop('checked', true);
+                }else{
+                    $('.credit_balance_checkbox').prop('checked', false);
+                    $('.credit_balance_option').addClass('d-none');
+                    $('.credit_balance_checkbox').prop('disabled', true);
+                }
+            }
+
+            if (document.getElementById('VAT'+cart.vat_var_id)) {
+                if(selectedCountry == 'GR'){
+                    selectedCountry = 'EL';
+                }
+                $("#vat_country").html(selectedCountry);
+                if (response.totals.requestVAT) {
+                    document.getElementById('vat_validating').style.display = 'none';
+                    if(selectedVATNumber != ""){
+                        switch(response.totals.vatResponse){
+                            case "-1":
+                                document.getElementById('vat_error').style.display = '';
+                                break;
+                            case "0":
+                                document.getElementById('vat_invalid').style.display = '';
+                                break;
+                            case "1":
+                                document.getElementById('vat_valid').style.display = '';
+                                break;
+                        }
+                    }
+                    $('#VAT' + cart.vat_var_id).parent().removeClass('d-none');
+                } else {
+                    $('#VAT' + cart.vat_var_id).parent().addClass('d-none');
+                }
+            }
+        }
+      ).done(function(data) {
+        if (typeof initStripe === 'function') {
+            initStripe();
+        }
+    });
+}
+
+cart.toggle_gateway = function(gatewayName) {
+    var el = $('#' + cart.selected_gateway + '-extraFields');
+    if (el) {
+        el.addClass('d-none')
+    }
+    var el = $('#' + gatewayName + '-extraFields');
+    if (el) {
+        el.removeClass('d-none')
+    }
+
+    cart.selected_gateway = gatewayName;
+    gatewayNameSelected = gatewayName;
+
+    $('#submitButton').text(cart.main_button_text);
+    $('.customButton').text(cart.main_button_text);
+
+    $('.payment_method_selected').removeClass('payment_method_selected');
+    $('.payment_method_'+gatewayName).parent().addClass('payment_method_selected');
+
+    if ($('.paymentbutton2').length > 0) {
+        $('.paymentbutton2').addClass('d-none');
+    }
+    if ($('.'+cart.selected_gateway+'paymentbutton').length > 0 && !(parseFloat(document.getElementById('totalPay_raw').value) == 0 && document.getElementById('hidePaymentMethods').value == 1)) {
+        $('.paymentbutton1').addClass('d-none');
+        $('.'+cart.selected_gateway+'paymentbutton').removeClass('d-none').trigger('paymentShow');
+    } else {
+        $('.'+cart.selected_gateway+'paymentbutton').addClass('d-none');
+        $('.paymentbutton1').removeClass('d-none');
+    }
+
+    var el2 = document.getElementById('autochargeccblock');
+    if(el2){
+        el2.style.display = 'none';
+        var el3 = document.getElementById('autochargecc');
+        if(el3){
+            el3.checked = true;
+
+            //If autopayment, display the autocharge option
+            var el4 = document.getElementById(gatewayName+'_autopayment');
+            if (el4) {
+                if(el4.value == 1) {
+                    el2.style.display = 'block';
+                }
+            }
+        }
+    }
+}
+
+cart.submit_form = function(allowSubmit) {
+    if ($('#submitButton').hasClass('disabled')) {
+        return;
+    }
+    if ($('.customButton').hasClass('disabled')) {
+        return;
+    }
+    $('#submitForm').parsley({
+        excluded: 'input[type=button], input[type=submit], input[type=reset], :hidden'
+    });
+    $('#submitForm').submit();
+}
+
+$('#couponModal').on('show.bs.modal', function (event) {
+    var itemId = $(event.relatedTarget).data('item-id');
+    $(this).find('.modal-body input[name="item-id"]').val(itemId);
+})
+
+$('#couponSubmitButton').on('click', function(e) {
+    e.preventDefault();
+
+    itemId = $('#coupon-item-id').val();
+    code = clientexec.htmlspecialchars($('#couponCode').val());
+    if (code != '') {
+        $.ajax({
+            url: 'index.php?fuse=admin&controller=signup&action=validatecoupon',
+            success: function (rsp) {
+                $('#couponModal').modal('hide');
+                if (rsp.error) {
+                    clientexec.parseResponse(rsp);
+                } else {
+                    window.location='order.php?step=3';
+                }
+            },
+            data: {
+                couponCode: code,
+                itemID: itemId
+            },
+            dataType: 'json'
+        });
+        $('#coupon-item-id').val('');
+        $('#couponCode').val('');
+    }
+});
+
+$('.remove-button').on('click', function(e) {
+    cartItemId = $(this).data('cart-item-id');
+    isBundle = $(this).data('is-bundle');
+
+    if (isBundle) {
+        var confirmMsg = clientexec.lang('Are you sure that you wish to remove the item from your cart? <br>Note: The associated items will also be removed.');
+    } else {
+        var confirmMsg = clientexec.lang('Are you sure that you wish to remove the item from your cart?');
+    }
+
+    $.confirm({
+        theme: 'bootstrap',
+        title: clientexec.lang('Removing Cart Item'),
+        content: confirmMsg,
+        draggable: false,
+        buttons: {
+            confirm: {
+                text: clientexec.lang('Yes'),
+                action: function () {
+                    clientexec.mask();
+                    $.ajax({
+                        url: 'index.php?fuse=admin&controller=signup&action=deletecartitem',
+                        success: function () {
+                            window.location='order.php?step=3';
+                        },
+                        data: {
+                            cartItem: cartItemId
+                        },
+                        dataType: 'json'
+                    });
+                }
+            },
+            cancel: {
+                text: clientexec.lang('No')
+            },
+        }
+    });
+});
+
+cart.agree_tc = function() {
+
+    if ($('#tocAgree').is(':checked')) {
+        $('#submitButton').removeClass('disabled');
+        $('.customButton').removeClass('disabled');
+    } else {
+        $('#submitButton').addClass('disabled');
+        $('.customButton').addClass('disabled');
+    }
+}
+
+cart.toggle_addons = function(productId) {
+    $('#addons-' + productId).toggle('hidden');
+
+    if ($('#toggle_addon_icon_' + productId).html().trim() == '<i class="fa fa-plus"></i>') {
+        $('#toggle_addon_icon_' + productId).html('<i class="fa fa-minus"></i>');
+        $('#toggle_addon_text_' + productId).html(clientexec.lang("Hide Product Addons"));
+    } else {
+        $('#toggle_addon_icon_' + productId).html('<i class="fa fa-plus"></i>');
+        $('#toggle_addon_text_' + productId).html(clientexec.lang("Show Product Addons"));
+    }
+    return false;
+}
+
+</script>
+
+<?php if ($this->enableFraudLabsPro) { ?>
+<script data-cfasync="false" type="text/javascript">
+(function(){
+    function s() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.async = true;
+        e.src = ('https:' === document.location.protocol ? 'https://' : 'http://') + 'cdn.fraudlabspro.com/s.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(e, s);
+    }
+    (window.attachEvent) ? window.attachEvent('onload', s) : window.addEventListener('load', s, false);
+})();
+</script>
+<?php } ?>

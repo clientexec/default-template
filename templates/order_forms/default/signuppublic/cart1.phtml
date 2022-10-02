@@ -1,0 +1,52 @@
+<?php
+    echo $this->partial('../partials/currency.phtml', [
+        'currency' => $this->currency,
+    ]);
+?>
+
+<section class="cart-pages-wrapper">
+    <div class="container">
+        <?php
+            echo $this->partial('../partials/cartHeader.phtml', [
+                'tempInformation' => $this->tempInformation,
+                'step' => $this->step,
+                'summary' => $this->summary,
+                'bundled' => $this->bundled,
+                'hasStep1' => true
+            ]);
+        ?>
+        <div class="sec-head">
+            <h2>
+                <?php echo $this->user->lang('Select Product'); ?>
+            </h2>
+        </div>
+        <div class="hosting-plan-wrapper page-wrapper">
+            <?php
+            foreach ($this->packages as $package) {
+                echo $this->partial('partials/productRow.phtml', [
+                    'package' => $package,
+                    'hideSetupFees' => $this->hideSetupFees,
+                    'showSaved' => $this->showSaved
+                ]);
+            }
+            ?>
+        </div>
+    </div>
+</section>
+<script>
+    $('.paymentTerm').on('change', function () {
+        // disable setup fee
+        $(this).parents('.item-wrapper').find('.setupfeeprice').html(accounting.formatMoney($('option:selected', this).data('setupfee'), currency.symbol, currency.precision, currency.thousandssep, currency.decimalssep, currency.alignment) + currency.showabrv);
+
+        // disable $ saved
+        if ($('option:selected', this).data('saved') != '-') {
+            $(this).parents('.item-wrapper').find('.savePercent').html(
+                clientexec.lang('You saved %', $('option:selected', this).data('saved'))
+            );
+            $(this).parents('.item-wrapper').find('.saveWrapper').removeClass('d-none');
+        } else {
+            $(this).parents('.item-wrapper').find('.saveWrapper').addClass('d-none');
+        }
+
+    }).change();
+</script>

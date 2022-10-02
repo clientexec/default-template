@@ -1,0 +1,53 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="package-view-page">
+            <?php echo $this->publicproductheader($this->user); ?>
+            <div class="cs-padding">
+            <?php if ( $this->domainNotRegistered == true ) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("This domain currently isn't registered.");?>
+                </div>
+                <?php } else if ( $this->domainNotActive == true ) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("This domain currently isn't active.");?>
+                </div>
+                <?php } else { ?>
+                <?php
+                    echo $this->form()->open(
+                        'index.php?fuse=clients&controller=products&action=savedomaincontactinfo',
+                        'POST'
+                    );
+                    echo $this->form()->hidden('id', $this->packageId);
+                ?>
+                <div class="row">
+                    <?php foreach ($this->contactInformation as $customField) { ?>
+                    <?php if ($customField['fieldtype'] == 'break')  { ?>
+                    <div class="w-100"></div>
+                    <?php } else { ?>
+                    <div class="col-sm-6">
+                        <div class="form-elem">
+                            <?php echo $this->cFHelper()->getLabel($customField); ?>
+                            <?php echo $this->cFHelper()->getMarkup($customField); ?>
+                        </div>
+                    </div>
+                        <?php } ?>
+                    <?php } ?>
+                    <div class="w-100"></div>
+                    <div class="col-sm-6">
+                        <div class="form-elem">
+                    <?php echo $this->form()->submit(
+                        $this->user->lang('Update Contact Information'),
+                        ['class' => [
+                            'app-btns',
+                            'primary'
+                            ]
+                        ]); ?>
+                        </div>
+                    </div>
+                </div>
+                <?php echo $this->form()->close(); ?>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>

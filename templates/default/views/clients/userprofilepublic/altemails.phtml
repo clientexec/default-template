@@ -1,0 +1,77 @@
+<div class="datatable-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('Alternate Accounts'); ?>
+                    </h1>
+                </div>
+                <div class="table-responsive cs-padding">
+                    <form method="post" action="index.php?fuse=clients&action=updatealtemail&controller=userprofile">
+                        <table id="alt-accounts-table" class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <?php echo $this->user->lang('Email'); ?>
+                                    </th>
+                                    <th>
+                                        <?php echo $this->user->lang('Notifications'); ?>
+                                    </th>
+                                    <th>
+                                        <?php echo $this->user->lang('Invoices'); ?>
+                                    </th>
+                                    <th>
+                                        <?php echo $this->user->lang('Support'); ?>
+                                    </th>
+                                    <th>
+                                        <?php echo $this->user->lang('Delete'); ?>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <?php foreach ($this->accounts as $account) { ?>
+                            <tr>
+                                <td>
+                                    <input class="form-control" type="text" name="email_<?php echo $account['altEmailId']; ?>" value="<?php echo $account['altEmail']; ?>">
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="sendnotifications_<?php echo $account['altEmailId']; ?>" <?php echo $account['sendNotifications']; ?>>
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="sendinvoice_<?php echo $account['altEmailId']; ?>" <?php echo $account['sendInvoice']; ?>>
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="sendsupport_<?php echo $account['altEmailId']; ?>" <?php echo $account['support']; ?>>
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="delete_<?php echo $account['altEmailId']; ?>">
+                                </td>
+                            </tr>
+                            <?php } ?>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control" name="newaltemail">
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="newnotify">
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="newinvoice">
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="newsupport">
+                                </td>
+                                <td>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="form-actions alt-accounts">
+                            <input type="submit" class="app-btns primary" value="<?php echo $this->user->lang('Update'); ?>">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

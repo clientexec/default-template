@@ -1,0 +1,31 @@
+//@import '../css/vendor/icomoon/style';
+
+@import '../css/vendor/jquery.uploadFile';
+@import '../css/vendor/tab-accordian';
+@import '../css/vendor/date-picker';
+
+@import '~bootstrap/scss/bootstrap';
+
+@import '@fortawesome/fontawesome-free/scss/fontawesome';
+@import '@fortawesome/fontawesome-free/scss/regular';
+@import '@fortawesome/fontawesome-free/scss/solid';
+@import '@fortawesome/fontawesome-free/scss/brands';
+
+
+@import '~malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar';
+
+
+@import '~datatables.net-bs4/css/dataTables.bootstrap4';
+@import '~datatables.net-responsive-bs4/css/responsive.bootstrap4';
+// @import '~datatables.net-dt/css/jquery.dataTables';
+
+@import '~select2/dist/css/select2';
+@import '~jquery-confirm/css/jquery-confirm';
+
+@import '~bootstrap-datepicker/dist/css/bootstrap-datepicker';
+
+// @import '~bootstrap-fileinput/scss/fileinput';
+
+@import 'main';
+@import 'currency';
+@import 'cart';

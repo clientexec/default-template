@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Feedback submit</title>
+        <link rel="Shortcut Icon" href="favicon.ico" />
+        <link href='//fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Quattrocento+Sans:400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link href="templates/default/views/support/indexpublic/SupportWidgetForm.css" media="all" rel="stylesheet" type="text/css" />
+        <script id="translations" type="application/json">{
+            "txt.feedback_tab.link.go_back":"<?php echo $this->user->lang('Go back') ?>",
+            "txt.feedback_tab.message.submitted_thanks":"<?php echo $this->user->lang('Message submitted. Thanks!') ?>",
+            "txt.feedback_tab.error.no_results_found":"<?php echo $this->user->lang('Sorry, nothing in our Knowledge base matches your search. Please submit a request for help below.') ?>",
+            "txt.feedback_tab.button.submit_support_request":"<?php echo $this->user->lang('Submit a support request') ?>",
+            "txt.feedback_tab.label.what_is_your_question":"<?php echo $this->user->lang('What is your question?') ?>",
+            "txt.feedback_tab.notification.need_more_details":"<?php echo $this->user->lang('We need just a few more details about you. Please fill out the form below for further help.') ?>",
+            "txt.feedback_tab.placeholder.search_knowledgebase":"<?php echo $this->user->lang('Search our Knowledge Base') ?>",
+            "txt.feedback_tab.error.seems_to_be_invalid":"<?php echo $this->user->lang('Please fill in this field properly.') ?>",
+            "txt.feedback_tab.label.your_email_address":"<?php echo $this->user->lang('Your email address') ?>",
+            "txt.feedback_tab.button.begin_chat":"<?php echo $this->user->lang('Begin chat') ?>",
+            "txt.feedback_tab.label.search":"<?php echo $this->user->lang('You asked:') ?>",
+            "txt.feedback_tab.link.see_all_results":"<?php echo $this->user->lang('See all {{total_entries}} results') ?>",
+            "txt.feedback_tab.text.or":"<?php echo $this->user->lang('or') ?>",
+            "txt.feedback_tab.footer.powered_by_zendesk":"<?php echo $this->user->lang('Powered by Clientexec') ?>",
+            "txt.feedback_tab.button.submitting":"<?php echo $this->user->lang('Submitting...') ?>",
+            "txt.feedback_tab.label.we_found_helpful_entries":"<?php echo $this->user->lang('We found the following entries in our knowledge base that might be helpful:') ?>",
+            "txt.feedback_tab.heading.would_you_like_to":"<?php echo $this->user->lang('Would you like to...') ?>",
+            "txt.feedback_tab.heading.how_can_we_help":"<?php echo $this->user->lang('How can we help you?') ?>",
+            "txt.feedback_tab.error.problem_submitting_request":"<?php echo $this->user->lang('Sorry, there was a problem submitting your request. Please try again later.') ?>",
+            "txt.feedback_tab.label.name":"<?php echo $this->user->lang('Name') ?>",
+            "txt.feedback_tab.button.find_someone_to_chat":"<?php echo $this->user->lang('Find someone to chat with') ?>",
+            "txt.feedback_tab.button.next":"<?php echo $this->user->lang('Continue') ?>",
+            "txt.feedback_tab.placeholder.fill_in_details":"<?php echo $this->user->lang('Fill in the details here. Please try to be as specific as possible.') ?>",
+            "txt.feedback_tab.error.no_agents_available":"<?php echo $this->user->lang('Sorry, no agents are available. You may submit a ticket below for further help.') ?>",
+            "txt.feedback_tab.button.submit":"<?php echo $this->user->lang('Submit') ?>",
+            "txt.feedback_tab.notification.thanks_what_next":"<?php echo $this->user->lang('Thanks! What would you like to do next?') ?>",
+            "txt.feedback_tab.notification.all_agents_busy":"<?php echo $this->user->lang('It looks like all our agents are busy at the moment. Please submit a support request instead.') ?>",
+            "txt.feedback_tab.placeholder.briefly_describe":"<?php echo $this->user->lang('Briefly describe your question') ?>",
+            "txt.feedback_tab.error.problem_submitting_search":"<?php echo $this->user->lang('Sorry, there was a problem submitting your search. Please try again later.') ?>",
+            "txt.feedback_tab.button.none_helpful":"<?php echo $this->user->lang('Click to contact us') ?>",
+            "txt.feedback_tab.label.question":"<?php echo $this->user->lang('Question') ?>",
+            "txt.feedback_tab.label.details":"<?php echo $this->user->lang('Details') ?>"
+        }</script>
+    </head>
+    <body class="knowledge_base<?php echo ($this->forceSuggestions) ? ' suggestions' : ''; ?>">
+        <script type='application/mustache' id='search_results_template'>
+            <ul>
+                {{#entries}}
+                <li class="entry {{forum_type}}">
+                    <span class='entry_tag'></span>
+                    <a href='index.php?fuse=knowledgebase&view=article&controller=articles&articleId={{id}}' target='_new'>{{title}}
+                    <span class="pull-right entry_tag_right" /></a>
+                    <p>{{excerpt}}</p>
+                </li>
+                {{/entries}}
+            </ul>
+            <div class='footer'>
+                {{#backURL}}
+                <a href='{{backURL}}' class='back'><input type="button" value="{{goBack}}" class="button left" name="back"/></a>
+                {{/backURL}}
+                {{#total_entries}}
+                <a href='{{moreResultsURL}}' target='_new' class='more'><input type="button" value="{{seeAllResults}}" class="button pull-right" name="results"/></a>
+                {{/total_entries}}
+            </div>
+            <div class='clear'>&nbsp;</div>
+
+        </script>
+        <div id='wrapper' class="container-fluid">
+            <div id='dropbox'>
+                <header class="row">
+                    <form action="#/dropbox/knowledge_base" data-remote-moreurl="index.php?fuse=knowledgebase&controller=articles&view=search" data-remote-url="index.php?fuse=knowledgebase&action=getautosuggetartices&controller=index&sessionHash=<?php echo md5(session_id()); ?>" id="knowledge_base_search" method="get">
+                        <input class="search" id="knowledge_base_search_input" name="subject" placeholder="<?php echo $this->user->lang('Or search the knoweldge base') ?>" type="search" style="border:1px solid #cdcdcd;display:none;" />
+                    </form>
+                    <h1 class="col-xs-12"><?php echo $this->user->lang('How may we assist you?') ?></h1>
+                </header>
+
+                <div id='dropbox_content' class="row">
+                    <div id='ticket_submission' class='view'>
+                        <form action="#/dropbox/tickets" method="post" data-remote-moreurl="index.php?fuse=knowledgebase&controller=articles&view=search" data-remote-url='index.php?fuse=support&action=saveticket&controller=ticket&sessionHash=<?php echo md5(session_id()); ?>'>
+                            <div class="form-group col-xs-12">
+                                <label for="subject">
+                                    <?php echo $this->user->lang('Your Question') ?>
+                                    <abbr title="<?php echo $this->user->lang('Required') ?>">*</abbr>
+                                </label>
+                                <input id="subject" name="subject" placeholder="<?php echo $this->user->lang('Briefly describe your question') ?>" required="required" type="text" class="form-control">
+                                <div class="validation error" id="subject_errors">&nbsp;</div>
+                            </div>
+                            <div class="form-group col-xs-12">
+                                <label for="description">
+                                    <?php echo $this->user->lang('Details') ?>
+                                    <abbr title="<?php echo $this->user->lang('Required') ?>">*</abbr>
+                                </label>
+                                <textarea id="description" name="message" placeholder="<?php echo $this->user->lang('Fill in the specifics to your question here. The more detail the better.') ?>" required="required" rows="6" class="form-control"></textarea>
+                                <div class="validation error" id="description_errors">&nbsp;</div>
+                            </div>
+                            <div class="form-group col-xs-12">
+                                <label for="name">
+                                    <?php echo $this->user->lang('First and Last Name') ?>
+                                    <abbr title="Required">*</abbr>
+                                </label>
+                                <input id="name" name="guestName" required="required" type="text" class="form-control" />
+                                <div class="validation error" id="name_errors">&nbsp;</div>
+                            </div>
+                            <div class="form-group col-xs-12">
+                                <label for="email">
+                                    <?php echo $this->user->lang('Email Address') ?>
+                                    <abbr title="Required">*</abbr>
+                                </label>
+                                <input data-type="email" id="email" name="guestEmail" required="required" type="email" class="form-control" />
+                                <div class="validation error" id="email_errors">&nbsp;</div>
+                            </div>
+                            <input id="set_tags" name="set_tags" type="hidden" value="fromwidget" />
+                            <input id="via_id" name="via_id" type="hidden" value="17" />
+                            <input id="client" name="client" type="hidden" value="" />
+                            <input id="ticketTypeId" name="ticket-type" type="hidden" value="0" />
+                            <input id="submitted_from" name="submitted_from" type="hidden" value="widget" />
+                            <input id="userid" name="userid" type="hidden" value="0" />
+                            <input id="mode" name="mode" type="hidden" value="supportwidget" />
+                            <footer class="col-xs-12">
+                                <span class="branding">
+                                    <a href="http://www.clientexec.com?source=feedback" target="_new">
+                                        <?php echo $this->user->lang('Powered by') ?>.
+                                        <img src='templates/default/images/logo_text.png' class="branding-image">
+                                    </a>
+                                </span>
+                                <span>
+                                    <input class="submit pull-right" id="newticket_submit" name="commit" type="submit" value="<?php echo $this->user->lang('Submit') ?>" />
+                                </span>
+                                <div class="clearfix"></div>
+                            </footer>
+                        </form>
+                    </div>
+
+                    <div id='ticket_success' class='view'>
+                        <div class='body'><span><?php echo $this->user->lang('Message submitted. Thanks!') ?></span></div>
+                        <footer>
+                            <span class="branding">
+                                <a href="http://www.clientexec.com?source=feedback" target="_new">
+                                    <?php echo $this->user->lang('Powered by') ?>.
+                                    <img src='templates/default/images/logo_text.png' class="branding-image">
+                                </a>
+                            </span>
+                            <span>
+                                <span class="spacer">&nbsp;</span>
+                            </span>
+                            <div class="clearfix"></div>
+                        </footer>
+                    </div>
+
+                    <div id='suggestions_form' class='view'>
+                        <form action="#/dropbox/suggestions" class="body" data-metric-activity="submit-question" data-remote-moreurl="index.php?fuse=knowledgebase&controller=articles&view=search" data-remote-url="index.php?fuse=knowledgebase&action=getautosuggetartices&controller=index&sessionHash=<?php echo md5(session_id()); ?>" method="get">
+                            <div class="form-group col-xs-12">
+                                <label for="suggestions_query"><?php echo $this->user->lang('What is your question?') ?></label>
+                                <input class="form-control" id="suggestions_query" maxlength="75" name="subject" placeholder="" required="required" type="text" value="" />
+                                <div class="validation error" id="suggestions_query_errors">&nbsp;</div>
+                            </div>
+                            <footer class="col-xs-12">
+                                <span class="branding">
+                                    <a href="http://www.clientexec.com?source=feedback" target="_new">
+                                        <?php echo $this->user->lang('Powered by') ?>.
+                                        <img src='templates/default/images/logo_text.png' class="branding-image">
+                                    </a>
+                                </span>
+                                <span>
+                                    <input class="submit pull-right" id="suggestions_submit" name="commit" type="submit" value="<?php echo $this->user->lang('Continue') ?>" />
+                                </span>
+                                <div class="clearfix"></div>
+                            </footer>
+                        </form>
+                    </div>
+
+                    <div id='suggestions_results' class='view search_results'>
+                        <div class='body col-xs-12'>
+                            <div class='you_asked'>
+                                <span class='label'></span>
+                                <span class='question'></span>
+                            </div>
+                            <p class='results_header'>
+                                <?php echo $this->user->lang('The following knowledge base article(s) might assist you:') ?>
+                            </p>
+                            <div class='content'>
+                            </div>
+                            <footer>
+                                <span class="branding">
+                                    <a href="http://www.clientexec.com?source=feedback" target="_new">
+                                        <?php echo $this->user->lang('Powered by') ?>.
+                                        <img src='templates/default/images/logo_text.png' class="branding-image">
+                                    </a>
+                                </span>
+                                <span>
+                                    <a href="#/dropbox/suggestions/notHelpful">
+                                        <input type="button" value="<?php echo $this->user->lang("These articles don't answer my question") ?>" class="submit pull-right" name="results"/>
+                                    </a>
+                                </span>
+                                <div class="clearfix"></div>
+                            </footer>
+                        </div>
+
+                    </div>
+
+                    <div id='knowledge_base_search_results' class='view search_results'>
+                        <div class='body'>
+                            <div class='content'>
+                            </div>
+                            <footer>
+                                <span class="branding">
+                                    <a href="http://www.clientexec.com?source=feedback" target="_new">
+                                        <?php echo $this->user->lang('Powered by') ?>.
+                                        <img src='templates/default/images/logo_text.png' class="branding-image">
+                                    </a>
+                                </span>
+                                <span>
+                                    <a href="#/dropbox/tickets/new">
+                                        <input type="button" value="<?php echo $this->user->lang("These articles don't answer my question") ?>" class="submit pull-right" name="results"/>
+                                    </a>
+                                </span>
+                                <div class="clearfix"></div>
+                            </footer>
+                        </div>
+                    </div>
+                    <div class='view' id='waiting'>
+                        <div class='body'>
+                            <img height='20' width='20' src='templates/default/images/widget/loading.gif' title="<?php echo $this->user->lang('Loading ...') ?>" />
+                        </div>
+                        <footer>
+                            <span class="branding">
+                                <a href="http://www.clientexec.com?source=feedback" target="_new">
+                                    <?php echo $this->user->lang('Powered by') ?>.
+                                    <img src='templates/default/images/logo_text.png' class="branding-image">
+                                </a>
+                            </span>
+                            <span>
+                                <span class="spacer">&nbsp;</span>
+                            </span>
+                            <div class="clearfix"></div>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="library/utilities/min/index.php?g=supportwidgetformjs&f=templates/default/views/support/indexpublic/SupportWidgetForm.js&debug=true"></script>
+    </body>
+</html>
