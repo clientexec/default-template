@@ -10,13 +10,21 @@
                     <?php echo $this->pageTitle; ?>: <?php echo $this->domain; ?>
                 </span>
             </h1>
-        <?php if ( $this->domainNotRegistered == true ) { ?>
+            <?php if ($this->domainNotRegistered == true) { ?>
             <div class="alert alert-danger alert-dismissible" role="alert">
                 <?php echo $this->user->lang("This domain currently isn't registered.");?>
             </div>
-            <?php } else if ( $this->domainNotActive == true ) { ?>
+            <?php } else if ($this->domainNotActive == true) { ?>
             <div class="alert alert-danger alert-dismissible" role="alert">
                 <?php echo $this->user->lang("This domain currently isn't active.");?>
+            </div>
+            <?php } else if ($this->domainNotTransfered == true) { ?>
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <?php echo $this->user->lang("The transfer for this domain has not completed.");?>
+            </div>
+            <?php } else if ( $this->contactInfoNotSupported == true ) { ?>
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <?php echo $this->user->lang("Managing contact information is not supported.");?>
             </div>
             <?php } else { ?>
             <?php
@@ -28,7 +36,7 @@
             ?>
             <div class="row">
                 <?php foreach ($this->contactInformation as $customField) { ?>
-                <?php if ($customField['fieldtype'] == 'break')  { ?>
+                <?php if ($customField['fieldtype'] == 'break') { ?>
                 <div class="w-100"></div>
                 <?php } else { ?>
                 <div class="col-sm-6">

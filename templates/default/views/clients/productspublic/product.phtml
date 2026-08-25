@@ -9,7 +9,8 @@
                     echo $this->partial('productspublic/partials/hosting.phtml', [
                         'package' => $this->package,
                         'showAutomaticRenewal' => $this->showAutomaticRenewal,
-                        'automaticRenewalChecked' => $this->automaticRenewalChecked
+                        'automaticRenewalChecked' => $this->automaticRenewalChecked,
+                        'showAdditionalInfo' => $this->showAdditionalInfo
                     ]);
                 } else if ($this->package['productType'] == PACKAGE_TYPE_DOMAIN) {
                     echo $this->partial('productspublic/partials/domain.phtml', [
@@ -40,6 +41,7 @@
 <script>
 
 var productId = <?php echo $this->product_id; ?>;
+var fields_markup_array = <?php echo json_encode($this->package['customFieldsMarkup']); ?>;
 
 <?php if ($this->showAutomaticRenewal) { ?>
 $('#toogle-automatic-cc-charge').on('click', function() {
@@ -53,7 +55,7 @@ $('#toogle-automatic-cc-charge').on('click', function() {
 <?php } ?>
 
 
-<?php if ($this->registrarLock != '' && $this->status['statusRaw'] == 'Active') { ?>
+<?php if ($this->package['registrarLock'] != '' && $this->package['status']['statusRaw'] == 'Active') { ?>
 $('#toogle-registrar-lock').on('click', function() {
     var regLockValue = 0;
     if ($(this).is(':checked')) {
@@ -135,6 +137,11 @@ $('.customFieldChange').on('click', function(e){
     e.preventDefault();
     var fieldName = $(this).data('name');
     var value = $(this).data('value');
+    var key = $(this).data('key');
+    var type = $(this).data('type');
+
+    var field = fields_markup_array[key];  //for cFHelper
+
     if (value.length > 50) {
         columnClass = 'medium';
     } else if (value.length > 25) {
@@ -148,10 +155,10 @@ $('.customFieldChange').on('click', function(e){
         containerFluid: true,
         title: '',
         content: '' +
-        '<form action="">' +
+        '<form id="customFieldForm" action="">' +
         '<div class="form-group">' +
-        '<label>' + clientexec.lang('Please enter a new value') + '</label>' +
-        '<input type="text" class="value form-control" value="' + value + '" />' +
+        '<label>' + fieldName + '<br>' + clientexec.lang('Please enter a new value') + '</label>' +
+        field +
         '</div>' +
         '</form>',
         buttons: {
@@ -159,17 +166,26 @@ $('.customFieldChange').on('click', function(e){
                 text: 'Save',
                 btnClass: 'btn btn-primary',
                 action: function () {
-                    var value = this.$content.find('.value').val();
-                    $.post('index.php?fuse=clients&controller=products&action=updatecustomfield', {
-                        id: productId,
-                        fieldName: fieldName,
-                        value: value
-                    }, function( data ) {
-                        response = clientexec.parseResponse(data);
-                        if (response.success === true) {
-                            location.reload();
-                        }
-                    });
+                    var form = $('#customFieldForm').parsley();
+                    if (form.isValid()) {
+                        var value = this.$content.find('.form-control').val();
+
+                        $.post('index.php?fuse=clients&controller=products&action=updatecustomfield', {
+                            id: productId,
+                            fieldName: fieldName,
+                            value: value,
+                            type: type
+                        }, function( data ) {
+                            response = clientexec.parseResponse(data);
+                            if (response.success === true) {
+                                location.reload();
+                            }
+                        });
+                    } else {
+                        $('#parsley-errors-list').remove();
+                        $('#formValueInput').after('<ul id="parsley-errors-list" class="parsley-errors-list filled" style="display: block;"><li class="parsley-required" style="display: list-item;">' + clientexec.lang('This value seems to be invalid') + '</li></ul>');
+                        return false;
+                    }
                 }
             },
             cancel: function () {

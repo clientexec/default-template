@@ -65,7 +65,12 @@
                     <?php
                         echo $this->priceAdaptiveSize(
                             $package,
-                            $this->user
+                            $this->user,
+                            [
+                                'hideSetupFees' => $this->hideSetupFees,
+                                'monthlyPriceBreakdown' => $this->monthlyPriceBreakdown,
+                                'showDiscountedPricingInBillingCycleSelector' => $this->showDiscountedPricingInBillingCycleSelector
+                            ]
                         );
                     ?>
                      <?php

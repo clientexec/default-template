@@ -490,6 +490,12 @@ body {
             }
         }
 
+        .user-toggle.loggedout {
+            &:after {
+                top: unset;
+            }
+        }
+
         >ul {
             display: block;
             position: absolute;

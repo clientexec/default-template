@@ -10,7 +10,7 @@
         <div class="ticket-view-page">
             <div class="ticket-view-head d-flex justify-content-between align-items-center">
                 <h3>
-                    <?php echo $this->user->lang('Ticket #%s - %s', $this->metadata['id'], $this->metadata['subject']); ?>
+                    <?php echo $this->user->lang('Ticket #%s - %s', $this->metadata['id'], $this->escape($this->metadata['subject'])); ?>
                 </h3>
                 <p>
                     <?php echo $this->user->lang('Status'); ?>:
@@ -29,7 +29,7 @@
                         <?php if (count($this->customFields) > 0) { ?>
                         <li>
                             <span class="fas fa-sliders-h" aria-hidden="true"></span>
-                            <?php echo $this->user->lang("Custom Fields"); ?>
+                            <?php echo $this->user->lang("More Information"); ?>
                         </li>
                         <?php } ?>
                     </ul>
@@ -218,7 +218,7 @@
                                         <?php } ?>
                                         <div class="col-md-6">
                                             <div class="form-elem ">
-                                                <input id="save-custom-fields" type="submit" class="app-btns primary" value="<?php echo $this->user->lang('Save Custom Fields'); ?>">
+                                                <input id="save-custom-fields" type="submit" class="app-btns primary" value="<?php echo $this->user->lang('Save Changes'); ?>">
                                             </div>
                                         </div>
                                     </div>

@@ -244,21 +244,29 @@
     <div class="cs-padding" id="paymentOptions">
     <form id="payinvoice-form" action="index.php?fuse=billing&controller=invoice&action=payinvoice" method="POST">
         <input type="hidden" name="id" value="<?php echo $this->invoice_id; ?>">
-       <div class="payment_information_box">
+        <input id="usingStoredCCPlugin" type="hidden" name="usingStoredCCPlugin" value="<?php echo $this->usingStoredCCPlugin; ?>">
+        <div class="payment_information_box">
             <?php if (count($this->paymentMethods) != 0) { ?>
                 <h1 class="make_payment_using"><?php echo $this->user->lang("Choose Your Payment Method");?></h1>
                 <div class="payment-method pb-0">
                     <div class="select-payment">
                         <div class="row">
-                        <?php
-                            foreach ($this->paymentMethods as $key) {
-                              echo $this->partial('../layoutpartials/paymentMethod.phtml', [
-                                    'paymentmethod' => $key,
-                                ]);
-                            }
-                        ?>
+                            <div class="col-12 col-sm-6 stored_cc_payment_option d-none">
+                                <label class="payment_method_radio_label payment_method_selected payment-option">
+                                    <input type="radio" class="payment_method_stored_cc payment-option" onclick="invoice.toggle_gateway(this.value);" name="paymentMethod" checked="checked" value="stored_cc" />
+                                        <div class="text">
+                                            <?php echo $this->user->lang("Pay with my saved card"); ?>
+                                        </div>
+                                </label>
+                            </div>
+                            <?php
+                                foreach ($this->paymentMethods as $key) {
+                                  echo $this->partial('../layoutpartials/paymentMethod.phtml', [
+                                        'paymentmethod' => $key,
+                                    ]);
+                                }
+                            ?>
                         </div>
-
                     </div>
                 </div>
                 <?php } else { ?>
@@ -287,15 +295,17 @@
                 <div class="form-actions col-12 form-group">
                     <div class="payment-container pl-5 text-center pt-2">
                     <?php if ($this->user->hasPermission('clients_edit_payment_type')) { ?>
-                        <label class="checkbox inline">
-                            <input type="checkbox" name="makeDefault" id="makeDefault" value="1" checked="true" />
-                            <span class='makeDefaultNoCC'>
-                                <?php echo $this->user->lang("Make this my default payment method"); ?>
-                            </span>
-                            <span class='makeDefaultCC'>
-                                <?php echo $this->user->lang("Make this my default payment method and store my credit card for future payments"); ?>
-                            </span>
-                        </label>
+                        <span class='makeDefaultOption'>
+                            <label class="checkbox inline">
+                                <input type="checkbox" name="makeDefault" id="makeDefault" value="1" checked="true" />
+                                <span class='makeDefaultNoCC'>
+                                    <?php echo $this->user->lang("Make this my default payment method"); ?>
+                                </span>
+                                <span class='makeDefaultCC'>
+                                    <?php echo $this->user->lang("Make this my default payment method and store my credit card for future payments"); ?>
+                                </span>
+                            </label>
+                        </span>
                     <?php } ?>
                     <span class='paymentbutton1 d-none'>
                         <button class="app-btns primary" id="submitButton">
@@ -355,7 +365,16 @@ invoice.payment_method = "<?php echo $this->payment_method;?>";
 invoice.selected_gateway = '<?php echo @$this->defaultGateway;?>';
 
 $(document).ready(function() {
-    invoice.toggle_gateway(invoice.selected_gateway);
+    if (document.getElementById('usingStoredCCPlugin') != undefined
+      && parseInt(document.getElementById('usingStoredCCPlugin').value) === 1) {
+        $('.stored_cc_payment_option').removeClass('d-none');
+        $('.payment_method_stored_cc').click();
+        $('.payment_method_stored_cc').prop('checked', true);
+        invoice.toggle_gateway('stored_cc');
+    } else {
+        $('.stored_cc_payment_option').addClass('d-none');
+        invoice.toggle_gateway(invoice.selected_gateway);
+    }
 });
 
 $('#submitButton').on('click', function() {
@@ -374,8 +393,6 @@ $('#submitButton').on('click', function() {
     return true;
 });
 
-
-
 $('.btn-pay-invoice').on('click', function() {
     invoice.showPaymentOptions();
 });
@@ -383,7 +400,9 @@ $('#btn-apply-credit').on('click', function() {
     invoice.apply_account_credit();
 });
 $('.payment-option').on('change', function () {
-    invoice.toggle_gateway($(this).val());
+    if ($(this).val() !== ''){
+        invoice.toggle_gateway($(this).val());
+    }
 });
 
 invoice.apply_account_credit = function() {
@@ -404,6 +423,13 @@ invoice.toggle_gateway = function(gatewayName) {
         $('.makeDefaultCC').addClass('d-none');
         $('.makeDefaultNoCC').removeClass('d-none');
     }
+
+    if (gatewayName == 'stored_cc') {
+        $('.makeDefaultOption').addClass('d-none');
+    } else {
+        $('.makeDefaultOption').removeClass('d-none');
+    }
+
     invoice.selected_gateway = gatewayName;
     $('.payment_method_selected').removeClass('payment_method_selected');
     $('.payment_method_' + gatewayName).parent().addClass('payment_method_selected');

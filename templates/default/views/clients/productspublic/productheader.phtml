@@ -30,8 +30,8 @@
                     $class = 'active';
                 }
             ?>
-            <li>
-                <a class="<?php echo $class; ?>" href="index.php?fuse=clients&controller=products&view=productsnapinview&key=<?php echo $view; ?>&id=<?php echo $this->productId; ?>&publicPanel=1">
+            <li class="<?php echo $class; ?>">
+                <a href="index.php?fuse=clients&controller=products&view=productsnapinview&key=<?php echo $panel['view']; ?>&id=<?php echo $this->productId; ?>&publicPanel=1">
                     <i class="<?php echo $panel['fa']; ?>"></i>
                     <?php echo $panel['name'];?>
                 </a>

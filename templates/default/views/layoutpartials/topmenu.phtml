@@ -17,7 +17,11 @@ if (count($this->snapins) > 0) {
             if ($map['type'] != "public") {
                 continue;
             }
-            $li = '<li><a href="index.php?fuse=admin&view=snapin&controller=snapins&plugin=' . $snapin->getInternalName() . '&h=' . urlencode(base64_encode("topmenu:" . $hash_key)) . '">' . $map['title'] . '</a></li>';
+            if ($map['loc'] == 'profile')  {
+                $li = '<li><a href="index.php?fuse=admin&view=snapin&controller=snapins&plugin=' . $snapin->getInternalName() . '&h=' . urlencode(base64_encode("topmenu:" . $hash_key)) . '"><i class="' . $map['icon'] . '"></i> ' . $map['title'] . '</a></li>';
+            } else {
+                $li = '<li><a href="index.php?fuse=admin&view=snapin&controller=snapins&plugin=' . $snapin->getInternalName() . '&h=' . urlencode(base64_encode("topmenu:" . $hash_key)) . '">' . $map['title'] . '</a></li>';
+            }
 
             switch ($map['loc']) {
                 case "tools":
@@ -141,7 +145,7 @@ if ($this->user->hasPermission('support_view') ||
                     </li>
                     <li>
                         <a href="index.php?fuse=clients&controller=userprofile&view=paymentmethod">
-                            <?php echo $this->user->lang("Edit Payment Method");?>
+                            <?php echo ($this->user->hasPermission('clients_edit_payment_type') || $this->user->hasPermission('clients_edit_credit_card'))? $this->user->lang("Edit Payment Method") : $this->user->lang("Payment Method");?>
                         </a>
                     </li>
                     <?php if ($pluginMenu['billing'] != '') { ?>
@@ -208,6 +212,7 @@ if ($this->user->hasPermission('support_view') ||
                 'loggedin' => $this->loggedin,
                 'customerProfileURL' => $this->customerProfileURL,
                 'customer' => $this->customer,
+                'pluginMenu' => $pluginMenu['profile']
             ]);
         ?>
         </div>
@@ -219,6 +224,7 @@ if ($this->user->hasPermission('support_view') ||
             'loggedin' => $this->loggedin,
             'customerProfileURL' => $this->customerProfileURL,
             'customer' => $this->customer,
+            'pluginMenu' => $pluginMenu['profile']
         ]);
     ?>
 </div>

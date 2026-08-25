@@ -662,8 +662,18 @@
                     font-size: 20px;
                 }
 
+                .setupfee {
+                    font-size: 16px;
+                    color: #858b9a;
+                }
+
                 @include desktop {
                     font-size: 28px;
+                }
+
+                del {
+                    font-size: 16px;
+                    color: #858b9a;
                 }
             }
         }

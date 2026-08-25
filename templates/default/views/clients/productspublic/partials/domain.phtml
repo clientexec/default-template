@@ -98,7 +98,7 @@
                         <?php echo $this->package['expirationDate']; ?>
                     </span>
                 </li>
-                <?php if ($this->eppCode && $this->status['statusRaw'] == 'Active') { ?>
+                <?php if ($this->package['eppCode'] && $this->package['status']['statusRaw'] == 'Active') { ?>
                 <li>
                     <span class="card-label">
                         <?php echo $this->user->lang('EPP Code'); ?>:
@@ -136,7 +136,7 @@
                     <li>
                         <span class="tab-heading">
                             <i class="fa fa-cog" aria-hidden="true"></i>
-                            <?php echo $this->user->lang('Custom Fields'); ?>
+                            <?php echo $this->user->lang('More Information'); ?>
                         </span>
                     </li>
                     <?php } ?>
@@ -153,68 +153,69 @@
                 <div class="resp-tabs-container">
                     <div>
                         <ul>
-                            <?php foreach ($this->package['customFields'] as $customField) { ?>
-                            <li>
-                                <span class="card-label">
-                                    <?php echo $customField['name']; ?>
-                                </span>
-                                <span class="card-value">
-                                <?php
-                                    if (isset($customField['password'])) {
-                                        echo $customField['value'];
-                                    } elseif ($customField['value'] == $this->user->lang("Left Blank") && !$customField['isClientChangeable']) {
-                                        echo "<span class='muted'>" . $customField['value'] . "</span>";
-                                    } elseif ($customField['isClientChangeable']) {
-                                        if ($customField['type'] == TYPEPASSWORD || strlen($customField['value']) >= 25) {
-                                            echo '<a href="#" data-value="' . $customField['value'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name'])  . '</a>';
+                            <?php foreach ($this->package['customFields'] as $customFieldKey => $customField) { ?>
+                                <li>
+                                    <span class="card-label">
+                                        <?php echo $customField['name']; ?>
+                                    </span>
+                                    <span class="card-value">
+                                    <?php
+                                        $customField['valuetoshow'] = $this->escape($customField['valuetoshow']);
+                                        $customField['value'] = $this->escape($customField['value']);
+                                        if (isset($customField['password'])) {
+                                            echo $customField['valuetoshow'];
+                                        } elseif ($customField['valuetoshow'] == $this->user->lang("Left Blank") && !$customField['isClientChangeable']) {
+                                            echo "<span class='muted'>" . $customField['valuetoshow'] . "</span>";
+                                        } elseif ($customField['isClientChangeable']) {
+                                            if ($customField['type'] == TYPEPASSWORD || strlen($customField['valuetoshow']) >= 25) {
+                                                echo '<a href="#" data-value="' . $customField['value'] . '" data-key="' . $customFieldKey . '" data-type="' . $customField['type'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name'])  . '</a>';
+                                            } else {
+                                                echo '<a href="#" data-value="' . $customField['value'] . '" data-key="' . $customFieldKey . '" data-type="' . $customField['type'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $customField['valuetoshow'] . '</a>';
+                                            }
+                                        } elseif ($customField['type'] == TYPEPASSWORD || strlen($customField['valuetoshow']) >= 25) {
+                                            echo '<a href="#" class="customFieldModal" data-content="' . $customField['valuetoshow'] . '" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name']) . '</a>';
                                         } else {
-                                            echo '<a href="#" data-value="' . $customField['value'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $customField['value'] . '</a>';
+                                            echo $customField['valuetoshow'];
                                         }
-                                    } elseif ($customField['type'] == TYPEPASSWORD || strlen($customField['value']) >= 25) {
-                                        echo '<a href="#" class="customFieldModal" data-content="' . $customField['value'] . '" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name']) . '</a>';
-                                    } else {
-                                        echo $this->escape($customField['value']);
-                                    }
-                                ?>
-                                </span>
-                            </li>
+                                    ?>
+                                    </span>
+                                </li>
                             <?php } ?>
-
                         </ul>
                     </div>
                     <?php if (count($this->package['addons']) > 0) { ?>
-                    <div>
-                        <ul>
-                            <?php foreach ($this->package['addons'] as $addon) { ?>
-                            <?php if ($addon['fieldtype'] !== (string)typeHIDDEN) { ?>
-                            <li>
-                                <span class="card-label">
-                                    <?php echo $addon['namelanguage']; ?>
-                                </span>
-                                <span class="card-value">
-                                <?php
-                                    $addonQuantity = '';
-                                    $addonQuantityPrice = $addon['optioncustomerprice'];
-                                    $addonQuantitySetupPrice = $addon['optionsetupprice'];
-                                    if ($addon['optioncustomerquantity'] > 1 || $addon['optioncustomerquantity'] == 0) {
-                                        $addonQuantity = $addon['optioncustomerquantity'].' x ';
-                                        $addonQuantityPrice = '@ '.$addon['optioncustomerprice'].'/'.$this->user->lang("each").' = '.$addon['optioncustomerquantityprice'];
+                        <div>
+                            <ul>
+                                <?php foreach ($this->package['addons'] as $addon) { ?>
+                                    <?php if ($addon['fieldtype'] !== (string)typeHIDDEN) { ?>
+                                        <li>
+                                            <span class="card-label">
+                                                <?php echo $addon['namelanguage']; ?>
+                                            </span>
+                                            <span class="card-value">
+                                            <?php
+                                                $addonQuantity = '';
+                                                $addonQuantityPrice = $addon['optioncustomerprice'];
+                                                $addonQuantitySetupPrice = $addon['optionsetupprice'];
+                                                if ($addon['optioncustomerquantity'] > 1 || $addon['optioncustomerquantity'] == 0) {
+                                                    $addonQuantity = $addon['optioncustomerquantity'].' x ';
+                                                    $addonQuantityPrice = '@ '.$addon['optioncustomerprice'].'/'.$this->user->lang("each").' = '.$addon['optioncustomerquantityprice'];
 
-                                        if($addon['optionsetupprice'] !== false){
-                                            $addonQuantitySetupPrice = $addon['optionsetupprice'].'/'.$this->user->lang("each").' = '.$addon['optionsetupquantityprice'];
-                                        }
-                                    }
-                                    echo $addonQuantity.$addon['optionnamelanguage'].' '.$addonQuantityPrice.' / '.$addon['optioncycle'];
-                                    if($addonQuantitySetupPrice !== false){
-                                        echo '<br><span style="float:right;">+ '.$addonQuantity.$addonQuantitySetupPrice.' / '.$addon['optionsetup'].'</span><br><br>';
-                                    }
-                                ?>
-                                </span>
-                            </li>
-                            <?php } ?>
-                            <?php } ?>
-                        </ul>
-                    </div>
+                                                    if($addon['optionsetupprice'] !== false){
+                                                        $addonQuantitySetupPrice = $addon['optionsetupprice'].'/'.$this->user->lang("each").' = '.$addon['optionsetupquantityprice'];
+                                                    }
+                                                }
+                                                echo $addonQuantity.$addon['optionnamelanguage'].' '.$addonQuantityPrice.' / '.$addon['optioncycle'];
+                                                if($addonQuantitySetupPrice !== false){
+                                                    echo '<br><span style="float:right;">+ '.$addonQuantity.$addonQuantitySetupPrice.' / '.$addon['optionsetup'].'</span><br><br>';
+                                                }
+                                            ?>
+                                            </span>
+                                        </li>
+                                    <?php } ?>
+                                <?php } ?>
+                            </ul>
+                        </div>
                     <?php } ?>
                 </div>
             </div>

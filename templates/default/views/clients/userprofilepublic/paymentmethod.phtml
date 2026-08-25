@@ -9,7 +9,7 @@
             <div class="data-table-wrapper">
                 <div class="head">
                     <h1>
-                        <?php echo $this->user->lang('Edit Payment Method'); ?>
+                        <?php echo ($this->canEditPaymentType || $this->canEditCreditCard)? $this->user->lang('Edit Payment Method') : $this->user->lang('Payment Method'); ?>
                     </h1>
                 </div>
                 <div class="cs-padding">
@@ -21,7 +21,7 @@
                                 <label>
                                     <?php echo $this->user->lang("Payment Method");?>
                                 </label>
-                                <select <?php echo (!$this->canEditPaymentType) ? ' readonly="readonly"' : ''; ?> class="paymenttype-list normalSelect2 form-control" name="paymenttype">
+                                <select <?php echo (!$this->canEditPaymentType) ? ' disabled="disabled"' : ''; ?> class="paymenttype-list normalSelect2 form-control" name="paymenttype">
                                     <?php foreach ($this->paymentmethods as $paymentmethod) { ?>
                                     <option value="<?php echo $paymentmethod['paymentTypeOptionValue']; ?>" <?php echo $paymentmethod['paymentTypeOptionSelected']; ?>>
                                         <?php echo $paymentmethod['paymentTypeOptionLabel']; ?>
@@ -192,7 +192,7 @@
 
                         <?php } ?>
                     </div>
-                    <?php if ($this->canEditCreditCard) { ?>
+                    <?php if ($this->canEditPaymentType || $this->canEditCreditCard) { ?>
                         <div class="col-sm-3">
                             <div class="d-none" id="btnupdatepaymentmethod">
                                 <input type="submit" class="app-btns primary btn-update-payment-method" value="<?php echo $this->user->lang('Update'); ?>">

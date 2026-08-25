@@ -231,6 +231,7 @@
         <input id="hidePaymentMethods" type="hidden" name="hidePaymentMethods" value="<?php echo $this->hidePaymentMethods; ?>">
         <input id="totalPay_raw" type="hidden" name="totalPay_raw" value="0">
         <input id="creditBalance_raw" type="hidden" name="creditBalance_raw" value="<?php echo $this->creditbalance; ?>">
+        <input id="usingStoredCCPlugin" type="hidden" name="usingStoredCCPlugin" value="<?php echo $this->usingStoredCCPlugin; ?>">
 
         <div class="cm-box-holder customer-details">
             <div id="payment_information_box" class="pl-5 pr-5">
@@ -256,6 +257,16 @@
                                     </div>
                             </label>
                         </div>
+
+                        <div class="col-12 col-sm-6 stored_cc_payment_option d-none">
+                            <label class="payment_method_radio_label payment_method_selected payment-option">
+                                <input type="radio" class="payment_method_stored_cc payment-option" onclick="cart.toggle_gateway(this.value);" name="paymentMethod" checked="checked" value="stored_cc" />
+                                    <div class="text">
+                                        <?php echo $this->user->lang("Pay with my saved card"); ?>
+                                    </div>
+                            </label>
+                        </div>
+
                         <?php
                             foreach ($this->paymentmethods as $key) {
                               echo $this->partial('../../default/views/layoutpartials/paymentMethod.phtml', [
@@ -420,6 +431,7 @@ $(document).ready(function() {
         validate_vat();
     });
 
+    cart.checkListsStates();
     validate_vat();
 
     <?php foreach ($this->paymentmethods as $key) { ?>
@@ -543,10 +555,12 @@ cart.update_pricing = function() {
                 }
             }
 
-            if(document.getElementById('totalPay_raw') != undefined
+            select_payment_method_stored_cc = true;
+
+            if (document.getElementById('totalPay_raw') != undefined
               && document.getElementById('creditBalance_raw') != undefined
               && parseFloat(document.getElementById('totalPay_raw').value) > 0.00
-              && parseFloat(document.getElementById('totalPay_raw').value) <= parseFloat(document.getElementById('creditBalance_raw').value)){
+              && parseFloat(document.getElementById('totalPay_raw').value) <= parseFloat(document.getElementById('creditBalance_raw').value)) {
                 $('.credit_balance_checkbox').prop('checked', false);
                 $('.credit_balance_option').addClass('d-none');
                 $('.credit_balance_checkbox').prop('disabled', true);
@@ -554,17 +568,33 @@ cart.update_pricing = function() {
                 $('.payment_method_apply_my_credit').click();
                 $('.payment_method_apply_my_credit').prop('checked', true);
                 cart.toggle_gateway('apply_my_credit');
-            }else{
+                select_payment_method_stored_cc = false;
+            } else {
                 $('.credit_balance_payment_option').addClass('d-none');
-                if(parseFloat(document.getElementById('creditBalance_raw').value) > 0){
+                if (document.getElementById('creditBalance_raw') != undefined && parseFloat(document.getElementById('creditBalance_raw').value) > 0) {
                     $('.credit_balance_checkbox').prop('disabled', false);
                     $('.credit_balance_option').removeClass('d-none');
                     $('.credit_balance_checkbox').prop('checked', true);
-                }else{
+                } else {
                     $('.credit_balance_checkbox').prop('checked', false);
                     $('.credit_balance_option').addClass('d-none');
                     $('.credit_balance_checkbox').prop('disabled', true);
                 }
+            }
+
+            if (document.getElementById('totalPay_raw') != undefined
+              && parseFloat(document.getElementById('totalPay_raw').value) > 0.00
+              && document.getElementById('usingStoredCCPlugin') != undefined
+              && parseInt(document.getElementById('usingStoredCCPlugin').value) === 1) {
+                $('.stored_cc_payment_option').removeClass('d-none');
+
+                if (select_payment_method_stored_cc) {
+                    $('.payment_method_stored_cc').click();
+                    $('.payment_method_stored_cc').prop('checked', true);
+                    cart.toggle_gateway('stored_cc');
+                }
+            } else {
+                $('.stored_cc_payment_option').addClass('d-none');
             }
 
             if (document.getElementById('VAT'+cart.vat_var_id)) {

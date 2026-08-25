@@ -22,13 +22,34 @@
                     <div class="row">
                         <div class="col-lg-4 col-md-6">
                             <div class="upgrade-downgrade-second-left">
-                                <label>Select a Product</label>
+                                <label><?php echo $this->user->lang('Select a Product'); ?></label>
                                 <select name="upgradePackage" id="upgradePackage" class="normalSelect2 upgrade-downgrade-select" onChange="loadTotalsInfo();" >
                                     <?php foreach($this->upgradePackages as $package) { ?>
-                                        <option value="<?php echo $package["id"]; ?>" data-taxable="<?php echo $package['taxable']; ?>"><?php echo $this->user->lang($package["plannamelanguage"]); ?></option>
+                                        <option value="<?php echo $package["id"]; ?>" data-taxable="<?php echo $package['taxable']; ?>"><?php echo $this->user->lang($package["groupnamelanguage"]) . ' - ' . $this->user->lang($package["plannamelanguage"]); ?></option>
                                     <?php } ?>
                                 </select>
                             </div>
+                        </div>
+                        <div class="col-lg-8 col-md-6">
+                            <?php
+                                $firstPkgId = false;
+                                $pkgClass = '';
+                                foreach($this->upgradePackages as $package) {
+                            ?>
+                            <div id="upgradeDescription_<?php echo $package["id"]; ?>" class="upgrade-description <?php echo $pkgClass; ?>">
+                                <?php if (stripos($package["descriptionlanguage"], 'class="items"')) { ?>
+                                    <div class="hosting-features">
+                                <?php } ?>
+                                        <?php echo $this->user->lang($package["descriptionlanguage"]); ?>
+                                <?php if (stripos($package["descriptionlanguage"], 'class="items"')) { ?>
+                                    </div>
+                                <?php } ?>
+                                <?php if ($firstPkgId === false) {
+                                    $firstPkgId = $package["id"];
+                                    $pkgClass = 'd-none';
+                                } ?>
+                            </div>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -240,8 +261,8 @@
                                 <td></td>
                                 <td>
                                     <div class="cancel-submit-btns d-flex justify-content-between align-items-center">
-                                        <input type="submit" class="cancel-btn" value="Cancel">
-                                        <input type="submit" class="submit-btn" value="Submit">
+                                        <input type="submit" class="cancel-btn" value="<?php echo $this->user->lang('Cancel'); ?>">
+                                        <input type="submit" class="submit-btn" value="<?php echo $this->user->lang('Submit'); ?>">
                                     </div>
                                 </td>
                             </tr>
@@ -280,6 +301,9 @@ function loadTotalsInfo()
     // $(".upgradePackageDescription").hide();
     $('.upgrade-table').addClass('d-none');
     $("#upgradePackageDescription_" + packageId).removeClass('d-none');
+
+    $('.upgrade-description').addClass('d-none');
+    $("#upgradeDescription_" + packageId).removeClass('d-none');
 
     packageTerm = $('input[name="priceTerm_' + packageId + '"]:checked').val();
 

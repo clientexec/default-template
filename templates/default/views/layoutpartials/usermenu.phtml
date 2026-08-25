@@ -13,7 +13,7 @@
         </div>
     </a>
     <ul class="dropdown-menu dropdown-menu-right">
-        <?php if ($this->user->hasPermission('clients_edit_customers')) { ?>
+        <?php if ($this->customer->hasPermission('clients_edit_customers')) { ?>
         <li>
             <a href="index.php?fuse=clients&controller=userprofile&view=editprofile">
                 <i class="fas fa-user"></i>
@@ -39,7 +39,7 @@
                 <?php echo $this->user->lang("Account Notes");?>
             </a>
         </li>
-        <?php if (CE_Lib::affiliateSystem() && !$this->customer->isDeclinedAffiliate()) { ?>
+        <?php if ($this->customer->hasPermission('affiliate_view') && CE_Lib::affiliateSystem() && !$this->customer->isDeclinedAffiliate()) { ?>
         <li>
             <a href="index.php?fuse=affiliates&controller=affiliate&view=overview">
                 <i class="fas fa-dollar-sign"></i>
@@ -47,7 +47,7 @@
             </a>
         </li>
         <?php } ?>
-        <?php if ($this->user->hasPermission('clients_view_emails')) { ?>
+        <?php if ($this->customer->hasPermission('clients_view_emails')) { ?>
         <li>
             <a href="index.php?fuse=clients&controller=index&view=emailhistory">
                 <i class="fas fa-envelope"></i>
@@ -55,6 +55,7 @@
             </a>
         </li>
         <?php } ?>
+        <?php echo $this->unescape($this->pluginMenu); ?>
         <li>
             <a href="index.php?fuse=admin&action=Logout">
                 <i class="fas fa-sign-out-alt"></i>
@@ -71,10 +72,31 @@
         </a>
     </div>
     <?php } else { ?>
-    <div id="login-menu">
-        <a href="index.php?fuse=home&view=login">
-            <?php echo $this->user->lang("Login"); ?>
+        <?php if ($this->pluginMenu != '') { ?>
+        <a href="javascript:void(0)" class="user-toggle loggedout">
+            <div class="user-tag">
+                <span>
+                    <h5>
+                        <?php echo $this->user->lang('Welcome'); ?>
+                    </h5>
+                </span>
+            </div>
         </a>
-    </div>
+        <ul class="dropdown-menu dropdown-menu-right">
+            <li>
+                <a href="index.php?fuse=home&view=login">
+                    <i class="fas fa-user"></i>
+                    <?php echo $this->user->lang("Login");?>
+                </a>
+            </li>
+            <?php echo $this->unescape($this->pluginMenu); ?>
+        </ul>
+        <?php } else { ?>
+        <div id="login-menu">
+            <a href="index.php?fuse=home&view=login">
+                <?php echo $this->user->lang("Login"); ?>
+            </a>
+        </div>
+        <?php } ?>
     <?php } ?>
 </div>

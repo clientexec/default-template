@@ -21,6 +21,10 @@
             <div class="alert alert-danger alert-dismissible" role="alert">
                 <?php echo $this->user->lang("Managing host records is not supported.");?>
             </div>
+            <?php } else if ($this->domainNotTransfered == true) { ?>
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <?php echo $this->user->lang("The transfer for this domain has not completed.");?>
+            </div>
             <?php } else { ?>
             <div class="dns-records-box cloneable d-none">
                 <ul class="dns-records-box-ul">
