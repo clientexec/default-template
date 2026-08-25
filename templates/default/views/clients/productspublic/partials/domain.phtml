@@ -151,6 +151,7 @@
                 </ul>
 
                 <div class="resp-tabs-container">
+                    <?php if (count($this->package['customFields']) > 0) { ?>
                     <div>
                         <ul>
                             <?php foreach ($this->package['customFields'] as $customFieldKey => $customField) { ?>
@@ -183,6 +184,7 @@
                             <?php } ?>
                         </ul>
                     </div>
+                    <?php } ?>
                     <?php if (count($this->package['addons']) > 0) { ?>
                         <div>
                             <ul>

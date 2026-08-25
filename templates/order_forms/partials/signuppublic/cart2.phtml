@@ -139,9 +139,9 @@
 
     }).change();
 
-  $('.cart-item').on('change', function() {
+  $('.cart-item, .form-control').on('change', function() {
     // dynamically update history with each change, allows for easy linking or sharing
-    url = 'step=<?php echo $this->step; ?>&product=<?php echo $this->product; ?>&' + $('.cart-item').map(function () {
+    url = 'step=<?php echo $this->step; ?>&product=<?php echo $this->product; ?>&' + $('.cart-item, .form-control').map(function () {
         inputType = $(this).prop('type');
         if (inputType == 'radio') {
             if ($(this).is(':checked')) {

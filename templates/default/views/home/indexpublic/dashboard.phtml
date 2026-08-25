@@ -115,6 +115,71 @@
                                 </div>
                             </div>
                         </div>
+                        <?php if (count($this->invoices) > 0) { ?>
+                        <div class="cm-holder invoice-list-table">
+                            <div class="head padding-bottom d-flex justify-content-between align-items-center">
+                                <h3>
+                                    <?php echo $this->user->lang('Outstanding Invoices'); ?>
+                                </h3>
+                                <a href="index.php?fuse=billing&controller=invoice&view=allinvoices&filter=open" class="view-all-table">
+                                    <?php echo $this->user->lang('View all'); ?>
+                                </a>
+                            </div>
+                            <div class="data-table-wrapper pull-top">
+                                <div class="pending-orders table-responsive">
+                                    <table id="order-table" class="table display">
+                                        <thead>
+                                            <tr>
+                                                <th class="width1">
+                                                    <?php echo $this->user->lang('Description'); ?>
+                                                </th>
+                                                <th class="width2">
+                                                    <?php echo $this->user->lang('Balance Due'); ?>&nbsp;</th>
+                                                <th class="width3">
+                                                    <?php echo $this->user->lang('Due Date'); ?>
+                                                </th>
+                                                <th class="width4">
+                                                    <?php echo $this->user->lang('Status'); ?>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($this->invoices as $invoices) { ?>
+                                            <tr>
+                                                <td>
+                                                    <a href="index.php?fuse=billing&controller=invoice&view=invoice&id=<?php echo $invoices['id'];?>">
+                                                        <?php echo $this->user->lang('Invoice #%s', $invoices['id']); ?>
+                                                    </a>
+
+                                                    <br /><span class="addition_description">
+                                                        <?php echo ($invoices['subscription_id'])? ($this->user->lang("Subscription: %s", $invoices['subscription_id'])) : '' ?></span>
+                                                </td>
+                                                <td>
+                                                    <?php echo $invoices['balancedue']; ?>
+                                                </td>
+                                                <td>
+                                                    <?php echo $this->dateRenderer($invoices['billdate']) ?>
+                                                </td>
+                                                <td>
+                                                    <span class="status <?php echo $invoices['status_class']; ?>">
+                                                        <?php echo $invoices['status_name']; ?>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                            <?php if (count($this->invoices) == 0) { ?>
+                                            <tr>
+                                                <td class="text-center" colspan="4">
+                                                    <?php echo $this->user->lang('No Outstanding Invoices'); ?>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
                         <?php if ( $this->user->hasPermission('support_view') ) { ?>
                         <div class="cm-holder support-ticket-list-table">
                             <div class="head padding-bottom d-flex justify-content-between align-items-center">
@@ -175,71 +240,6 @@
                                             <tr>
                                                 <td class="text-center" colspan="3">
                                                     <?php echo $this->user->lang('No Open Tickets'); ?>
-                                                </td>
-                                            </tr>
-                                            <?php } ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <?php } ?>
-                        <?php if (count($this->invoices) > 0) { ?>
-                        <div class="cm-holder invoice-list-table">
-                            <div class="head padding-bottom d-flex justify-content-between align-items-center">
-                                <h3>
-                                    <?php echo $this->user->lang('Outstanding Invoices'); ?>
-                                </h3>
-                                <a href="index.php?fuse=billing&controller=invoice&view=allinvoices&filter=open" class="view-all-table">
-                                    <?php echo $this->user->lang('View all'); ?>
-                                </a>
-                            </div>
-                            <div class="data-table-wrapper pull-top">
-                                <div class="pending-orders table-responsive">
-                                    <table id="order-table" class="table display">
-                                        <thead>
-                                            <tr>
-                                                <th class="width1">
-                                                    <?php echo $this->user->lang('Description'); ?>
-                                                </th>
-                                                <th class="width2">
-                                                    <?php echo $this->user->lang('Balance Due'); ?>&nbsp;</th>
-                                                <th class="width3">
-                                                    <?php echo $this->user->lang('Due Date'); ?>
-                                                </th>
-                                                <th class="width4">
-                                                    <?php echo $this->user->lang('Status'); ?>
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($this->invoices as $invoices) { ?>
-                                            <tr>
-                                                <td>
-                                                    <a href="index.php?fuse=billing&controller=invoice&view=invoice&id=<?php echo $invoices['id'];?>">
-                                                        <?php echo $this->user->lang('Invoice #%s', $invoices['id']); ?>
-                                                    </a>
-
-                                                    <br /><span class="addition_description">
-                                                        <?php echo ($invoices['subscription_id'])? ($this->user->lang("Subscription: %s", $invoices['subscription_id'])) : '' ?></span>
-                                                </td>
-                                                <td>
-                                                    <?php echo $invoices['balancedue']; ?>
-                                                </td>
-                                                <td>
-                                                    <?php echo $this->dateRenderer($invoices['billdate']) ?>
-                                                </td>
-                                                <td>
-                                                    <span class="status <?php echo $invoices['status_class']; ?>">
-                                                        <?php echo $invoices['status_name']; ?>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            <?php } ?>
-                                            <?php if (count($this->invoices) == 0) { ?>
-                                            <tr>
-                                                <td class="text-center" colspan="4">
-                                                    <?php echo $this->user->lang('No Outstanding Invoices'); ?>
                                                 </td>
                                             </tr>
                                             <?php } ?>

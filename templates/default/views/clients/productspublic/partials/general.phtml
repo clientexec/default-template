@@ -63,16 +63,19 @@
             </ul>
         </div>
     </div>
+    <?php if (count($this->package['customFields']) > 0 || count($this->package['addons']) > 0) { ?>
     <div class="col-lg-12 col-xl-12">
         <div class="config-options">
             <div id="config-addon-tab">
                 <ul class="resp-tabs-list">
+                    <?php if (count($this->package['customFields']) > 0) {?>
                     <li>
                         <span class="tab-heading">
                             <i class="fa fa-cog" aria-hidden="true"></i>
                             <?php echo $this->user->lang('More Information'); ?>
                         </span>
                     </li>
+                    <?php } ?>
                     <?php if (count($this->package['addons']) > 0) { ?>
                     <li>
                         <span class="tab-heading">
@@ -84,6 +87,7 @@
                 </ul>
 
                 <div class="resp-tabs-container">
+                    <?php if (count($this->package['customFields']) > 0) { ?>
                     <div>
                         <ul>
                             <?php foreach ($this->package['customFields'] as $customFieldKey => $customField) { ?>
@@ -116,6 +120,7 @@
                             <?php } ?>
                         </ul>
                     </div>
+                    <?php } ?>
                     <?php if (count($this->package['addons']) > 0) { ?>
                         <div>
                             <ul>
@@ -154,4 +159,5 @@
             </div>
         </div>
     </div>
+    <?php } ?>
 </div>
