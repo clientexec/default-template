@@ -38,11 +38,11 @@
 
                                 <?php if (stripos($this->planDesc, 'class="items"')) { ?>
                                 <div class="hosting-features">
-                                    <?php echo $this->planDesc; ?>
+                                    <?php echo $this->unescape($this->planDesc); ?>
                                 </div>
                                 <?php } else { ?>
                                 <p>
-                                    <?php echo $this->planDesc; ?>
+                                    <?php echo $this->unescape($this->planDesc); ?>
                                 </p>
                                 <?php } ?>
                             <?php } ?>
