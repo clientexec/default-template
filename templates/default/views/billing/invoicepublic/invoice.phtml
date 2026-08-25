@@ -15,7 +15,9 @@
                         <h6>
                             <?php echo $this->user->lang('Invoice To'); ?>
                         </h6>
+                        <?php if (!empty($this->user->getOrganization())) { ?>
                         <b><?php echo $this->escape($this->user->getOrganization()) ?></b><br>
+                        <?php } ?>
                         <?php echo $this->escape($this->user->getFirstName()) ?> <?php echo $this->escape($this->user->getLastName()) ?><br>
                         <?php echo $this->escape($this->user->getAddress());?><br>
                         <?php echo $this->escape($this->user->getCity());?>, <?php echo $this->escape($this->user->getState(true));?> <?php echo $this->escape($this->user->getZipCode());?><br>
@@ -48,7 +50,7 @@
                             <?php echo $this->user->lang('Download PDF'); ?>
                         </a>
                     </li>
-                    <?php if ($this->invoiceBalanceDue > 0 && $this->user->hasPermission('billing_apply_account_credit') && $this->creditBalance > 0) { ?>
+                    <?php if ($this->canApplyAccountCredit) { ?>
                         <li>
                             <a href="#" class="invoice2-pdf-btn" id="btn-apply-credit" data-toggle="tooltip" data-placement="top" title="<?php echo $this->user->lang("Available Credit: %s", $this->formattedCreditBalance); ?>">
                                 <?php echo $this->user->lang("Apply my Credit"); ?>

@@ -1,3 +1,10 @@
+<?php
+    $mostRecentMessageOnTop = $this->user->getBoolCustomValue("Support-TicketReplyOnTop");
+    if ($mostRecentMessageOnTop) {
+        $this->comments = array_reverse($this->comments);
+    }
+?>
+
 <div class="content-area dashboard-wraper">
     <div class="container">
         <div class="ticket-view-page">
@@ -28,6 +35,57 @@
                     </ul>
                     <div class="resp-tabs-container">
                         <div>
+                            <?php if ($mostRecentMessageOnTop && $this->metadata['status_system'] != -1) { ?>
+                            <form enctype="multipart/form-data" action="index.php?action=savenewlog&fuse=support&controller=ticket" method="POST" class="validate-form">
+                                <input type="hidden" name="id" value="<?php echo $this->metadata['id'];?>" />
+                                <input type="hidden" name="ticketstatus" value="2" />
+                                <div class="ticket-tab-reply-block">
+                                    <div class="ticket-tab-reply-head d-flex justify-content-between align-items-center">
+                                        <h3>
+                                            <?php echo $this->user->lang('Reply');?>
+                                        </h3>
+                                        <span style="float: left; width: 60%; text-align: right;">
+                                            <span data-toggle="tooltip" data-html="true" data-placement="top" class="tool-tip" data-title="<?php echo $this->user->lang("Ticket messages will also be listed with most recent message on top.");?>">
+                                                <?php echo $this->user->lang("Show ticket reply box on top"); ?>:
+                                                <input name="permission_Support-TicketReplyOnTop" onchange="sortReplies(this)" type="checkbox" <?php echo ($mostRecentMessageOnTop) ? "checked" : "";?> />
+                                            </span>
+                                        </span>
+                                        <?php if ($this->canCloseTicket == true) { ?>
+                                        <a href="<?php echo $this->closeTicketURL; ?>" class="close-ticket">
+                                            <?php echo $this->user->lang('Close Ticket Without Replying'); ?>
+                                        </a>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="ticket-tab-reply-box">
+                                        <textarea dir="auto" class="ticket-reply" name="message" required></textarea>
+                                    </div>
+
+                                    <div class="ticket-tab-reply-bottom d-flex justify-content-between align-items-center">
+                                        <?php if ($this->maxfilesize > 0 && $this->extns) { ?>
+                                        <div class="ticket-tab-reply-attachments">
+                                            <div id="fileFieldsContainer" class="form-actions">
+                                                <div id="fileFields_" class="d-none file-upload ">
+                                                    <label class="btn-file">
+                                                        <input class="file_upload_input" type="file">
+                                                    </label>
+                                                    <a class="d-none deleteButton">
+                                                        <?php echo $this->user->lang('Delete'); ?>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <a id="new-file-button" class="attach-more-file" href="#">
+                                                <?php echo $this->user->lang('Add a New File'); ?>
+                                            </a>
+                                            <input type="hidden" name="validExtns" value="<?php echo $this->extns; ?>" />
+                                        </div>
+                                        <?php } ?>
+                                        <button type="submit" class="submit-reply-btn app-btns primary">
+                                            <?php echo $this->user->lang('Submit Reply'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <?php } ?>
                             <div class="ticket-tab-wrapper">
                                 <?php foreach ($this->comments as $comment) { ?>
                                 <?php if ($comment['action'] == 1) { ?>
@@ -89,7 +147,7 @@
                                 </div>
                                 <?php } ?>
                             </div>
-                            <?php if ($this->metadata['status_system'] != -1) { ?>
+                            <?php if (!$mostRecentMessageOnTop && $this->metadata['status_system'] != -1) { ?>
                             <form enctype="multipart/form-data" action="index.php?action=savenewlog&fuse=support&controller=ticket" method="POST" class="validate-form">
                                 <input type="hidden" name="id" value="<?php echo $this->metadata['id'];?>" />
                                 <input type="hidden" name="ticketstatus" value="2" />
@@ -98,6 +156,12 @@
                                         <h3>
                                             <?php echo $this->user->lang('Reply');?>
                                         </h3>
+                                        <span style="float: left; width: 60%; text-align: right;">
+                                            <span data-toggle="tooltip" data-html="true" data-placement="top" class="tool-tip" data-title="<?php echo $this->user->lang("Ticket messages will also be listed with most recent message on top.");?>">
+                                                <?php echo $this->user->lang("Show ticket reply box on top"); ?>:
+                                                <input name="permission_Support-TicketReplyOnTop" onchange="sortReplies(this)" type="checkbox" <?php echo ($mostRecentMessageOnTop) ? "checked" : "";?> />
+                                            </span>
+                                        </span>
                                         <?php if ($this->canCloseTicket == true) { ?>
                                         <a href="<?php echo $this->closeTicketURL; ?>" class="close-ticket">
                                             <?php echo $this->user->lang('Close Ticket Without Replying'); ?>
@@ -212,5 +276,14 @@ if ($('#new-file-button').length) {
     });
 
     support.cloneAttchInput();
+}
+
+function sortReplies(element) {
+    $.post('index.php?fuse=support&controller=ticket&action=sortreplies',{
+        ticketId: <?php echo $this->metadata['id'];?>,
+        replyOnTop: (element.checked) ? 1: 0
+    }, function(t) {
+        location.reload();
+    });
 }
 </script>

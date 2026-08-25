@@ -48,7 +48,7 @@
                                     <span class="www-name">www.</span>
                                     <input pattern="<?php echo REGEXDOMAIN_PARSLEY; ?>" type="text" class="domain-input need-domain-input first_domain_name" placeholder="<?php echo $this->user->lang('Search Domain'); ?>" name="first_domain_name" value="<?php echo $this->domainName; ?>" />
                                     <div class="domain-dropdown">
-                                        <select name="domain_extension" id="" class="normalSelect2 domain_extension">
+                                        <select name="domain_extension" id="" class="searchSelect2 domain_extension">
                                             <?php foreach ($this->packages as $package) { ?>
                                             <option<?php echo ($this->tld == $package['planname']) ? ' selected="selected"' : ''; ?> value="<?php echo $package['id'];?>">
                                                 <?php echo $package['planname'];?>
@@ -77,7 +77,7 @@
                                     <span class="www-name">www.</span>
                                     <input type="text" class="domain-input transfer_domain" placeholder="<?php echo $this->user->lang('Domain Name'); ?>" id="transfer_extension" name="transfer_domain" value="<?php echo $this->domainName; ?>">
                                     <div class="domain-dropdown">
-                                        <select name="domain_extension" id="" class="normalSelect2 transfer_extension">
+                                        <select name="domain_extension" id="" class="searchSelect2 transfer_extension">
                                             <?php foreach ($this->packages as $package) { ?>
                                             <option<?php echo ($this->tld == $package['planname']) ? ' selected="selected"' : ''; ?> value="<?php echo $package['id'];?>">
                                                 <?php echo $package['planname'];?>
@@ -738,7 +738,7 @@ var ObjectLength = Object.keys ? ObjectLength_Modern : ObjectLength_Legacy;
 
 <?php if ($this->bundled) { ?>
     $(document).ready(function() {
-        $('a:not(.button, .btn, .continue-btn, .dropdown-toggle)').click(function(e){
+        $('a:not(.button, .btn, .continue-btn, .dropdown-toggle, .currency-selector)').click(function(e){
             e.preventDefault();
             var selectedLink = this;
 

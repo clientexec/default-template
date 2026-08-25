@@ -266,14 +266,11 @@
                                                 <th>
                                                     <?php echo $this->user->lang('Product/Service'); ?>
                                                 </th>
+                                                <th>
+                                                    <?php echo $this->user->lang('Amount'); ?>
+                                                </th>
                                                 <th class="next-due-date">
                                                     <?php echo $this->user->lang('Due Date'); ?>
-                                                </th>
-                                                <th class="billing-cycle">
-                                                    <?php echo $this->user->lang('Billing Cycle'); ?>
-                                                </th>
-                                                <th>
-                                                    <?php echo $this->user->lang('Last Billed'); ?>
                                                 </th>
                                                 <th class="status-header">
                                                     <?php echo $this->user->lang('Status'); ?>
@@ -294,18 +291,14 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span class="due-date">
-                                                        <?php echo $package['nextDueDate']; ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span class="billing-cycle">
+                                                    <span class="total">
+                                                        <?php echo $package['price']; ?>
                                                         <?php echo $package['term']; ?>
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <span class="total">
-                                                        <?php echo $package['price']; ?>
+                                                    <span class="due-date">
+                                                        <?php echo $package['nextDueDate']; ?>
                                                     </span>
                                                 </td>
                                                 <td>
@@ -328,9 +321,17 @@
                                                             </a>
                                                         </li>
                                                         <?php } else if (isset($action['link']) && $action['form'] == '') { ?>
-                                                            <?php echo $action['link']; ?>
+                                                            <li>
+                                                                <a href="<?php echo $action['link']; ?>">
+                                                                    <?php echo $action['text']; ?>
+                                                                </a>
+                                                            </li>
                                                         <?php } else if (isset($action['form']) && $action['form'] != '') { ?>
-                                                        <?php echo $action['link']; ?>
+                                                            <li>
+                                                                <a href="#" onclick="<?php echo $action['onclick']; ?>">
+                                                                    <?php echo $action['text']; ?>
+                                                                </a>
+                                                            </li>
                                                         <?php $additionalHTML .= $action['form']; ?>
                                                         <?php } else { ?>
                                                         <li>

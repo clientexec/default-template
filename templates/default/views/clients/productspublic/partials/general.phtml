@@ -1,0 +1,156 @@
+<div class="row">
+    <div class="col-lg-12 col-xl-12">
+        <div class="white-card plan-details eq-height">
+            <h6>
+                <?php echo $this->user->lang('Plan Details - %s', $this->package['reference']); ?>
+                <span class="float-right status <?php echo $this->package['status']['statusClassClient']; ?>">
+                    <?php echo $this->package['status']['statusText']; ?>
+                </span>
+            </h6>
+            <ul>
+                <?php if ($this->package['domain'] != '') { ?>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Domain'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->package['domain']; ?>
+                    </span>
+                </li>
+                <?php } ?>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Amount'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->unescape($this->package['recurringAmount']); ?>
+                    </span>
+                </li>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Billing Cycle'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->user->lang($this->package['billingCycle']); ?>
+                    </span>
+                </li>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->package['nextBillDateText']; ?>
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->package['nextBillDate']; ?>
+                    </span>
+                </li>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Package'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->package['product']; ?>
+                    </span>
+                </li>
+                <?php if ($this->showAutomaticRenewal) { ?>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Charge Card Automatically'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <input lass="form-check-input" id="toogle-automatic-cc-charge" type="checkbox"<?php echo $this->automaticRenewalChecked;?>>
+                    </span>
+                </li>
+                <?php } ?>
+            </ul>
+        </div>
+    </div>
+    <div class="col-lg-12 col-xl-12">
+        <div class="config-options">
+            <div id="config-addon-tab">
+                <ul class="resp-tabs-list">
+                    <li>
+                        <span class="tab-heading">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                            <?php echo $this->user->lang('Custom Fields'); ?>
+                        </span>
+                    </li>
+                    <?php if (count($this->package['addons']) > 0) { ?>
+                    <li>
+                        <span class="tab-heading">
+                            <i class="fa fa-puzzle-piece" aria-hidden="true"></i>
+                            <?php echo $this->user->lang('Addons'); ?>
+                        </span>
+                    </li>
+                    <?php } ?>
+                </ul>
+
+                <div class="resp-tabs-container">
+                    <div>
+                        <ul>
+                            <?php foreach ($this->package['customFields'] as $customField) { ?>
+                            <li>
+                                <span class="card-label">
+                                    <?php echo $customField['name']; ?>
+                                </span>
+                                <span class="card-value">
+                                <?php
+                                    if (isset($customField['password'])) {
+                                        echo $customField['value'];
+                                    } elseif ($customField['value'] == $this->user->lang("Left Blank") && !$customField['isClientChangeable']) {
+                                        echo "<span class='muted'>" . $customField['value'] . "</span>";
+                                    } elseif ($customField['isClientChangeable']) {
+                                        if ($customField['type'] == TYPEPASSWORD || strlen($customField['value']) >= 25) {
+                                            echo '<a href="#" data-value="' . $customField['value'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name'])  . '</a>';
+                                        } else {
+                                            echo '<a href="#" data-value="' . $customField['value'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $customField['value'] . '</a>';
+                                        }
+                                    } elseif ($customField['type'] == TYPEPASSWORD || strlen($customField['value']) >= 25) {
+                                        echo '<a href="#" class="customFieldModal" data-content="' . $customField['value'] . '" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name']) . '</a>';
+                                    } else {
+                                        echo $this->escape($customField['value']);
+                                    }
+                                ?>
+                                </span>
+                            </li>
+                            <?php } ?>
+
+                        </ul>
+                    </div>
+                    <?php if (count($this->package['addons']) > 0) { ?>
+                    <div>
+                        <ul>
+                            <?php foreach ($this->package['addons'] as $addon) { ?>
+                            <?php if ($addon['fieldtype'] !== (string)typeHIDDEN) { ?>
+                            <li>
+                                <span class="card-label">
+                                    <?php echo $addon['namelanguage']; ?>
+                                </span>
+                                <span class="card-value">
+                                <?php
+                                    $addonQuantity = '';
+                                    $addonQuantityPrice = $addon['optioncustomerprice'];
+                                    $addonQuantitySetupPrice = $addon['optionsetupprice'];
+                                    if ($addon['optioncustomerquantity'] > 1 || $addon['optioncustomerquantity'] == 0) {
+                                        $addonQuantity = $addon['optioncustomerquantity'].' x ';
+                                        $addonQuantityPrice = '@ '.$addon['optioncustomerprice'].'/'.$this->user->lang("each").' = '.$addon['optioncustomerquantityprice'];
+
+                                        if($addon['optionsetupprice'] !== false){
+                                            $addonQuantitySetupPrice = $addon['optionsetupprice'].'/'.$this->user->lang("each").' = '.$addon['optionsetupquantityprice'];
+                                        }
+                                    }
+                                    echo $addonQuantity.$addon['optionnamelanguage'].' '.$addonQuantityPrice.' / '.$addon['optioncycle'];
+                                    if($addonQuantitySetupPrice !== false){
+                                        echo '<br><span style="float:right;">+ '.$addonQuantity.$addonQuantitySetupPrice.' / '.$addon['optionsetup'].'</span><br><br>';
+                                    }
+                                ?>
+                                </span>
+                            </li>
+                            <?php } ?>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

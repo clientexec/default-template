@@ -144,9 +144,9 @@ function validate_vat() {
                                 break;
                         }
                     }
-                    $('#VAT' + vat_var_id).parent().show();
+                    $('#VAT' + vat_var_id).parent().parent().show();
                 } else {
-                    $('#VAT' + vat_var_id).parent().hide();
+                    $('#VAT' + vat_var_id).parent().parent().hide();
                 }
             }
         }
@@ -176,8 +176,13 @@ function checkListsStates() {
 $('#register-form').on('submit', function(e) {
 
     e.preventDefault();
-    $(this).parsley().validate();
-    if ($(this).parsley().isValid()) {
+
+    var form = $(this).parsley({
+        excluded: 'input[type=button], input[type=submit], input[type=reset], :hidden'
+    });
+
+    form.validate();
+    if (form.isValid()) {
         $.ajax({
             url: $(this).prop('action'),
             data: $(this).serialize(),

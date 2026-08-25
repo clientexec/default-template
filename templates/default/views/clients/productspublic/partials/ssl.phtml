@@ -1,0 +1,290 @@
+<div class="row">
+    <div class="col-lg-6 col-xl-6">
+        <div class="white-card plan-details eq-height">
+            <h6>
+                <?php echo $this->user->lang('Plan Details - %s', $this->package['reference']); ?>
+                <span class="float-right status <?php echo $this->package['status']['statusClassClient']; ?>">
+                    <?php echo $this->package['status']['statusText']; ?>
+                </span>
+            </h6>
+            <ul>
+                <?php if ($this->package['domain'] != '') { ?>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Domain'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->package['domain']; ?>
+                    </span>
+                </li>
+                <?php } ?>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Amount'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->unescape($this->package['recurringAmount']); ?>
+                    </span>
+                </li>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Billing Cycle'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->user->lang($this->package['billingCycle']); ?>
+                    </span>
+                </li>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->package['nextBillDateText']; ?>
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->package['nextBillDate']; ?>
+                    </span>
+                </li>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Package'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->package['product']; ?>
+                    </span>
+                </li>
+                <?php if ($this->showAutomaticRenewal) { ?>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Charge Card Automatically'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <input lass="form-check-input" id="toogle-automatic-cc-charge" type="checkbox"<?php echo $this->automaticRenewalChecked;?>>
+                    </span>
+                </li>
+                <?php } ?>
+            </ul>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-6">
+        <div class="white-card additional-details eq-height">
+            <h6>
+                <?php echo $this->user->lang('Additional Details'); ?>
+            </h6>
+            <ul>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Certificate ID'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->cert['id']; ?>
+                    </span>
+                </li>
+
+
+                <?php if ($this->cert['status'] != '') { ?>
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Status'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->cert['status']; ?>
+                    </span>
+                </li>
+                <?php } ?>
+
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Domain'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->cert['domain']; ?>
+                    </span>
+                </li>
+
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Expiration Date'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->cert['expirationDate']; ?>
+                    </span>
+                </li>
+
+                <li>
+                    <span class="card-label">
+                        <?php echo $this->user->lang('Administration Email'); ?>:
+                    </span>
+                    <span class="card-value">
+                        <?php echo $this->cert['adminEmail']; ?>
+                    </span>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-12">
+        <div class="config-options">
+            <div id="config-addon-tab">
+                <ul class="resp-tabs-list">
+                    <li>
+                        <span class="tab-heading">
+                            <i class="fa fa-cog" aria-hidden="true"></i>
+                            <?php echo $this->user->lang('Custom Fields'); ?>
+                        </span>
+                    </li>
+                    <?php if (count($this->package['addons']) > 0) { ?>
+                    <li>
+                        <span class="tab-heading">
+                            <i class="fa fa-puzzle-piece" aria-hidden="true"></i>
+                            <?php echo $this->user->lang('Addons'); ?>
+                        </span>
+                    </li>
+                    <?php } ?>
+                </ul>
+
+                <div class="resp-tabs-container">
+                    <div>
+                        <ul>
+                            <?php foreach ($this->package['customFields'] as $customField) { ?>
+                            <li>
+                                <span class="card-label">
+                                    <?php echo $customField['name']; ?>
+                                </span>
+                                <span class="card-value">
+                                <?php
+                                    if (isset($customField['password'])) {
+                                        echo $customField['value'];
+                                    } elseif ($customField['value'] == $this->user->lang("Left Blank") && !$customField['isClientChangeable']) {
+                                        echo "<span class='muted'>" . $customField['value'] . "</span>";
+                                    } elseif ($customField['isClientChangeable']) {
+                                        if ($customField['type'] == TYPEPASSWORD || strlen($customField['value']) >= 25) {
+                                            echo '<a href="#" data-value="' . $customField['value'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name'])  . '</a>';
+                                        } else {
+                                            echo '<a href="#" data-value="' . $customField['value'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $customField['value'] . '</a>';
+                                        }
+                                    } elseif ($customField['type'] == TYPEPASSWORD || strlen($customField['value']) >= 25) {
+                                        echo '<a href="#" class="customFieldModal" data-content="' . $customField['value'] . '" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name']) . '</a>';
+                                    } else {
+                                        echo $this->escape($customField['value']);
+                                    }
+                                ?>
+                                </span>
+                            </li>
+                            <?php } ?>
+
+                            <li>
+                                <span class="card-label">
+                                    <?php echo $this->user->lang("CSR");?>
+                                </span>
+                                <span class="card-value">
+                                    <a href="#" id="viewCSR" data-value="<?php echo $this->cert['csr']; ?>">View CSR</a>
+                                </span>
+                            </li>
+
+                            <?php if ($this->cert['cert'] != '') {?>
+                            <li>
+                                <span class="card-label">
+                                    <?php echo $this->user->lang("Certificate");?>
+                                </span>
+                                <span class="card-value">
+                                    <a href="#" id="viewCert" data-value="<?php echo $this->cert['cert']; ?>">View Certificate</a>
+                                </span>
+                            </li>
+                            <?php } ?>
+
+                        </ul>
+                    </div>
+                    <?php if (count($this->package['addons']) > 0) { ?>
+                    <div>
+                        <ul>
+                            <?php foreach ($this->package['addons'] as $addon) { ?>
+                            <?php if ($addon['fieldtype'] !== (string)typeHIDDEN) { ?>
+                            <li>
+                                <span class="card-label">
+                                    <?php echo $addon['namelanguage']; ?>
+                                </span>
+                                <span class="card-value">
+                                <?php
+                                    $addonQuantity = '';
+                                    $addonQuantityPrice = $addon['optioncustomerprice'];
+                                    $addonQuantitySetupPrice = $addon['optionsetupprice'];
+                                    if ($addon['optioncustomerquantity'] > 1 || $addon['optioncustomerquantity'] == 0) {
+                                        $addonQuantity = $addon['optioncustomerquantity'].' x ';
+                                        $addonQuantityPrice = '@ '.$addon['optioncustomerprice'].'/'.$this->user->lang("each").' = '.$addon['optioncustomerquantityprice'];
+
+                                        if($addon['optionsetupprice'] !== false){
+                                            $addonQuantitySetupPrice = $addon['optionsetupprice'].'/'.$this->user->lang("each").' = '.$addon['optionsetupquantityprice'];
+                                        }
+                                    }
+                                    echo $addonQuantity.$addon['optionnamelanguage'].' '.$addonQuantityPrice.' / '.$addon['optioncycle'];
+                                    if($addonQuantitySetupPrice !== false){
+                                        echo '<br><span style="float:right;">+ '.$addonQuantity.$addonQuantitySetupPrice.' / '.$addon['optionsetup'].'</span><br><br>';
+                                    }
+                                ?>
+                                </span>
+                            </li>
+                            <?php } ?>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#viewCert').on('click', function(e) {
+        var value = $(this).data('value');
+        $.dialog({
+            title: clientexec.lang('Certificate'),
+            content: value,
+             columnClass: 'medium',
+        });
+    });
+
+
+    $('#viewCSR').on('click', function(e) {
+        var value = $(this).data('value');
+        $.confirm({
+        columnClass: 'medium',
+        containerFluid: true,
+        title: '',
+        content: '' +
+        '<form action="">' +
+        '<div class="form-group">' +
+        '<label>' + clientexec.lang('Please enter your new CSR') + '</label>' +
+        '<textarea id="csr" rows="20" class="form-control">' + value + '</textarea>' +
+        '</div>' +
+        '</form>',
+        buttons: {
+            formSubmit: {
+                text: 'Save',
+                btnClass: 'btn btn-primary',
+                action: function () {
+                    var csr = $('#csr').val();
+                    $.post('index.php?fuse=clients&controller=products&action=updatecsr', {
+                        id: productId,
+                        csr: csr
+                    }, function( data ) {
+                        response = clientexec.parseResponse(data);
+                        if (response.success === true) {
+                            location.reload();
+                        }
+                    });
+                }
+            },
+            cancel: function () {
+            },
+        },
+        onContentReady: function () {
+            var jc = this;
+            this.$content.find('form').on('submit', function (e) {
+                // if the user submits the form by pressing enter in the field.
+                e.preventDefault();
+                jc.$$formSubmit.trigger('click');
+            });
+        }
+    });
+});
+</script>

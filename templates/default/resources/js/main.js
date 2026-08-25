@@ -1393,6 +1393,7 @@ $(document).ready(function() {
             disabledSelects.prop('disabled', 'disabled');
         }
     });
+
     $.extend( true, $.fn.dataTable.defaults, {
         language: {
             lengthMenu: clientexec.lang('Show _MENU_ entries'),
@@ -1404,5 +1405,57 @@ $(document).ready(function() {
                 next: clientexec.lang('Next')
             }
         }
+    });
+
+    var btnst = true;
+    $('.sidebar-toggle').on('click', function(e) {
+        if (btnst == true) {
+            document.querySelector('.sidebar-toggle span').classList.add('toggle');
+            document.getElementById('sidebar').classList.add('sidebarshow');
+            btnst = false;
+        } else if (btnst == false) {
+            document.querySelector('.sidebar-toggle span').classList.remove('toggle');
+            document.getElementById('sidebar').classList.remove('sidebarshow');
+            btnst = true;
+        }
+    });
+
+
+   // Config and Addon Tab
+    $('#config-addon-tab').easyResponsiveTabs();
+
+    $('.language-selector').on('click', function(){
+        clientexec.mask();
+        $.get('index.php?lang=' + $(this).attr('data-language'), function(){
+            window.location.reload();
+        });
+    });
+
+     $('.currency-selector').on('click', function() {
+        currency = $(this).attr('data-currency');
+        $.getJSON('index.php?fuse=admin&controller=signup&action=getnumberofcartitems', {},
+        function(response) {
+            if (response.items > 0) {
+                $.confirm({
+                    theme: 'bootstrap',
+                    title: 'Changing Currency',
+                    content: clientexec.lang('Changing currencies will reset your cart. Are you sure you want to continue?'),
+                    draggable: false,
+                    buttons: {
+                        confirm: {
+                            text: clientexec.lang('Yes'),
+                            action: function () {
+                                window.location.replace('order.php?currency=' + currency);
+                            }
+                        },
+                        cancel: {
+                            text: clientexec.lang('No')
+                        },
+                    }
+                });
+            } else {
+                window.location.replace('order.php?currency=' + currency);
+            }
+        });
     });
 });

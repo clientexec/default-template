@@ -15,20 +15,9 @@
 */
 
 /*!
- * Datepicker for Bootstrap v1.9.0 (https://github.com/uxsolutions/bootstrap-datepicker)
+ * Datepicker for Bootstrap v1.10.0 (https://github.com/uxsolutions/bootstrap-datepicker)
  *
- * Licensed under the Apache License v2.0 (http://www.apache.org/licenses/LICENSE-2.0)
- */
-
-/*!
- * Sizzle CSS Selector Engine v2.3.6
- * https://sizzlejs.com/
- *
- * Copyright JS Foundation and other contributors
- * Released under the MIT license
- * https://js.foundation/
- *
- * Date: 2021-02-16
+ * Licensed under the Apache License v2.0 (https://www.apache.org/licenses/LICENSE-2.0)
  */
 
 /*!
@@ -51,17 +40,14 @@
  */
 
 /*!
- * jQuery JavaScript Library v3.6.0
+ * jQuery JavaScript Library v3.7.1
  * https://jquery.com/
- *
- * Includes Sizzle.js
- * https://sizzlejs.com/
  *
  * Copyright OpenJS Foundation and other contributors
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2021-03-02T17:08Z
+ * Date: 2023-08-28T13:37Z
  */
 
 /*!
@@ -97,19 +83,19 @@
 */
 
 /*! Bootstrap 4 integration for DataTables' Responsive
- * ©2016 SpryMedia Ltd - datatables.net/license
+ * © SpryMedia Ltd - datatables.net/license
  */
 
-/*! DataTables 1.12.1
- * ©2008-2022 SpryMedia Ltd - datatables.net/license
+/*! DataTables 1.13.5
+ * ©2008-2023 SpryMedia Ltd - datatables.net/license
  */
 
 /*! DataTables Bootstrap 4 integration
  * ©2011-2017 SpryMedia Ltd - datatables.net/license
  */
 
-/*! Responsive 2.2.9
- * 2014-2021 SpryMedia Ltd - datatables.net/license
+/*! Responsive 2.5.0
+ * © SpryMedia Ltd - datatables.net/license
  */
 
 /**!

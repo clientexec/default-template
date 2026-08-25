@@ -587,9 +587,9 @@ cart.update_pricing = function() {
                                 break;
                         }
                     }
-                    $('#VAT' + cart.vat_var_id).parent().removeClass('d-none');
+                    $('#VAT' + cart.vat_var_id).parent().parent().removeClass('d-none');
                 } else {
-                    $('#VAT' + cart.vat_var_id).parent().addClass('d-none');
+                    $('#VAT' + cart.vat_var_id).parent().parent().addClass('d-none');
                 }
             }
         }

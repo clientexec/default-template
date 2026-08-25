@@ -44,14 +44,21 @@
                 }
 
                 &::before {
-                    content: '';
+                    /*content: '';
                     width: 20px;
                     height: 20px;
-                    display: inline-block;
                     @include backgroundImage('signup/radio-btn.png');
                     position: relative;
-                    top: 3px;
+                    top: 3px;*/
+                    display: inline-block;
                     margin-right: 5px;
+                    content: '\25CF';
+                    width: 20px;
+                    height: 20px;
+                    color: #7f9bd0;
+                    border: 5px solid #e7e7e7;
+                    line-height: 10px;
+                    border-radius: 12px;
                 }
 
                 &.resp-tab-active {
@@ -61,7 +68,9 @@
                     box-shadow: 0 3px 0 0 #1e6bca;
 
                     &::before {
-                        @include backgroundImage('signup/radio-btn-active.png');
+                        /*@include backgroundImage('signup/radio-btn-active.png');*/
+                        color: white;
+                        border: 5px solid #1c66c0;
 
                     }
                 }
@@ -102,6 +111,11 @@
                     position: relative;
 
                     .domain-dropdown {
+
+                        select {
+                            width: 100%;
+                        }
+
                         display: inline-block;
                         position: absolute;
                         right: 14px;
@@ -112,7 +126,7 @@
                             position: static;
                         }
 
-                        .normalSelect2 {
+                        .searchSelect2, .normalSelect2 {
                             display: block;
                             width: 122px;
                             height: 34px;
@@ -301,41 +315,20 @@
         position: relative;
         height: 13px;
         max-width: 100%;
-        @include backgroundImage('signup/cart-status-rail-bg.png', repeat-x);
-
-        &::before {
-            position: absolute;
-            content: '';
-            width: 22px;
-            height: 23px;
-            @include backgroundImage('signup/cart-status-start-node.png', no-repeat);
-            // background: url(../img/cart-status-start-node.png) ;
-            display: block;
-            top: -5px;
-            left: -2px;
-        }
-
-        &::after {
-            position: absolute;
-            content: '';
-            width: 23px;
-            height: 23px;
-            @include backgroundImage('signup/cart-status-end-node.png', no-repeat);
-            // background: url(../img/) no-repeat;
-            display: block;
-            top: -5px;
-            right: -2px;
-        }
-
+        background: $cart-rail;
+        box-shadow: 0 4px 10px rgb(0 0 0 / 0.2);
     }
 
     .cart-status-nodes {
         display: block;
         position: relative;
         z-index: 3;
-        width: 36px;
-        height: 36px;
-        @include backgroundImage('signup/cart-status-inner-nodes.png', no-repeat center center);
+        width: 1px;
+        height: 1px;
+        background: $cart-rail;
+        border: $cart-radius solid $cart-rail;
+        border-radius: $cart-radius;
+        box-shadow: 0 5px 10px rgb(0 0 0 / 0.2);
 
         &.start,
         &.end {
@@ -344,22 +337,45 @@
         }
 
         &.now {
-            @include backgroundImage('signup/cart-status-ends-bg.png', no-repeat center center);
             top: -1px;
+            background: $cart-active;
+            border: $cart-radius-active solid $cart-active;
+            border-radius: $cart-radius-active;
 
             &.end {
                 right: -8px;
             }
+
+            &::before {
+                content: '\2026';
+                width: 1px;
+                height: 1px;
+                position: absolute;
+                left: -9px;
+                top: -25px;
+                color: white;
+                font-size: 25px;
+            }
         }
 
         &.done {
-            @include backgroundImage('signup//cart-stats-done-node.png', no-repeat center center);
-            // background: url(../img/cart-stats-done-node.png) no-repeat center center;
             top: 0px;
+            background: $cart-active;
+            border: $cart-radius-active solid $cart-active;
+            border-radius: $cart-radius-active;
+
+            &::before {
+                content: '\2713';
+                width: 1px;
+                height: 1px;
+                position: absolute;
+                left: -5px;
+                top: -11px;
+                color: white;
+                font-size: 14px;
+            }
 
             &.first-step {
-                @include backgroundImage('signup/cart-stats-done-first-node.png', no-repeat center center);
-                // background: url(../img/cart-stats-done-first-node.png) no-repeat center center;
                 top: -1px;
             }
         }
@@ -384,17 +400,17 @@
             width: 140px;
             position: relative;
             line-height: 16px;
-            left: -55px;
-            top: -20px;
             color: $text-body;
             font-size: $font-md;
+            left: -69px;
+            top: -37px;
 
             @include portrait-small {
                 width: 60px;
                 font-size: 12px;
                 line-height: 14px;
-                left: -12px;
-                top: -30px;
+                left: -29px;
+                top: -50px;
                 height: 25px;
                 display: flex;
                 flex-direction: column;
@@ -409,14 +425,13 @@
         height: 6px;
         width: 18%;
         flex-grow: 1;
-        @include backgroundImage('signup/cart-status-inner-rail-bg.png', repeat-x);
-        // background: url(../img/cart-status-inner-rail-bg.png) repeat-x;
         position: absolute;
         top: -1px;
         bottom: 0;
         left: 35px;
         margin: auto;
         display: block;
+        background: $cart-active;
 
         &.step2 {
             &.of3steps {
@@ -532,6 +547,9 @@
         margin: 22px 21px;
         background: #FFF;
         border: 1px solid #e0e3f1;
+        &.highlight {
+            border: 1px solid #ffa500;
+        }
         @include border-radius(6px);
         @include common_shadow();
 
@@ -694,6 +712,9 @@
     align-items: center;
     background: #FFF;
     border: 1px solid #e0e3f1;
+    &.highlight {
+        border: 1px solid #ffa500;
+    }
     @include common_shadow();
     margin-bottom: 16px;
     border-radius: 6px;

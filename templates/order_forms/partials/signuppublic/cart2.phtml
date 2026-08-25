@@ -267,7 +267,7 @@ $(function() {
 
 <?php if ($this->bundled) { ?>
     $(document).ready(function() {
-        $('a:not(.button, .btn)').click(function(e){
+        $('a:not(.button, .btn, .continue-btn, .dropdown-toggle, .currency-selector)').click(function(e){
             e.preventDefault();
             var selectedLink = this;
 

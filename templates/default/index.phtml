@@ -109,6 +109,8 @@ if (count($this->gSuccessMessages)>0) {
                             'domainLink' => $this->domainLink,
                             'logoURL' => $this->logoURL,
                             'customer' => $this->customer,
+                            'announcementCount' => $this->announcementCount,
+                            'kbArticleCount' => $this->kbArticleCount
                         ]);
                     ?>
             </div>
@@ -123,18 +125,17 @@ if (count($this->gSuccessMessages)>0) {
     <?php echo $this->unescape($this->clientAreaAllHTML); ?>
     <?php echo $this->layout()->CONTENT; ?>
     <footer class="footer">
-        <?php if (!CE_Lib::hasAttribute("nobranding")) { ?>
-        <div class="container">
-            <div class="copyright">
-                <p>
-                    <?php echo $this->user->lang("Powered by"); ?> <a href="https://www.clientexec.com?source=poweredby" target="_new">
-                        <img class="brand-logo" src="templates/default/images/logo_text.png">
-                    </a>
-                </p>
-            </div>
-        </div>
         <?php
-        }
+            echo $this->partial(
+                'views/layoutpartials/footer.phtml', [
+                    'langauges' => CE_Lib::getEnabledLanguages(),
+                    'defaultLanguage' => $this->gLanguage,
+                    'currencies' => $this->currenciesArray,
+                    'defaultCurrencyName' => $this->defaultCurrencyName,
+                    'defaultCurrencyCode' => $this->defaultCurrencyCode,
+                    'showCurrencyDropdown' => $this->showCurrencyDropdown
+                ]
+            );
 
         if (!$this->gHideStyle) {
             echo $this->unescape($this->footerHTML);

@@ -1,0 +1,76 @@
+ <?php if (count($this->langauges) > 1 || ($this->showCurrencyDropdown && count($this->currencies) > 1)) { ?>
+<div class="container">
+    <div class="copyright">
+            <?php if (!CE_Lib::hasAttribute("nobranding")) { ?>
+            <div class="d-flex justify-content-between">
+                <div>
+                     <p class="pt-1">
+                        <?php echo $this->user->lang("Powered by"); ?>
+                        <a href="https://www.clientexec.com?source=poweredby" target="_new">
+                            <img class="brand-logo" src="templates/default/images/logo_text.png">
+                        </a>
+                    </p>
+                </div>
+            <?php } else { ?>
+            <div class="justify-content-between">
+            <?php } ?>
+            <div>
+                <?php if (count($this->langauges) > 1) { ?>
+                <p class="float-right">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="" aria-expanded="false" aria-label="Toggle navigation">
+                        <div class="dropdown" style="display: inline-block;">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLang" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="flag-icon <?php echo $this->defaultLanguage; ?>"></span>
+                                <?php echo ucwords($this->defaultLanguage); ?>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownLang">
+                                <?php foreach ($this->langauges as $key => $lang) { ?>
+                                <a class="dropdown-item language-selector" href="#" data-language="<?php echo $lang; ?>">
+                                    <span class="flag-icon <?php echo $lang; ?>"></span> <?php echo ucwords($lang); ?>
+                                </a>
+                                <?php } ?>
+                           </div>
+                        </div>
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </p>
+                <?php } ?>
+                <?php if ($this->showCurrencyDropdown) { ?>
+                <p class="float-right">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="" aria-expanded="false" aria-label="Toggle navigation">
+                        <div class="dropdown" style="display: inline-block;">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLang" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span><b><?php echo $this->defaultCurrencyCode; ?></b></span>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownLang">
+                                <?php foreach ($this->currencies as $key => $currency) { ?>
+                                <a class="dropdown-item currency-selector" href="#" data-currency="<?php echo $key; ?>">
+                                    <span><b><?php echo $key; ?></b></span>
+                                </a>
+                                <?php } ?>
+                           </div>
+                        </div>
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </p>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php } else { ?>
+    <?php if (!CE_Lib::hasAttribute("nobranding")) { ?>
+<div class="container">
+    <div class="copyright">
+        <p>
+            <?php echo $this->user->lang("Powered by"); ?> <a href="https://www.clientexec.com?source=poweredby" target="_new">
+                <img class="brand-logo" src="templates/default/images/logo_text.png">
+            </a>
+        </p>
+    </div>
+</div>
+<?php } ?>
+
+
+<?php } ?>

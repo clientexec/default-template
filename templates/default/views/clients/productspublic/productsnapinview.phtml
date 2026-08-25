@@ -1,12 +1,10 @@
-<div class="content-area dashboard-wraper">
+<div class="content-area colum-two-wrper">
     <div class="container">
-        <div class="package-view-page">
+        <div class="sidenav-left">
             <?php echo $this->publicproductheader($this->user); ?>
-            <div class="product-detail-block">
-                <div class="row">
-                    <?php echo $this->unescape($this->output); ?>
-                </div>
-            </div>
+        </div>
+        <div class="content-right bg-white p-4">
+            <?php echo $this->unescape($this->output); ?>
         </div>
     </div>
 </div>

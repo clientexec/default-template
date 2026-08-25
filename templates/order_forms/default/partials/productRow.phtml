@@ -4,7 +4,7 @@
         $continueButtonClass = ' disabled';
     }
 ?>
-<div class="hosting-plan-row item-wrapper">
+<div class="hosting-plan-row item-wrapper<?php if ($this->package['highlight'] == 1) {?> highlight<?php } ?>">
     <div class="head">
         <h3>
             <?php echo $this->package['plannamelanguage']; ?>

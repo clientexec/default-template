@@ -11,12 +11,21 @@
         class="currency-option"
     >
     <?php
-        if ($this->monthlyPriceBreakdown) {
-            if ($this->showDiscountedPricingInBillingCycleSelector && $price['signup_price_monthly'] !== false && $price['signup_price_monthly'] !== $price['price_monthly']) {
-                echo $this->user->lang('%s: %s/mo', $price['term'], $price['signup_price_monthly']);
-                echo ' ' . $this->user->lang('(Normally: %s/mo)', $price['price_monthly']);
+        if ($price['termId'] != '0') {
+            if ($this->monthlyPriceBreakdown) {
+                if ($this->showDiscountedPricingInBillingCycleSelector && $price['signup_price_monthly'] !== false && $price['signup_price_monthly'] !== $price['price_monthly']) {
+                    echo $this->user->lang('%s: %s/mo', $price['term'], $price['signup_price_monthly']);
+                    echo ' ' . $this->user->lang('(Normally: %s/mo)', $price['price_monthly']);
+                } else {
+                    echo $this->user->lang('%s: %s/mo', $price['term'], $price['price_monthly']);
+                }
             } else {
-                echo $this->user->lang('%s: %s/mo', $price['term'], $price['price_monthly']);
+                if ($this->showDiscountedPricingInBillingCycleSelector && $price['signup_price'] !==  false && $price['signup_price'] !== $price['price']) {
+                    echo $this->user->lang('%s / %s', $price['signup_price'], $price['term']);
+                    echo ' ' . $this->user->lang('(Normally: %s / %s)', $price['price'], $price['term']);
+                } else {
+                    echo $this->user->lang('%s / %s', $price['price'], $price['term']);
+                }
             }
         } else {
             if ($this->showDiscountedPricingInBillingCycleSelector && $price['signup_price'] !==  false && $price['signup_price'] !== $price['price']) {
@@ -26,6 +35,7 @@
                 echo $this->user->lang('%s / %s', $price['price'], $price['term']);
             }
         }
+
 
         if (!$this->hideSetupFees && $price['termId'] != '0') {
             echo ' ' . $this->user->lang('(Setup Fee: %s)', $price['setup']);

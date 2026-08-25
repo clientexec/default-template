@@ -171,14 +171,14 @@ if ($this->user->hasPermission('support_view') ||
                         </a>
                     </li>
                     <?php } ?>
-                    <?php if ($this->user->hasPermission('knowledgebase_view')) { ?>
+                    <?php if ($this->user->hasPermission('knowledgebase_view') && $this->kbArticleCount > 0) { ?>
                     <li>
                         <a href="<?php echo CE_Lib::generateMainKBLink(); ?>">
                             <?php echo $this->user->lang("Knowledge Base");?>
                         </a>
                     </li>
                     <?php } ?>
-                    <?php if ($this->user->hasPermission('clients_view_announcements')) { ?>
+                    <?php if ($this->user->hasPermission('clients_view_announcements') && $this->announcementCount > 0) { ?>
                     <li>
                         <a href="index.php?fuse=home&controller=announcements&view=announcements">
                             <?php echo $this->user->lang("Announcements");?>

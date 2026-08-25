@@ -1,0 +1,97 @@
+.flag-icon {
+    background-size: contain;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    position: relative;
+    display: inline-block;
+    width: 1.33333333em;
+    line-height: 1em;
+    &:before {
+        content: "\00a0";
+    }
+
+    &.catalan {
+        background: url(../images/flags/catalan.svg);
+    }
+    &.arabic {
+        background: url(../images/flags/arabic.svg);
+    }
+    &.azerbaijani {
+        background: url(../images/flags/azerbaijani.svg);
+    }
+    &.bulgarian {
+        background: url(../images/flags/bulgarian.svg);
+    }
+    &.chinese {
+        background: url(../images/flags/chinese.svg);
+    }
+    &.croatian {
+        background: url(../images/flags/croatian.svg);
+    }
+    &.czech {
+        background: url(../images/flags/czech.svg);
+    }
+    &.danish {
+        background: url(../images/flags/danish.svg);
+    }
+    &.dutch {
+        background: url(../images/flags/dutch-nl.svg);
+    }
+    &.english {
+        background: url(../images/flags/english.svg);
+    }
+    &.estonian {
+        background: url(../images/flags/estonian.svg);
+    }
+    &.farsi {
+        background: url(../images/flags/farsi.svg);
+    }
+    &.french {
+        background: url(../images/flags/french.svg);
+    }
+    &.german {
+        background: url(../images/flags/dutch.svg);
+    }
+    &.hebrew {
+        background: url(../images/flags/hebrew.svg);
+    }
+    &.hungarian {
+        background: url(../images/flags/hungarian.svg);
+    }
+    &.italian {
+        background: url(../images/flags/italian.svg);
+    }
+    &.macedonian {
+        background: url(../images/flags/macedonian.svg);
+    }
+    &.norwegian {
+        background: url(../images/flags/norwegian.svg);
+    }
+    &.portuguese {
+        background: url(../images/flags/portuguese.svg);
+    }
+    &.portuguese-br {
+        background: url(../images/flags/portuguese-br.svg);
+    }
+    &.portuguese-pt {
+        background: url(../images/flags/portuguese-pt.svg);
+    }
+    &.romanian {
+        background: url(../images/flags/romanian.svg);
+    }
+    &.russian {
+        background: url(../images/flags/russian.svg);
+    }
+    &.spanish {
+        background: url(../images/flags/spanish.svg);
+    }
+    &.swedish {
+        background: url(../images/flags/swedish.svg);
+    }
+    &.turkish {
+        background: url(../images/flags/turkish.svg);
+    }
+    &.ukranian {
+        background: url(../images/flags/ukrainian.svg);
+    }
+}
