@@ -48,12 +48,14 @@
                         </div>
                         <div class="dashboard-info-box no-border">
                             <ul>
+                                <?php if ($this->showOrderLink) { ?>
                                 <li>
                                     <a href="order.php">
                                         <i class="fas fa-shopping-cart"></i>
                                         <?php echo $this->user->lang('Order New Services'); ?>
                                     </a>
                                 </li>
+                                <?php } ?>
                                 <!-- <li><a href="#"><span class="icon-icon-7"></span> Register a New Domain</a></li> -->
                                 <li>
                                     <a href="index.php?fuse=admin&action=Logout">

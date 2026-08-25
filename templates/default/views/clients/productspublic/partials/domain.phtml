@@ -2,7 +2,9 @@
     <div class="col-lg-6 col-xl-6">
         <div class="white-card plan-details eq-height">
             <h6>
-                <?php echo $this->user->lang('Plan Details - %s', $this->package['reference']); ?>
+                <?php
+                    echo $this->package['reference'] ? $this->user->lang('Plan Details - %s', $this->package['reference']) : $this->user->lang('Plan Details');
+                ?>
                 <span class="float-right status <?php echo $this->package['status']['statusClassClient']; ?>">
                     <?php echo $this->package['status']['statusText']; ?>
                 </span>
@@ -104,7 +106,13 @@
                         <?php echo $this->user->lang('EPP Code'); ?>:
                     </span>
                     <span class="card-value">
-                        <?php echo $this->package['eppCode']; ?>
+                        <?php
+                            if ($this->package['eppCode'] == 'N/A') {
+                                echo $this->package['eppCode'];
+                            } else {
+                                echo '<a href="#" class="customFieldModal" data-content="' . $this->package['eppCode'] . '" data-name="' . $this->user->lang('EPP Code') . '">' . $this->user->lang('View Code') . '</a>';
+                            }
+                        ?>
                     </span>
                 </li>
                 <?php } ?>

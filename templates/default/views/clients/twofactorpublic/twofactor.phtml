@@ -1,0 +1,195 @@
+<div class="datatable-page">
+    <div class="container">
+        <div class="cm-holder">
+            <div class="data-table-wrapper">
+                <div class="head">
+                    <h1>
+                        <?php echo $this->user->lang('Two-Factor Authentication'); ?>
+                    </h1>
+                </div>
+
+                <div class="cs-padding">
+
+                    <!-- Status -->
+                    <div class="twofactor-status mb-3">
+                        <span class="me-2 fw-medium">
+                            <?php echo $this->user->lang('Status'); ?>:
+                        </span>
+
+                        <?php if ($this->userEnabled) { ?>
+                            <span class="badge bg-success">
+                                <?php echo $this->user->lang('Enabled'); ?>
+                            </span>
+                        <?php } else { ?>
+                            <span class="badge bg-danger">
+                                <?php echo $this->user->lang('Disabled'); ?>
+                            </span>
+                        <?php } ?>
+                    </div>
+
+
+                    <?php if (!$this->userEnabled) { ?>
+                        <div class="alert alert-warning">
+                            <?php echo $this->user->lang('We recommend enabling two-factor authentication to provide an extra layer of security to your account.'); ?>
+                        </div>
+                    <?php } ?>
+
+                    <div class="twofactor-actions mt-3">
+                        <?php if ($this->userEnabled) { ?>
+                            <a href="index.php?fuse=clients&controller=twofactor&action=disable"
+                               class="btn btn-danger"
+                               id="disable2faBtn">
+                                <i class="fas fa-trash me-1"></i>
+                                <?php echo $this->user->lang('Disable'); ?>
+                            </a>
+                        <?php } else { ?>
+                            <a href="javascript:void(0);"
+                               class="btn btn-primary"
+                               data-toggle="modal"
+                               data-target="#enable2FAModal">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                <?php echo $this->user->lang('Enable'); ?>
+                            </a>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="enable2FAModal" tabindex="-1" role="dialog" aria-labelledby="enable2FALabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="enable2FALabel">
+                    <?php echo $this->user->lang('Two-Factor Authentication'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <p class="text-muted">
+                    <?php echo $this->user->lang('Scan the QR code with your authentication app and enter the code below to verify.'); ?>
+                </p>
+
+                <div class="text-center mb-3">
+                    <div class="border rounded p-3 d-inline-block">
+                        <img src="<?php echo $this->qrCodeUrl; ?>" alt="QR Code" style="width:150px; height:150px;">
+                    </div>
+                </div>
+
+                <div id="twofactor-error" class="alert alert-danger d-none"></div>
+
+                <div class="form-group">
+                    <label>
+                        <?php echo $this->user->lang('Authentication Code'); ?>
+                    </label>
+                    <input type="text"
+                           id="twofactor-code"
+                           class="form-control"
+                           placeholder="123456"
+                           maxlength="6">
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        id="verify2faBtn"
+                        class="btn btn-primary">
+                    <?php echo $this->user->lang('Verify & Enable'); ?>
+                </button>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <?php echo $this->user->lang('Cancel'); ?>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#verify2faBtn').on('click', function () {
+        var code = $('#twofactor-code').val();
+        var errorBox = $('#twofactor-error');
+
+        // reset state
+        errorBox.addClass('d-none').text('');
+
+        if (code.length !== 6) {
+            errorBox.text(clientexec.lang('Please enter a valid 6-digit code')).removeClass('d-none');
+            return;
+        }
+
+        var btn = $(this);
+        btn.prop('disabled', true).text(clientexec.lang('Verifying...'));
+
+        $.ajax({
+            url: 'index.php?fuse=clients&controller=twofactor&action=verify',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                code: code
+            },
+            success: function (response) {
+                if (response.success) {
+                    if (response.to_signup) {
+                        location.href = 'order.php?step=3';
+                    } else {
+                        location.href = 'index.php?fuse=clients&controller=twofactor&view=twofactor';
+                    }
+
+                } else {
+                    errorBox.text(response.error || clientexec.lang('Invalid code')).removeClass('d-none');
+                    btn.prop('disabled', false).text(clientexec.lang('Verify & Enable'));
+                }
+            },
+            error: function () {
+                errorBox.text(clientexec.lang('An error occurred. Please try again.')).removeClass('d-none');
+                btn.prop('disabled', false).text(clientexec.lang('Verify & Enable'));
+            }
+        });
+    });
+
+    $('#enable2FAModal').on('shown.bs.modal', function () {
+        $('#twofactor-code').focus();
+    });
+
+    $('#twofactor-code').on('input', function () {
+        $('#twofactor-error').addClass('d-none').text('');
+    });
+
+    $('#disable2faBtn').on('click', function (e) {
+        e.preventDefault();
+
+        if (!confirm(clientexec.lang('Are you sure you want to disable two-factor authentication?'))) {
+            return;
+        }
+
+        var btn = $(this);
+        btn.prop('disabled', true).text(clientexec.lang('Disabling...'));
+
+        $.ajax({
+            url: 'index.php?fuse=clients&controller=twofactor&action=disable',
+            method: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    location.href = 'index.php?fuse=clients&controller=twofactor&view=twofactor';
+                } else {
+                    alert(response.error || clientexec.lang('Failed to disable two-factor authentication.'));
+                    btn.prop('disabled', false).text(clientexec.lang('Disable'));
+                }
+            },
+            error: function () {
+                alert(clientexec.lang('An error occurred. Please try again.'));
+                btn.prop('disabled', false).text(clientexec.lang('Disable'));
+            }
+        });
+    });
+</script>

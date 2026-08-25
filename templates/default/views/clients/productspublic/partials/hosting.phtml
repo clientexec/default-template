@@ -9,7 +9,9 @@
     <div class="<?php echo $detailsClass; ?>">
         <div class="white-card plan-details eq-height">
             <h6>
-                <?php echo $this->user->lang('Plan Details - %s', $this->package['reference']); ?>
+                <?php
+                    echo $this->package['reference'] ? $this->user->lang('Plan Details - %s', $this->package['reference']) : $this->user->lang('Plan Details');
+                ?>
                 <span class="float-right status <?php echo $this->package['status']['statusClassClient']; ?>">
                     <?php echo $this->package['status']['statusText']; ?>
                 </span>

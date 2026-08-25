@@ -97,11 +97,13 @@ if ($this->user->hasPermission('support_view') ||
                         </a>
                     </li>
                     <?php } ?>
+                    <?php if ($this->showOrderLink) { ?>
                     <li>
                         <a href="order.php">
                             <?php echo $this->user->lang("Order new services");?>
                         </a>
                     </li>
+                    <?php } ?>
                     <?php if ($this->loggedin && $pluginMenu['products'] != '') { ?>
                     <?php echo $pluginMenu['products']; ?>
                     <?php } ?>
@@ -212,7 +214,8 @@ if ($this->user->hasPermission('support_view') ||
                 'loggedin' => $this->loggedin,
                 'customerProfileURL' => $this->customerProfileURL,
                 'customer' => $this->customer,
-                'pluginMenu' => $pluginMenu['profile']
+                'pluginMenu' => $pluginMenu['profile'],
+                'twoFactorEnabled' => $this->twoFactorEnabled,
             ]);
         ?>
         </div>
@@ -224,7 +227,9 @@ if ($this->user->hasPermission('support_view') ||
             'loggedin' => $this->loggedin,
             'customerProfileURL' => $this->customerProfileURL,
             'customer' => $this->customer,
-            'pluginMenu' => $pluginMenu['profile']
+            'pluginMenu' => $pluginMenu['profile'],
+            'twoFactorEnabled' => $this->twoFactorEnabled,
+
         ]);
     ?>
 </div>

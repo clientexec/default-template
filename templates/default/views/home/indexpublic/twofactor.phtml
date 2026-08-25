@@ -1,0 +1,184 @@
+<form method="post" name="twofactor" action="index.php?fuse=admin&action=verifytwofactor" class="validate-form">
+
+    <?php if ($this->redirectURL != '') { ?>
+        <input type="hidden" name="redirect_url" value="<?php echo $this->redirectURL; ?>" />
+    <?php } ?>
+
+    <div class="content-page">
+        <div class="container">
+            <div class="cm-holder">
+                <div class="data-table-wrapper">
+
+                    <div class="head">
+                        <h1>
+                            <?php echo $this->user->lang('Two-Factor Authentication'); ?>
+                        </h1>
+                    </div>
+
+                    <div class="cs-padding">
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-6">
+                                <div id="ce-loginbox">
+
+                                    <h4 class="text-center mb-4">
+                                        <?php echo $this->user->lang('Enter your authentication code'); ?>
+                                    </h4>
+
+                                    <div class="row">
+                                        <div class="col-12 text-center">
+                                            <label for="verification_code_1">
+                                                <?php echo $this->user->lang('Authentication Code'); ?>
+                                            </label>
+                                        </div>
+
+                                        <div class="col-12 mb-3">
+                                            <input
+                                                    type="hidden"
+                                                    name="verification_code"
+                                                    id="verification_code"
+                                                    value=""
+                                                    data-parsley-errors-container="#codeGroup"
+                                                    required
+                                            />
+
+                                            <div class="twofactor-code-inputs" id="twofactor-code-inputs">
+                                                <input type="text" id="verification_code_1" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" autocomplete="one-time-code" />
+                                                <input type="text" id="verification_code_2" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
+                                                <input type="text" id="verification_code_3" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
+                                                <input type="text" id="verification_code_4" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
+                                                <input type="text" id="verification_code_5" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
+                                                <input type="text" id="verification_code_6" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
+                                            </div>
+
+                                            <div id="codeGroup"></div>
+                                        </div>
+
+                                        <?php if (!empty($this->error)) { ?>
+                                            <div class="col-12">
+                                                <div class="alert alert-danger">
+                                                    <?php echo $this->error; ?>
+                                                </div>
+                                            </div>
+                                        <?php } ?>
+
+                                        <div class="col-12 text-center">
+                                            <?php echo $this->form()->submit(
+                                                    $this->user->lang('Verify'),
+                                                    [
+                                                            'class' => ['app-btns', 'primary'],
+                                                    ]
+                                            ); ?>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<style>
+    .twofactor-code-inputs {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .twofactor-code-inputs .twofactor-digit {
+        width: 54px;
+        height: 54px;
+        padding: 0;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 576px) {
+        .twofactor-code-inputs {
+            gap: 8px;
+        }
+
+        .twofactor-code-inputs .twofactor-digit {
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+        }
+    }
+</style>
+
+<script>
+    $(function () {
+        const $digits = $('.twofactor-digit');
+        const $hidden = $('#verification_code');
+
+        function updateHiddenValue() {
+            let code = '';
+
+            $digits.each(function () {
+                code += $(this).val();
+            });
+
+            $hidden.val(code);
+        }
+
+        function handlePaste(value) {
+            const cleanValue = value.replace(/[^0-9]/g, '').slice(0, 6);
+
+            if (!cleanValue.length) {
+                return;
+            }
+
+            $digits.each(function (index) {
+                $(this).val(cleanValue[index] || '');
+            });
+
+            updateHiddenValue();
+
+            const nextIndex = Math.min(cleanValue.length, 6) - 1;
+            $digits.eq(nextIndex).focus();
+        }
+
+        $digits.on('input', function () {
+            const value = $(this).val().replace(/[^0-9]/g, '').slice(0, 1);
+            $(this).val(value);
+
+            updateHiddenValue();
+
+            if (value !== '') {
+                $(this).next('.twofactor-digit').focus();
+            }
+        });
+
+        $digits.on('keydown', function (e) {
+            const $current = $(this);
+
+            if (e.key === 'Backspace' && $current.val() === '') {
+                $current.prev('.twofactor-digit').focus();
+            }
+
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                $current.prev('.twofactor-digit').focus();
+            }
+
+            if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                $current.next('.twofactor-digit').focus();
+            }
+        });
+
+        $digits.on('paste', function (e) {
+            e.preventDefault();
+
+            const pastedData = (e.originalEvent || e).clipboardData.getData('text');
+            handlePaste(pastedData);
+        });
+
+        $digits.first().focus();
+    });
+</script>

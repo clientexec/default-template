@@ -48,10 +48,18 @@
         </li>
         <?php } ?>
         <?php if ($this->customer->hasPermission('clients_view_emails')) { ?>
+            <li>
+                <a href="index.php?fuse=clients&controller=index&view=emailhistory">
+                    <i class="fas fa-envelope"></i>
+                    <?php echo $this->user->lang("Email History");?>
+                </a>
+            </li>
+        <?php } ?>
+        <?php if ($this->twoFactorEnabled) { ?>
         <li>
-            <a href="index.php?fuse=clients&controller=index&view=emailhistory">
-                <i class="fas fa-envelope"></i>
-                <?php echo $this->user->lang("Email History");?>
+            <a href="index.php?fuse=clients&controller=twofactor&view=twofactor">
+                <i class="fas fa-shield-alt"></i>
+                <?php echo $this->user->lang("Security");?>
             </a>
         </li>
         <?php } ?>

@@ -97,22 +97,24 @@ if (count($this->gSuccessMessages)>0) {
         <div class="main-meta">
             <div class="container">
                 <?php
-                        echo $this->partial('views/layoutpartials/topmenu.phtml', [
-                            'snapins' => $this->snapins,
-                            'user' => $this->user,
-                            'gView' => $this->gView,
-                            'loggedin' => $this->loggedIn,
-                            'overallstyle' => $overallstyle,
-                            'templateOptions' => $this->templateOptions,
-                            'langauges' => CE_Lib::getEnabledLanguages(),
-                            'customerProfileURL' => $this->customerProfileURL,
-                            'domainLink' => $this->domainLink,
-                            'logoURL' => $this->logoURL,
-                            'customer' => $this->customer,
-                            'announcementCount' => $this->announcementCount,
-                            'kbArticleCount' => $this->kbArticleCount
-                        ]);
-                    ?>
+                    echo $this->partial('views/layoutpartials/topmenu.phtml', [
+                        'snapins' => $this->snapins,
+                        'user' => $this->user,
+                        'gView' => $this->gView,
+                        'loggedin' => $this->loggedIn,
+                        'overallstyle' => $overallstyle,
+                        'templateOptions' => $this->templateOptions,
+                        'langauges' => CE_Lib::getEnabledLanguages(),
+                        'customerProfileURL' => $this->customerProfileURL,
+                        'domainLink' => $this->domainLink,
+                        'logoURL' => $this->logoURL,
+                        'customer' => $this->customer,
+                        'announcementCount' => $this->announcementCount,
+                        'kbArticleCount' => $this->kbArticleCount,
+                        'twoFactorEnabled' => $this->twoFactorEnabled,
+                        'showOrderLink' => $this->showOrderLink
+                    ]);
+                ?>
             </div>
         </div>
     </div>

@@ -26,3 +26,8 @@ $templateOptions[] = array(
     "description" => $this->user->lang("In the client portal, have the client's domain list appear in the dashboard"),
     "values" => array("Yes*", "No")
 );
+$templateOptions[] = array(
+    "name"=> "Show Package Identifier Number",
+    "description" => $this->user->lang("In the client portal, show the package identifier number"),
+    "values" => array("Yes*", "No")
+);
