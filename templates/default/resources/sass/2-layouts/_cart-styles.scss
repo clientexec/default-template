@@ -773,84 +773,6 @@
             }
         }
     }
-
-    .hosting-features {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-
-        padding: 28px 10px;
-
-        @include tab-landscape {
-            padding: 20px 0px;
-            flex-shrink: 0;
-            flex-grow: 1;
-            width: 100%;
-            border-top: 1px solid #e0e3f1;
-        }
-
-        @include portrait {
-            flex-wrap: wrap;
-        }
-
-        .items {
-            border-left: 1px solid #e0e3f1;
-            padding: 10px 15px 10px 20px;
-            flex: 1;
-
-            @include desktop {
-                padding: 5px 10px 5px 10px;
-                flex: auto;
-            }
-
-            @include tab-landscape {
-                padding: 15px 20px 15px 20px;
-                flex: 1;
-
-                &:first-child {
-                    border-left: none;
-                }
-            }
-
-            @include portrait {
-                width: 46%;
-                margin: 1%;
-                flex: auto;
-                flex-flow: 1;
-                border-left: none;
-                border: 1px solid #e0e3f1;
-
-                &:first-child {
-                    border-left: 1px solid #e0e3f1;
-                }
-            }
-        }
-
-        flex-grow: 1;
-
-        .icon {
-            display: block;
-
-            i {
-                font-size: 26px;
-                color: #b4b9d2;
-            }
-        }
-
-        span {
-            color: #80a6bc;
-            font-size: $font-md;
-            display: block;
-        }
-
-        h5 {
-            margin: 0;
-            color: $text-primary;
-            font-weight: 700;
-            font-size: $font-lg;
-        }
-    }
-
     .plan-rate {
         width: 20%;
         padding: 50px 28px 50px 28px;
@@ -893,6 +815,90 @@
             font-size: 12px;
             font-weight: 900;
         }
+    }
+}
+
+.hosting-features {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    padding: 28px 10px;
+
+    @include tab-landscape {
+        padding: 20px 0px;
+        flex-shrink: 0;
+        flex-grow: 1;
+        width: 100%;
+        border-top: 1px solid #e0e3f1;
+    }
+
+    @include portrait {
+        flex-wrap: wrap;
+    }
+
+    .items {
+        border-left: 1px solid #e0e3f1;
+        padding: 10px 15px 10px 20px;
+        flex: 1;
+
+        @include desktop {
+            padding: 5px 10px 5px 10px;
+            flex: auto;
+        }
+
+        @include tab-landscape {
+            padding: 15px 20px 15px 20px;
+            flex: 1;
+
+            &:first-child {
+                border-left: none;
+            }
+        }
+
+        @include portrait {
+            width: 46%;
+            margin: 1%;
+            flex: auto;
+            flex-flow: 1;
+            border-left: none;
+            border: 1px solid #e0e3f1;
+
+            &:first-child {
+                border-left: 1px solid #e0e3f1;
+            }
+        }
+    }
+
+    flex-grow: 1;
+
+    .icon {
+        display: block;
+
+        i {
+            font-size: 26px;
+            color: #b4b9d2;
+        }
+    }
+
+    span {
+        color: #80a6bc;
+        font-size: $font-md;
+        display: block;
+    }
+
+    h5 {
+        margin: 0;
+        color: $text-primary;
+        font-weight: 700;
+        font-size: $font-lg;
+    }
+}
+
+
+.config-product-section {
+    .hosting-features {
+        padding: 28px 0px;
     }
 }
 

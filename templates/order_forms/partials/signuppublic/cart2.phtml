@@ -35,9 +35,16 @@
                         <div class="col-md-12">
                             <h3><?php echo $this->package['package']->planname; ?></h3>
                             <?php if ($this->package['package']->description != '') { ?>
-                            <p>
-                                <?php echo $this->package['package']->description; ?>
-                            </p>
+
+                                <?php if (stripos($this->package['package']->description, 'class="items"')) { ?>
+                                <div class="hosting-features">
+                                    <?php echo $this->package['package']->description; ?>
+                                </div>
+                                <?php } else { ?>
+                                <p>
+                                    <?php echo $this->package['package']->description; ?>
+                                </p>
+                                <?php } ?>
                             <?php } ?>
                             <div class="form-elem">
                                 <label>
