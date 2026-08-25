@@ -105,7 +105,9 @@
                 value = discount;
             }
         } else if (discountType == 'percent') {
-            value = discount * value;
+            value = discount * 100 * value / 100;
+            value = value + 0.0001
+            value = value.toFixed(currency.precision);
         }
 
         return value;

@@ -2,7 +2,7 @@
     <div class="container">
         <div class="package-view-page">
             <?php echo $this->publicproductheader($this->user); ?>
-            <div class="cs-padding">
+            <div class="cs-padding product-detail-block contactinfo-block">
             <?php if ( $this->domainNotRegistered == true ) { ?>
                 <div class="alert alert-danger alert-dismissible" role="alert">
                     <?php echo $this->user->lang("This domain currently isn't registered.");?>
@@ -33,8 +33,8 @@
                         <?php } ?>
                     <?php } ?>
                     <div class="w-100"></div>
-                    <div class="col-sm-6">
-                        <div class="form-elem">
+                    <div class="col-sm-12">
+                        <div class="form-elem dns-records-updates">
                     <?php echo $this->form()->submit(
                         $this->user->lang('Update Contact Information'),
                         ['class' => [

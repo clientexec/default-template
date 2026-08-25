@@ -23,7 +23,9 @@
                     </li>
                     <?php if ($this->company_address != '') { ?>
                     <li>
-                        <h6>Invoice From</h6>
+                        <h6>
+                            <?php echo $this->user->lang('Invoice From'); ?>
+                        </h6>
                         <?php echo nl2br($this->company_address);?>
                     </li>
                     <?php } ?>

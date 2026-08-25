@@ -1485,6 +1485,13 @@
 
         .actions-side-bar {
             padding-top: 10px;
+            max-width: 200px;
+            margin-left: 7px;
+
+            @include mobile {
+                max-width: unset;
+                margin-left: unset;
+            }
 
             .actions-header {
                 background: #dfe8f3;
@@ -1592,9 +1599,8 @@
                 }
 
                 &.active {
-                    text-decoration: underline;
                     background: #dfe8f3;
-                    color: #1e6bca;
+                    font-weight: bold;
 
                     span {
                         color: #1e6bca;
@@ -2107,10 +2113,11 @@ body {
     border-radius: 5px;
     .dns-records-box {
         display: block;
-        padding: 35px;
-        border-top: 1px solid #e3e5e9;
-        &:first-child {
-            border-top: none;
+        padding: 3px;
+        padding-bottom: 15px;
+        // border-top: 1px solid #e3e5e9;
+        &:nth-child(2) {
+            // border-top: none;
         }
         @include desktop {
             padding: 20px 25px;
@@ -2168,7 +2175,6 @@ body {
 }
 
 .nameservers-block {
-    text-align: center;
     .dns-records-box-ul {
         >li {
             padding-right: 25px;
@@ -2182,7 +2188,7 @@ body {
 
 .dns-records-updates {
     display: block;
-    background: #eaeff5;
+    // background: #eaeff5;
     padding: 20px 30px;
     border: 2px solid #ffffff;
     text-align: right;
@@ -2820,6 +2826,10 @@ body {
     border: 2px solid #fff;
     border-radius: 3px;
     margin-left: 20px;
+
+    &.nameservers-block, &.contactinfo-block, &.dns-records-block {
+        background: #FFFFFF;
+    }
 
     .product-detail-4boxes {
         display: block;

@@ -173,7 +173,7 @@ if ($this->user->hasPermission('support_view') ||
                     <?php } ?>
                     <?php if ($this->user->hasPermission('knowledgebase_view')) { ?>
                     <li>
-                        <a href="index.php?fuse=knowledgebase&controller=articles&view=main">
+                        <a href="<?php echo CE_Lib::generateMainKBLink(); ?>">
                             <?php echo $this->user->lang("Knowledge Base");?>
                         </a>
                     </li>
