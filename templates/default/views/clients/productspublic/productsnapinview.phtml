@@ -1,10 +1,2 @@
-<div class="content-area colum-two-wrper">
-    <div class="container">
-        <div class="sidenav-left">
-            <?php echo $this->publicproductheader($this->user); ?>
-        </div>
-        <div class="content-right bg-white p-4">
-            <?php echo $this->unescape($this->output); ?>
-        </div>
-    </div>
-</div>
+<?php echo $this->profileheader($this->customer);?>
+<?php echo $this->unescape($this->output); ?>

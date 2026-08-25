@@ -337,7 +337,12 @@ jQuery.extend({
             success: function (n, o, m) {
                 l.redirect("#/dropbox/tickets/thanks");
             },
-            error: function (m, o, n) {
+            error: function (xhr) {
+                if (xhr.status === 302 || xhr.status === 200) {
+                    l.redirect("#/dropbox/tickets/thanks");
+                    return;
+                }
+
                 b.enable();
                 l.flash("error", a);
                 l.redirect("#/dropbox/tickets/new");

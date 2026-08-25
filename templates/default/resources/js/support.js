@@ -26,33 +26,69 @@ support = {
         support.uploadFieldCount++;
     },
 
-    selectedFile: function(e) {
-        var fileExt = $(this).val().split('\.').pop().toLowerCase();
+    selectedFile: function (e) {
+        var $input = $(e.target);
+        var file = e.target.files && e.target.files[0];
+
+        // Nothing selected
+        if (!file) {
+            return;
+        }
+
+        if (typeof MAX_UPLOAD_SIZE !== 'undefined' && file.size > MAX_UPLOAD_SIZE) {
+            var maxMb = (MAX_UPLOAD_SIZE / 1024 / 1024).toFixed(2);
+
+            // Clear file safely (works with cloned inputs)
+            $input.val('').replaceWith($input.clone(true));
+
+            $.showNotification({
+                body:
+                    clientexec.lang(
+                        'File is too large. Maximum allowed size is % MB.',
+                        maxMb
+                    ),
+                type: 'danger'
+            });
+
+            return;
+        }
+
+        var fileExt = $input.val().split('.').pop().toLowerCase();
         var validExtns = $('input[name=validExtns]').val().trim().toLowerCase();
 
-        if (fileExt && validExtns != '*') {
+        if (fileExt && validExtns !== '*') {
             var valid = false;
-            validExtns = validExtns.split(',');
-            $.each(validExtns, function(ix, val) {
-                if (fileExt.toLowerCase() == val.trim().toLowerCase()) {
+            var allowed = validExtns.split(',');
+
+            $.each(allowed, function (ix, val) {
+                if (fileExt === val.trim().toLowerCase()) {
                     valid = true;
                     return false;
                 }
             });
-            if (valid) {
-                $(this).parents('.file-upload').find('.deleteButton').removeClass('d-none');
-            } else {
-                // gotta unselect the file, as explained here:
-                // http://stackoverflow.com/questions/1043957/clearing-input-type-file-using-jquery/1043969#1043969
-                $(this).val('').replaceWith($(this).clone(true));
-                alert(
-                    clientexec.lang("This file type is not accepted. Please select a different file.")
-                );
+
+            if (!valid) {
+                $input.val('').replaceWith($input.clone(true));
+
+                $.showNotification({
+                    body:
+                        clientexec.lang(
+                            'This file type is not accepted. Please select a different file.'
+                        ),
+                    type: 'danger'
+                });
+
+                return;
             }
-        } else if (validExtns == '*') {
-            $(this).parents('.file-upload').find('.deleteButton').removeClass('d-none');
         }
+
+        // Passed validation — show delete button
+        $input
+            .parents('.file-upload')
+            .find('.deleteButton')
+            .removeClass('d-none');
     },
+
 
     removeFileField: function(id) {
         document.getElementById(id).parentNode.parentNode.removeChild(document.getElementById(id).parentNode);

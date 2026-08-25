@@ -132,7 +132,7 @@
                                             <?php if ($comment['createdAt_unix'] < 1396587600) { ?>
                                             <?php echo nl2br(trim($this->linkify($comment['message'])));?>
                                             <?php } else { ?>
-                                            <?php echo nl2br(trim($this->linkify($this->escape($comment['message']))));?>
+                                            <?php echo nl2br(trim($this->linkify(CE_Lib::formatTicketMessage($comment['message']))));?>
                                             <?php } ?>
                                         </p>
                                         <?php foreach($this->metadata['attachments'] as $attachment) { ?>
@@ -254,36 +254,37 @@
 
 
 <script>
-$('#ticketCustomFieldsForm').on('submit', function(e) {
-    e.preventDefault();
-    $(this).parsley().validate();
-    if ($(this).parsley().isValid()) {
-        $.post('index.php?fuse=support&controller=ticket&action=savecustomfields',{
+    var MAX_UPLOAD_SIZE = <?php echo (int) $this->maxfilesizeBytes; ?>;
+    $('#ticketCustomFieldsForm').on('submit', function(e) {
+        e.preventDefault();
+        $(this).parsley().validate();
+        if ($(this).parsley().isValid()) {
+            $.post('index.php?fuse=support&controller=ticket&action=savecustomfields',{
+                ticketId: <?php echo $this->metadata['id'];?>,
+                customfields: $('#ticketCustomFieldsForm').serializeArray()
+            }, function(t) {
+                data = clientexec.parseResponse(t);
+            });
+        }
+    });
+
+    if ($('#new-file-button').length) {
+
+        $('#support-ticket-form').on('change', 'input[type=file]', support.selectedFile);
+        $('#new-file-button').on('click',function(e){
+            e.preventDefault();
+            support.cloneAttchInput();
+        });
+
+        support.cloneAttchInput();
+    }
+
+    function sortReplies(element) {
+        $.post('index.php?fuse=support&controller=ticket&action=sortreplies',{
             ticketId: <?php echo $this->metadata['id'];?>,
-            customfields: $('#ticketCustomFieldsForm').serializeArray()
+            replyOnTop: (element.checked) ? 1: 0
         }, function(t) {
-            data = clientexec.parseResponse(t);
+            location.reload();
         });
     }
-});
-
-if ($('#new-file-button').length) {
-
-    $('input[type=file]').change(support.selectedFile);
-    $('#new-file-button').on('click',function(e){
-        e.preventDefault();
-        support.cloneAttchInput();
-    });
-
-    support.cloneAttchInput();
-}
-
-function sortReplies(element) {
-    $.post('index.php?fuse=support&controller=ticket&action=sortreplies',{
-        ticketId: <?php echo $this->metadata['id'];?>,
-        replyOnTop: (element.checked) ? 1: 0
-    }, function(t) {
-        location.reload();
-    });
-}
 </script>
