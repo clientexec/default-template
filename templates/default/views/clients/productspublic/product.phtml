@@ -85,7 +85,7 @@ $('#passwordChange').on('click', function(e) {
         '</form>',
         buttons: {
             formSubmit: {
-                text: 'Save',
+                text: clientexec.lang('Save'),
                 btnClass: 'btn btn-primary',
                 action: function () {
                     var password = this.$content.find('.password').val();
@@ -99,7 +99,10 @@ $('#passwordChange').on('click', function(e) {
                     }
                 }
             },
-            cancel: function () {
+            cancel: {
+                text: clientexec.lang('Cancel'),
+                action: function () {
+                }
             },
         },
         onContentReady: function () {
@@ -163,7 +166,7 @@ $('.customFieldChange').on('click', function(e){
         '</form>',
         buttons: {
             formSubmit: {
-                text: 'Save',
+                text: clientexec.lang('Save'),
                 btnClass: 'btn btn-primary',
                 action: function () {
                     var form = $('#customFieldForm').parsley();
@@ -188,7 +191,10 @@ $('.customFieldChange').on('click', function(e){
                     }
                 }
             },
-            cancel: function () {
+            cancel: {
+                text: clientexec.lang('Cancel'),
+                action: function () {
+                }
             },
         },
         onContentReady: function () {

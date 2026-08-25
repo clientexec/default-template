@@ -8,7 +8,7 @@
             <span>
                 <?php echo $this->user->lang('Welcome'); ?></span>
             <h5>
-                <?php echo $this->escape($this->customer->getFirstName()) . ' ' . substr($this->escape($this->customer->getLastName()), 0, 1); ?>
+                <?php echo $this->escape($this->customer->getFirstName()) . ' ' . mb_substr($this->escape($this->customer->getLastName()), 0, 1, 'UTF-8'); ?>
             </h5>
         </div>
     </a>

@@ -1308,23 +1308,21 @@ $(function() {
         $(this).addClass("selected");
     });
 
-    // 14-12-2020 For cog drop down menu
-    var actionBox = $('.data-table-wrapper table tr td .cog-drop-down');
-    var actionBtn = $('.data-table-wrapper table tr td .action');
-    $(actionBtn).click(function() {
+    $(document).on('click', '.data-table-wrapper table tr td .action', function () {
+        var $btn = $(this);
+        var $drop = $btn.next('.cog-drop-down');
 
-        if ($(this).hasClass('active')) {
-            $(this).removeClass('active');
-            $(this).next().removeClass("pull-it");
+        if ($btn.hasClass('active')) {
+            $btn.removeClass('active');
+            $drop.removeClass('pull-it');
         } else {
-            actionBox.removeClass("pull-it");
-            actionBtn.removeClass('active');
-            $(this).addClass('active');
-            $(this).next().addClass("pull-it");
+            $('.data-table-wrapper table tr td .cog-drop-down').removeClass('pull-it');
+            $('.data-table-wrapper table tr td .action').removeClass('active');
+            $btn.addClass('active');
+            $drop.addClass('pull-it');
             return false;
         }
     });
-    // 14-12-2020 For cog drop down menu END
 
     // Match Height **************************************************
 
