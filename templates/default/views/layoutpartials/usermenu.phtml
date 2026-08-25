@@ -39,6 +39,14 @@
                 <?php echo $this->user->lang("Account Notes");?>
             </a>
         </li>
+        <?php if (CE_Lib::affiliateSystem() && !$this->customer->isDeclinedAffiliate()) { ?>
+        <li>
+            <a href="index.php?fuse=affiliates&controller=affiliate&view=overview">
+                <i class="fas fa-dollar-sign"></i>
+                <?php echo $this->user->lang("Affiliate");?>
+            </a>
+        </li>
+        <?php } ?>
         <?php if ($this->user->hasPermission('clients_view_emails')) { ?>
         <li>
             <a href="index.php?fuse=clients&controller=index&view=emailhistory">

@@ -1,0 +1,160 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="affiliate-system-page">
+            <?php echo $this->publicaffiliateheader($this->user); ?>
+            <h3>
+                <?php echo $this->user->lang('Your Unique Referral Link'); ?>
+            </h3>
+            <div class="unique-referal-block">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="unique-referal-left">
+                            <div class="unique-referal-top-block">
+                                <div class="unique-referal-copy-link">
+                                    <input readonly class="msg-box-textarea" id="aff-link" value="<?php echo $this->url; ?>">
+                                    <button class="copy-btn">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="unique-referal-bottom-block">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <tbody>
+                                            <tr>
+                                                <td><?php echo $this->user->lang('Commission Rate'); ?></td>
+                                                <td>:</td>
+                                                <td>
+                                                    <span>
+                                                        <?php echo $this->user->lang('%s per matured sale', $this->unescape($this->commRate)); ?>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <?php echo $this->user->lang('Minimum Payout Amount'); ?>
+                                                    </td>
+                                                <td>:</td>
+                                                <td>
+                                                    <span><?php echo $this->unescape($this->minimumPay); ?></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo $this->user->lang('Days to Mature'); ?></td>
+                                                <td>:</td>
+                                                <td>
+                                                    <span><?php echo $this->days; ?></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><?php echo $this->user->lang('Have a Question?'); ?></td>
+                                                <td>:</td>
+                                                <td>
+                                                    <span>
+                                                        <a href="index.php?fuse=support&controller=ticket&view=submitticket">
+                                                            <?php echo $this->user->lang('Contact Us'); ?>
+                                                        </a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="unique-referal-right">
+                            <h3>
+                                <?php echo $this->user->lang('Available Commissions'); ?>
+                                <span><?php echo $this->unescape($this->balance); ?></span>
+                            </h3>
+                            <?php if ($this->showWithdrawlButton) { ?>
+                            <a id="requestWithdrawl" class="app-btns primary">
+                                <?php echo $this->user->lang('Request Withdrawal'); ?>
+                            </a>
+                            <?php } ?>
+                            <ul class="available-commissions-ul">
+                                <li class="d-flex justify-content-between align-items-center">
+                                    <p><?php echo $this->user->lang('Pending Commissions'); ?></p>
+                                    <span><?php echo $this->unescape($this->pendingCommission); ?></span>
+                                </li>
+                                <li class="d-flex justify-content-between align-items-center">
+                                    <p><?php echo $this->user->lang('Total Withdrawn'); ?></p>
+                                    <span><?php echo $this->unescape($this->totalCommissions); ?></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="affiliate-status-block">
+                <div class="head">
+                    <h3>
+                        <?php echo $this->user->lang('Affiliate Statistics'); ?>
+                    </h3>
+                <!--     <div class="select-holder">
+                        <label>Show data from:</label>
+                        <input type="text" id="date-range" class="form-control" placeholder="Select Date">
+                    </div> -->
+                </div>
+                <div class="affiliate-boxes">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 col-sm-6">
+                            <div class="affiliate-single-box eq-height">
+                                <span class="clicks affiliate-box-icon"></span>
+                                <p><?php echo $this->user->lang('Clicks'); ?></p>
+                                <h4><?php echo $this->hits; ?></h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6">
+                            <div class="affiliate-single-box eq-height">
+                                <span class="money-check affiliate-box-icon"></span>
+                                <p><?php echo $this->user->lang('Sales'); ?></p>
+                                <h4><?php echo $this->sales; ?></h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6">
+                            <div class="affiliate-single-box eq-height">
+                                <span class="percent affiliate-box-icon"></span>
+                                <p><?php echo $this->user->lang('Conversion rate'); ?></p>
+                                <h4><?php echo $this->rate; ?>%</h4>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6">
+                            <div class="affiliate-single-box eq-height">
+                                <span class="chart-line affiliate-box-icon"></span>
+                                <p><?php echo $this->user->lang('Commission'); ?></p>
+                                <h4><?php echo $this->unescape($this->totalCommissions); ?></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $('#requestWithdrawl').on('click', function(e) {
+        if ($(this).hasClass('disabled')) {
+            return;
+        }
+        $.ajax({
+            url: 'index.php?fuse=affiliates&controller=affiliate&action=requestwithdrawl',
+            success: function (rsp) {
+                clientexec.parseResponse(rsp);
+            },
+            dataType: 'json'
+        });
+    });
+
+    $('.copy-btn').on('click', function(e){
+        var copyText = document.getElementById('aff-link');
+        copyText.select();
+        document.execCommand("copy");
+    });
+
+
+</script>

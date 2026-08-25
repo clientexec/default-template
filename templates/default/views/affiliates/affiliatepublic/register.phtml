@@ -1,0 +1,46 @@
+<div class="content-area knowledge-base-wraper">
+    <div class="container">
+        <div class="knowledge-base-search2">
+            <div class="knowledge-base-search-box2">
+                <h1>
+                    <?php echo $this->user->lang('Refer-a-Friend and Get Paid'); ?>
+                </h1>
+
+            </div>
+        </div>
+        <div class="cs-padding">
+            <h2><?php echo $this->user->lang('How it works'); ?></h2>
+            <p>
+                <?php echo $this->user->lang('After your affiliate account has been approved, you will be given a unique affiliate link that you can share with your audience.'); ?>
+            </p>
+            <?php if ($this->bonus) { ?>
+            <p>
+                <?php
+                    echo $this->user->lang(
+                        'On approval, we will give you a %s affiliate bonus just for registering!',
+                        $this->bonus
+                    );
+                ?>
+            </p>
+            <?php } ?>
+            <p>
+                <?php
+                    echo $this->user->lang(
+                        'Whenever someone clicks your link a %s day cookie is placed on their browser. If they complete a purchase within that %s day window you will earn a %s commission.',
+                        $this->cookieLength,
+                        $this->cookieLength,
+                        $this->unescape($this->commission)
+                    );
+                ?>
+            </p>
+
+            <div class="text-center">
+                <form method="POST" action="index.php?fuse=affiliates&controller=affiliate&action=requestaccount">
+                    <button class="app-btns primary">
+                        <?php echo $this->buttonText; ?>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

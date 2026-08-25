@@ -1627,7 +1627,7 @@
 
     .affiliate-side-bar {
         display: block;
-        width: 215px;
+        width: 17.5%;
         position: absolute;
         left: 0px;
         top: 90px;
@@ -1821,15 +1821,14 @@
                 position: relative;
 
                 &:before {
-                    content: "\e90d";
-                    font-family: 'icomoon';
+                    content: "\f201";
+                    font-family: 'Font Awesome 5 Free';
                     display: inline-block;
                     color: #fff;
                     font-size: 18px;
                     position: absolute;
                     right: 0px;
                     bottom: 10px;
-                    font-weight: 200;
                 }
 
                 span {
@@ -1863,12 +1862,12 @@
 
                     p {
                         margin-bottom: 0px;
-                        color: $text-grey;
+                        color: #FFFFFF;
                         font-size: $font-md;
                     }
 
                     span {
-                        color: $text-grey;
+                        color: #FFFFFF;
                         font-size: $font-md;
                     }
                 }
@@ -1981,14 +1980,41 @@
                 }
 
                 .affiliate-box-icon {
+                    font-family: 'Font Awesome 5 Free';
+                    &.clicks {
+                        &:before {
+                            content: "\f8cc";
+                            font-weight: 600;
+                        }
+                    }
+
+                    &.percent {
+                        &:before {
+                            content: "\f295";
+                            font-weight: 600;
+                        }
+                    }
+
+                    &.chart-line {
+                        &:before {
+                            content: "\f201";
+                            font-weight: 600;
+                        }
+                    }
+
+                    &.money-check {
+                        &:before {
+                            content: "\f53d";
+                            font-weight: 600;
+                        }
+                    }
+
                     display: inline-block;
                     color: #bbcbdd;
                     font-size: 40px;
-                    /*05-01-2021*/
                     position: absolute;
                     left: 15px;
-                    /*05-01-2021*/
-                    top: 25px;
+                    top: 17px;
 
                     @include desktop {
                         font-size: 35px;
@@ -2007,6 +2033,7 @@
                     color: $text-body;
                     font-size: $font-md;
                     margin-bottom: 3px;
+                    margin-left: 15px;
                 }
 
                 h4 {
@@ -2015,6 +2042,7 @@
                     /*05-01-2021*/
                     font-weight: 700;
                     margin-bottom: 0px;
+                    margin-left: 15px;
                     line-height: 30px;
                     display: inline-block;
                     position: relative;

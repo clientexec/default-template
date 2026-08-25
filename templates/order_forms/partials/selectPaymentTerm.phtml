@@ -27,7 +27,7 @@
             }
         }
 
-        if (!$this->hideSetupFees && $price['setup_raw'] != '-') {
+        if (!$this->hideSetupFees && $price['termId'] != '0') {
             echo ' ' . $this->user->lang('(Setup Fee: %s)', $price['setup']);
         }
     ?>

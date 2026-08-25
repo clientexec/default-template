@@ -19,7 +19,7 @@
                                 <?php if ($this->customer->getCity() != '' && $this->customer->getState() != '' ) {?>
                                 <br>
                                 <?php echo $this->customer->getCity(); ?>,
-                                <?php echo $this->customer->getState(); ?>
+                                <?php echo $this->customer->getState(true); ?>
                                 <?php } ?>
                                 <?php if ($this->customer->getZipCode() != '') { ?>
                                 <br>
@@ -173,7 +173,7 @@
                                             <?php } ?>
                                             <?php if (count($this->tickets) == 0) { ?>
                                             <tr>
-                                                <td class="text-center" colspan="<?php echo (4+count($ticket['customfields'])); ?>">
+                                                <td class="text-center" colspan="3">
                                                     <?php echo $this->user->lang('No Open Tickets'); ?>
                                                 </td>
                                             </tr>

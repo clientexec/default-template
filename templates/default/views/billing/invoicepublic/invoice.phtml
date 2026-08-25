@@ -18,7 +18,7 @@
                         <b><?php echo $this->escape($this->user->getOrganization()) ?></b><br>
                         <?php echo $this->escape($this->user->getFirstName()) ?> <?php echo $this->escape($this->user->getLastName()) ?><br>
                         <?php echo $this->escape($this->user->getAddress());?><br>
-                        <?php echo $this->escape($this->user->getCity());?>, <?php echo $this->escape($this->user->getState());?> <?php echo $this->escape($this->user->getZipCode());?><br>
+                        <?php echo $this->escape($this->user->getCity());?>, <?php echo $this->escape($this->user->getState(true));?> <?php echo $this->escape($this->user->getZipCode());?><br>
                         <?php echo $this->escape($this->user->getCountry(true)); ?>
                     </li>
                     <?php if ($this->company_address != '') { ?>

@@ -1,0 +1,10 @@
+<ul class="affiliate-side-bar">
+<?php foreach ($this->tabs as $tab) { ?>
+    <li>
+        <a href="<?php echo $tab['link']; ?>" class="<?php echo $tab['class']; ?>">
+            <i class="<?php echo $tab['icon']; ?>"></i>
+            <?php echo $tab['name']; ?>
+        </a>
+    </li>
+<?php } ?>
+</ul>

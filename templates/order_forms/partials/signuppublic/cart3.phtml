@@ -1,7 +1,7 @@
 <?php
     $submitButtonDisabled = '';
     if ($this->termsConditions) {
-        // $submitButtonDisabled = ' disabled';
+         $submitButtonDisabled = ' disabled';
     }
 ?>
 
@@ -333,7 +333,7 @@
         <div class="make-mid mt-3 pb-3">
         <?php if (count($this->paymentmethods) != 0) { ?>
                 <span class='paymentbutton1'>
-                    <button class="app-btns primary" onclick="cart.submit_form(<?php echo $this->loggedIn; ?>);"  id="submitButton"></button>
+                    <button class="app-btns primary <?php echo $submitButtonDisabled; ?>" onclick="cart.submit_form(<?php echo $this->loggedIn; ?>);"  id="submitButton"></button>
                 </span>
             <?php foreach ($this->gatewayForms as $gatewayName => $gatewayForm) { ?>
                 <div class='paymentbutton2 <?php echo $gatewayName."paymentbutton"; ?> col-12 d-none pt-2'>
@@ -652,12 +652,15 @@ cart.submit_form = function(allowSubmit) {
     if ($('#submitButton').hasClass('disabled')) {
         return;
     }
+
     if ($('.customButton').hasClass('disabled')) {
         return;
     }
+
     $('#submitForm').parsley({
         excluded: 'input[type=button], input[type=submit], input[type=reset], :hidden'
     });
+
     $('#submitForm').submit();
 }
 

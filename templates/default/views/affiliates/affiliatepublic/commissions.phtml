@@ -1,0 +1,110 @@
+<div class="content-area dashboard-wraper">
+    <div class="container">
+        <div class="affiliate-system-page data-table-wrapper">
+            <?php echo $this->publicaffiliateheader($this->user); ?>
+            <h3>
+                <?php echo $this->user->lang('Your Commissions'); ?>
+            </h3>
+            <div class="table-responsive cs-padding">
+                <div class="form-group col-xs-12">
+                    <div class="btn-group" role="group" id="filter-ul">
+                        <button type="button" class="btn<?php echo ($this->filter == 'all') ? ' btn-primary' : ''; ?>" data-filter="all">
+                            <?php echo $this->user->lang("All");?>
+                        </button>
+                        <button type="button" class="btn<?php echo ($this->filter == 'pending') ? ' btn-primary' : ''; ?>" data-filter="pending">
+                            <?php echo $this->user->lang("Pending");?>
+                        </button>
+                        <button type="button" class="btn<?php echo ($this->filter == 'pending_payout') ? ' btn-primary' : ''; ?>" data-filter="pending_payout">
+                            <?php echo $this->user->lang("Pending Pay Out");?>
+                        </button>
+                        <button type="button" class="btn<?php echo ($this->filter == 'paid') ? ' btn-primary' : ''; ?>" data-filter="paid">
+                            <?php echo $this->user->lang("Paid");?>
+                        </button>
+                        <button type="button" class="btn<?php echo ($this->filter == 'declined') ? ' btn-primary' : ''; ?>" data-filter="declined">
+                            <?php echo $this->user->lang("Declined");?>
+                        </button>
+                    </div>
+                </div>
+                <table id="affiliate-table" class="table">
+                    <thead>
+                        <tr>
+                            <th class="min-width">
+                                #
+                            </th>
+                            <th>
+                                <?php echo $this->user->lang('Date'); ?>
+                            </th>
+                            <th>
+                                <?php echo $this->user->lang('Clearing Date'); ?>
+                            </th>
+                            <th>
+                                <?php echo $this->user->lang('Amount'); ?>
+                            </th>
+                            <th>
+                                <?php echo $this->user->lang('Status'); ?>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var filter = '<?php echo $this->filter; ?>';
+$(document).ready(function() {
+    var table = $('#affiliate-table').DataTable({
+        language: {
+            emptyTable: clientexec.lang('No Commissions To Show'),
+        },
+        ajax: {
+            url: 'index.php?fuse=affiliates&controller=affiliate&action=getcommissions&filter=' + filter,
+            dataSrc: 'commissions'
+        },
+        columns: [{
+            data: 'id',
+            className: 'dt-body-center min-width'
+
+        }, {
+            data: {
+                _: 'date',
+                sort: 'datesort'
+            }
+        }, {
+            data: {
+                _: 'clearing_date',
+                sort: 'clearing_datesort'
+            }
+        }, {
+            data: 'amount',
+            render: function(data, type, full, meta) {
+                if (data.length >= 18) {
+                    return '<span class="xxlong-currency">' + data + '</span>';
+                } else if (data.length >= 15) {
+                    return '<span class="xlong-currency">' + data + '</span>';
+                } else if (data.length >= 13) {
+                    return '<span class="long-currency">' + data + '</span>';
+                }
+                return data;
+            }
+        }, {
+            data: 'status_name',
+            render: function(data, type, full, meta) {
+                return '<span class="status ' + full.status_class + '">' + data + '</span>';
+            }
+        }],
+    });
+    $('#filter-ul button').click(function() {
+        window.location = 'index.php?fuse=affiliates&controller=affiliate&view=commissions&filter=' + $(this).data('filter')
+    });
+
+    $('.knowledge-search-submit').on('keyup click', function() {
+        table.search($('.knowledge-search-input').val()).draw();
+    });
+    $('.knowledge-search-input').keyup(function() {
+        table.search($(this).val()).draw();
+    });
+});
+
+</script>
