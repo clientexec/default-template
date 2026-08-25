@@ -1445,7 +1445,14 @@ $(document).ready(function() {
                         confirm: {
                             text: clientexec.lang('Yes'),
                             action: function () {
-                                window.location.replace('order.php?currency=' + currency);
+                                reloadUrl = new URL(window.location.href);
+
+                                if (reloadUrl.searchParams.get('bundled') === '1') {
+                                    window.location.replace('order.php?currency=' + currency);
+                                } else {
+                                    reloadUrl.searchParams.set('currency', currency);
+                                    window.location.href = reloadUrl.href;
+                                }
                             }
                         },
                         cancel: {
@@ -1454,7 +1461,14 @@ $(document).ready(function() {
                     }
                 });
             } else {
-                window.location.replace('order.php?currency=' + currency);
+                reloadUrl = new URL(window.location.href);
+
+                if (reloadUrl.searchParams.get('bundled') === '1') {
+                    window.location.replace('order.php?currency=' + currency);
+                } else {
+                    reloadUrl.searchParams.set('currency', currency);
+                    window.location.href = reloadUrl.href;
+                }
             }
         });
     });
