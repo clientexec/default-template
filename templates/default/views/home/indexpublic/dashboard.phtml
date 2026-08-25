@@ -71,7 +71,7 @@
                     <div class="dashboard-right-block cm-height">
                         <div class="dashboard-four-block">
                             <div class="row">
-                                <div class="col-lg-3 col-md-6">
+                                <div class="col-lg-3 col-6">
                                     <div class="dash-commen-boxes">
                                         <i class="fas fa-smile dash-commen-boxe-icon"></i>
                                         <p>
@@ -82,7 +82,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-md-6">
+                                <div class="col-lg-3 col-6">
                                     <div class="dash-commen-boxes yellow-bg">
                                         <i class="fas fa-cubes dash-commen-boxe-icon-no-weight"></i>
                                         <p>
@@ -93,18 +93,18 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-md-6">
+                                <div class="col-lg-3 col-6">
                                     <div class="dash-commen-boxes purple-bg">
                                         <i class="fas fa-life-ring dash-commen-boxe-icon"></i>
                                         <p>
                                             <?php echo $this->user->lang('Support Tickets'); ?>
                                             <span>
-                                                <?php echo count($this->tickets); ?>
+                                                <?php echo $this->user->getTotalOpenTickets(); ?>
                                             </span>
                                         </p>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 col-md-6">
+                                <div class="col-lg-3 col-6">
                                     <div class="dash-commen-boxes green-bg">
                                         <i class="fas fa-wallet dash-commen-boxe-icon-no-weight"></i>
                                         <p>

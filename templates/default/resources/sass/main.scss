@@ -396,12 +396,6 @@ input.support-search-kb {
         vertical-align: baseline;
         border-radius: .25em;
     }
-
-    #admin-notice-login {
-        @include mobile {
-            display: none;
-        }
-    }
 }
 
 @include mobile {

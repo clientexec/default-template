@@ -503,7 +503,7 @@ domains.start_additional_info_check = function(self, product_id, type)
         return false;
     }
 
-    $(self).addClass('btn-warning').text(clientexec.lang('Continue'));
+    $(self).text(clientexec.lang('Continue'));
 
     // we don't have any attributes for this product
     if (!has_attributes) {

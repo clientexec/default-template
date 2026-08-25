@@ -132,7 +132,7 @@
                                             <?php if ($comment['createdAt_unix'] < 1396587600) { ?>
                                             <?php echo nl2br(trim($this->linkify($comment['message'])));?>
                                             <?php } else { ?>
-                                            <?php echo nl2br(trim($this->linkify(CE_Lib::formatTicketMessage($comment['message']))));?>
+                                            <?php echo trim($this->linkify(CE_Lib::formatTicketMessage($comment['message'])));?>
                                             <?php } ?>
                                         </p>
                                         <?php foreach($this->metadata['attachments'] as $attachment) { ?>

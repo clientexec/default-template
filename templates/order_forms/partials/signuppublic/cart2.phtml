@@ -36,7 +36,12 @@
                             <h3><?php echo $this->planName; ?></h3>
                             <?php if ($this->planDesc != '') { ?>
 
-                                <?php if (stripos($this->planDesc, 'class="items"')) { ?>
+                                <?php
+                                if (
+                                        stripos($this->planDesc, 'class="items"') !== false ||
+                                        stripos($this->planDesc, 'class=&quot;items&quot;') !== false
+                                ) {
+                                    ?>
                                 <div class="hosting-features">
                                     <?php echo $this->unescape($this->planDesc); ?>
                                 </div>

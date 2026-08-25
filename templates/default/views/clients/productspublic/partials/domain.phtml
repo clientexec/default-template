@@ -110,7 +110,7 @@
                             if ($this->package['eppCode'] == 'N/A') {
                                 echo $this->package['eppCode'];
                             } else {
-                                echo '<a href="#" class="customFieldModal" data-content="' . $this->package['eppCode'] . '" data-name="' . $this->user->lang('EPP Code') . '">' . $this->user->lang('View Code') . '</a>';
+                                echo '<a href="#" class="eppCodeModal">' . $this->user->lang('View Code') . '</a>';
                             }
                         ?>
                     </span>
@@ -233,3 +233,39 @@
     </div>
     <?php } ?>
 </div>
+
+<script>
+    $('.eppCodeModal').on('click', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: 'index.php?fuse=clients&controller=products&action=geteppcode',
+            method: 'POST',
+            data: { id: productId },
+            success: function(response) {
+                if (!response.success) {
+                    $.dialog({
+                        title: clientexec.lang('Error'),
+                        content: response.message || clientexec.lang('Unable to retrieve EPP code.'),
+                        columnClass: 'small',
+                    });
+                    return;
+                }
+
+                $.dialog({
+                    title: clientexec.lang('EPP Code'),
+                    content: response.epp_code || clientexec.lang('N/A'),
+                    columnClass: 'xsmall',
+                    containerFluid: true,
+                });
+            },
+            error: function() {
+                $.dialog({
+                    title: 'Error',
+                    content: clientexec.lang('An unexpected error occurred.'),
+                    columnClass: 'small',
+                });
+            }
+        });
+    });
+</script>

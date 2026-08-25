@@ -40,16 +40,14 @@
                                                     data-parsley-errors-container="#codeGroup"
                                                     required
                                             />
-
                                             <div class="twofactor-code-inputs" id="twofactor-code-inputs">
-                                                <input type="text" id="verification_code_1" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" autocomplete="one-time-code" />
-                                                <input type="text" id="verification_code_2" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
-                                                <input type="text" id="verification_code_3" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
-                                                <input type="text" id="verification_code_4" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
-                                                <input type="text" id="verification_code_5" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
-                                                <input type="text" id="verification_code_6" class="form-control text-center twofactor-digit" maxlength="1" inputmode="numeric" />
+                                                <input type="text" id="verification_code_1" class="form-control text-center twofactor-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" />
+                                                <input type="text" id="verification_code_2" class="form-control text-center twofactor-digit" inputmode="numeric" pattern="[0-9]*" />
+                                                <input type="text" id="verification_code_3" class="form-control text-center twofactor-digit" inputmode="numeric" pattern="[0-9]*" />
+                                                <input type="text" id="verification_code_4" class="form-control text-center twofactor-digit" inputmode="numeric" pattern="[0-9]*" />
+                                                <input type="text" id="verification_code_5" class="form-control text-center twofactor-digit" inputmode="numeric" pattern="[0-9]*" />
+                                                <input type="text" id="verification_code_6" class="form-control text-center twofactor-digit" inputmode="numeric" pattern="[0-9]*" />
                                             </div>
-
                                             <div id="codeGroup"></div>
                                         </div>
 
@@ -113,57 +111,131 @@
 
 <script>
     $(function () {
-        const $digits = $('.twofactor-digit');
+        const $form = $('form[name="twofactor"]');
         const $hidden = $('#verification_code');
+
+        function getDigits() {
+            return $('.twofactor-digit');
+        }
+
+        function cleanCode(value) {
+            return String(value || '').replace(/[^0-9]/g, '').slice(0, 6);
+        }
 
         function updateHiddenValue() {
             let code = '';
 
-            $digits.each(function () {
-                code += $(this).val();
+            getDigits().each(function () {
+                const digit = cleanCode($(this).val()).charAt(0) || '';
+
+                $(this).val(digit);
+                code += digit;
             });
 
             $hidden.val(code);
         }
 
-        function handlePaste(value) {
-            const cleanValue = value.replace(/[^0-9]/g, '').slice(0, 6);
+        function fillCode(value) {
+            const code = cleanCode(value);
+            const $digits = getDigits();
 
-            if (!cleanValue.length) {
-                return;
-            }
+            $digits.val('');
 
             $digits.each(function (index) {
-                $(this).val(cleanValue[index] || '');
+                $(this).val(code.charAt(index) || '');
             });
 
             updateHiddenValue();
 
-            const nextIndex = Math.min(cleanValue.length, 6) - 1;
-            $digits.eq(nextIndex).focus();
+            const focusIndex = Math.min(code.length, $digits.length) - 1;
+
+            if (focusIndex >= 0) {
+                $digits.eq(focusIndex).focus();
+            }
         }
 
-        $digits.on('input', function () {
-            const value = $(this).val().replace(/[^0-9]/g, '').slice(0, 1);
-            $(this).val(value);
+        function normalizeAutofilledDigits() {
+            getDigits().each(function () {
+                const value = cleanCode($(this).val());
+
+                if (value.length > 1) {
+                    fillCode(value);
+                    return false;
+                }
+
+                $(this).val(value.charAt(0) || '');
+            });
 
             updateHiddenValue();
+        }
 
-            if (value !== '') {
-                $(this).next('.twofactor-digit').focus();
+        $(document).on('beforeinput', '.twofactor-digit', function (e) {
+            const event = e.originalEvent;
+
+            if (!event) {
+                return;
+            }
+
+            const data = event.data || '';
+
+            if (
+                data.length > 1 ||
+                event.inputType === 'insertFromPaste' ||
+                event.inputType === 'insertReplacementText'
+            ) {
+                e.preventDefault();
+                fillCode(data);
             }
         });
 
-        $digits.on('keydown', function (e) {
+        $(document).on('paste', '.twofactor-digit', function (e) {
+            const event = e.originalEvent || e;
+            const clipboardData = event.clipboardData || window.clipboardData;
+
+            if (!clipboardData) {
+                return;
+            }
+
+            const pastedData = clipboardData.getData('text');
+
+            if (pastedData) {
+                e.preventDefault();
+                fillCode(pastedData);
+            }
+        });
+
+        $(document).on('input change', '.twofactor-digit', function () {
+            const $current = $(this);
+            const cleanValue = cleanCode($current.val());
+
+            if (cleanValue.length > 1) {
+                fillCode(cleanValue);
+                return;
+            }
+
+            $current.val(cleanValue.charAt(0) || '');
+
+            updateHiddenValue();
+
+            if (cleanValue !== '') {
+                $current.next('.twofactor-digit').focus();
+            }
+        });
+
+        $(document).on('keydown', '.twofactor-digit', function (e) {
             const $current = $(this);
 
             if (e.key === 'Backspace' && $current.val() === '') {
+                e.preventDefault();
                 $current.prev('.twofactor-digit').focus();
+                updateHiddenValue();
+                return;
             }
 
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 $current.prev('.twofactor-digit').focus();
+                return;
             }
 
             if (e.key === 'ArrowRight') {
@@ -172,13 +244,26 @@
             }
         });
 
-        $digits.on('paste', function (e) {
-            e.preventDefault();
-
-            const pastedData = (e.originalEvent || e).clipboardData.getData('text');
-            handlePaste(pastedData);
+        $form.on('submit', function () {
+            normalizeAutofilledDigits();
+            updateHiddenValue();
         });
 
-        $digits.first().focus();
+        setTimeout(function () {
+            getDigits().first().focus();
+            normalizeAutofilledDigits();
+        }, 50);
+
+        setTimeout(normalizeAutofilledDigits, 250);
+        setTimeout(normalizeAutofilledDigits, 750);
+
+        window.addEventListener('pageshow', function () {
+            setTimeout(function () {
+                getDigits().first().focus();
+                normalizeAutofilledDigits();
+            }, 50);
+
+            setTimeout(normalizeAutofilledDigits, 250);
+        });
     });
 </script>
