@@ -366,4 +366,23 @@
         });
 
     });
+
+    $(document).on('click', '.clickable-action', function(e) {
+        e.preventDefault();
+        var command = $(this).data('command');
+        var packageId = $(this).data('package-id');
+
+        clientexec.mask();
+        $.ajax({
+            url: 'index.php?fuse=clients&action=callpluginaction',
+            success: function(xhr) {
+                clientexec.parseResponse(xhr);
+                clientexec.unMask();
+            },
+            data: {
+                id: packageId,
+                actioncmd: command
+            }
+        });
+    });
 </script>

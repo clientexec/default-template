@@ -65,6 +65,13 @@
                                     <div class="ticket-tab-reply-bottom d-flex justify-content-between align-items-center">
                                         <?php if ($this->maxfilesize > 0 && $this->extns) { ?>
                                         <div class="ticket-tab-reply-attachments">
+                                        <div class="share-upload-desc">
+                                        <?php echo $this->user->lang("Sharing a picture will help us understand your question even more");?>
+                                        <?php echo $this->user->lang("Max file size: %s", $this->maxfilesize);?>
+                                            <?php if ($this->extns != '*') { ?>
+                                                - <span data-html="true" data-toggle="tooltip" data-placement="top" title="<?php echo $this->user->lang("Allowed file extensions: %s", $this->extnsmessage);?>"><?php echo $this->user->lang('See Allowed Extensions') ?></span>
+                                            <?php } ?>
+                                            </div>
                                             <div id="fileFieldsContainer" class="form-actions">
                                                 <div id="fileFields_" class="d-none file-upload ">
                                                     <label class="btn-file">
@@ -177,6 +184,13 @@
                                     <div class="ticket-tab-reply-bottom d-flex justify-content-between align-items-center">
                                         <?php if ($this->maxfilesize > 0 && $this->extns) { ?>
                                         <div class="ticket-tab-reply-attachments">
+                                        <div class="share-upload-desc">
+                                        <?php echo $this->user->lang("Sharing a picture will help us understand your question even more");?>
+                                        <?php echo $this->user->lang("Max file size: %s", $this->maxfilesize);?>
+                                            <?php if ($this->extns != '*') { ?>
+                                                - <span data-html="true" data-toggle="tooltip" data-placement="top" title="<?php echo $this->user->lang("Allowed file extensions: %s", $this->extnsmessage);?>"><?php echo $this->user->lang('See Allowed Extensions') ?></span>
+                                            <?php } ?>
+                                            </div>
                                             <div id="fileFieldsContainer" class="form-actions">
                                                 <div id="fileFields_" class="d-none file-upload ">
                                                     <label class="btn-file">

@@ -1324,6 +1324,29 @@ $(function() {
         }
     });
 
+    $(document).on('click', '.data-table-wrapper table tr td .action', function () {
+        var $btn = $(this);
+
+        if ($btn.data('fetched')) {
+            return;
+        }
+        $btn.data('fetched', true);
+
+        var $drop = $btn.next('.cog-drop-down');
+        var packageId = $btn.data('package-id');
+
+        $.ajax({
+            url: 'index.php?fuse=clients&controller=products&action=getpackageactions',
+            data: { id: packageId },
+            dataType: 'json'
+        }).done(function (response) {
+            $drop.html(response.html);
+        }).fail(function () {
+            $drop.html('<li>Unable to load actions</li>');
+            $btn.data('fetched', false); // allow retry on next click
+        });
+    });
+
     // Match Height **************************************************
 
     $(".eq-height").matchHeight({

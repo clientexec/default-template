@@ -62,41 +62,12 @@
                                 </td>
                                 <td class="mid">
                                     <?php if (count($package['actions']) > 0) {?>
-                                    <a class="action">
+                                    <a class="action" data-package-id="<?php echo $package['id']; ?>">
                                         <i class="fas fa-cog"></i>
                                     </a>
                                     <ul class="cog-drop-down">
-                                    <?php $additionalHTML = ''; ?>
-                                    <?php foreach ($package['actions']  as $action) { ?>
-                                        <?php if (isset($action['url'])) { ?>
-                                        <li>
-                                            <a  href="<?php echo $action['url']; ?>">
-                                                <?php echo $action['name']; ?>
-                                            </a>
-                                        </li>
-                                        <?php } else if (isset($action['link']) && $action['form'] == '') { ?>
-                                        <li>
-                                            <a target="_blank" href="<?php echo $action['link']; ?>">
-                                                <?php echo $action['text']; ?>
-                                            </a>
-                                        </li>
-                                        <?php } else if (isset($action['form']) && $action['form'] != '') { ?>
-                                        <li>
-                                            <a href="#" onclick="<?php echo $action['onclick']; ?>">
-                                                <?php echo $action['text']; ?>
-                                            </a>
-                                        </li>
-                                        <?php $additionalHTML .= $action['form']; ?>
-                                        <?php } else { ?>
-                                        <li>
-                                            <a data-package-id="<?php echo $package['id']; ?>" class="clickable-action" data-command="<?php echo $action['command']; ?>">
-                                                <?php echo $action['name']; ?>
-                                            </a>
-                                        </li>
-                                        <?php } ?>
-                                    <?php } ?>
+
                                     </ul>
-                                    <?php echo $additionalHTML; ?>
                                     <?php } ?>
                                 </td>
                             </tr>
@@ -130,10 +101,10 @@ $(document).ready(function() {
     });
 });
 
-$('.clickable-action').on('click', function(e) {
+$(document).on('click', '.clickable-action', function(e) {
     e.preventDefault();
-    command = $(this).data('command');
-    packageId = $(this).data('package-id');
+    var command = $(this).data('command');
+    var packageId = $(this).data('package-id');
 
     clientexec.mask();
     $.ajax({
@@ -147,5 +118,5 @@ $('.clickable-action').on('click', function(e) {
             actioncmd: command
         }
     });
-})
+});
 </script>

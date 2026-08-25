@@ -10,7 +10,6 @@
 
                 <div class="cs-padding">
 
-                    <!-- Status -->
                     <div class="twofactor-status mb-3">
                         <span class="me-2 fw-medium">
                             <?php echo $this->user->lang('Status'); ?>:
@@ -73,14 +72,16 @@
             <div class="modal-body">
 
                 <p class="text-muted">
-                    <?php echo $this->user->lang('Scan the QR code with your authentication app and enter the code below to verify.'); ?>
+                    <?php echo $this->message; ?>
                 </p>
 
+                <?php if (!empty($this->qrCodeUrl)) { ?>
                 <div class="text-center mb-3">
                     <div class="border rounded p-3 d-inline-block">
                         <img src="<?php echo $this->qrCodeUrl; ?>" alt="QR Code" style="width:150px; height:150px;">
                     </div>
                 </div>
+                <?php } ?>
 
                 <div id="twofactor-error" class="alert alert-danger d-none"></div>
 
