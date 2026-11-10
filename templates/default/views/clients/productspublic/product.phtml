@@ -5,33 +5,37 @@
         </div>
         <div class="content-right">
             <?php
-                if ($this->package['productType'] == PACKAGE_TYPE_HOSTING) {
-                    echo $this->partial('productspublic/partials/hosting.phtml', [
+            if ($this->package['productType'] == PACKAGE_TYPE_HOSTING) {
+                echo $this->partial('productspublic/partials/hosting.phtml', [
                         'package' => $this->package,
                         'showAutomaticRenewal' => $this->showAutomaticRenewal,
                         'automaticRenewalChecked' => $this->automaticRenewalChecked,
                         'showAdditionalInfo' => $this->showAdditionalInfo
-                    ]);
-                } else if ($this->package['productType'] == PACKAGE_TYPE_DOMAIN) {
-                    echo $this->partial('productspublic/partials/domain.phtml', [
+                ]);
+            } else if ($this->package['productType'] == PACKAGE_TYPE_DOMAIN) {
+                echo $this->partial('productspublic/partials/domain.phtml', [
                         'package' => $this->package,
                         'showAutomaticRenewal' => $this->showAutomaticRenewal,
                         'automaticRenewalChecked' => $this->automaticRenewalChecked
-                    ]);
-                } else if ($this->package['productType'] == PACKAGE_TYPE_GENERAL) {
-                    echo $this->partial('productspublic/partials/general.phtml', [
+                ]);
+            } else if ($this->package['productType'] == PACKAGE_TYPE_GENERAL) {
+                echo $this->partial('productspublic/partials/general.phtml', [
                         'package' => $this->package,
                         'showAutomaticRenewal' => $this->showAutomaticRenewal,
                         'automaticRenewalChecked' => $this->automaticRenewalChecked
-                    ]);
-                } else if ($this->package['productType'] == PACKAGE_TYPE_SSL) {
-                    echo $this->partial('productspublic/partials/ssl.phtml', [
+                ]);
+            } else if ($this->package['productType'] == PACKAGE_TYPE_SSL) {
+                echo $this->partial('productspublic/partials/ssl.phtml', [
                         'package' => $this->package,
                         'cert' => $this->cert,
                         'showAutomaticRenewal' => $this->showAutomaticRenewal,
                         'automaticRenewalChecked' => $this->automaticRenewalChecked
-                    ]);
-                }
+                ]);
+            }
+
+            if (!empty($this->pluginOutput)) {
+                echo '<div class="plugin-public-view">' . $this->unescape($this->pluginOutput) . '</div>';
+            }
             ?>
         </div>
     </div>
@@ -40,173 +44,212 @@
 
 <script>
 
-var productId = <?php echo $this->product_id; ?>;
-var fields_markup_array = <?php echo json_encode($this->package['customFieldsMarkup']); ?>;
+    var productId = <?php echo (int) $this->product_id; ?>;
+    var fields_markup_array = <?php echo json_encode($this->package['customFieldsMarkup']); ?>;
 
-<?php if ($this->showAutomaticRenewal) { ?>
-$('#toogle-automatic-cc-charge').on('click', function() {
-    $.post('index.php?fuse=clients&controller=products&action=toogleautomaticcccharge', {
-        id: productId
-    },
-    function(data) {
-        clientexec.parseResponse(data);
-    });
-});
-<?php } ?>
-
-
-<?php if ($this->package['registrarLock'] != '' && $this->package['status']['statusRaw'] == 'Active') { ?>
-$('#toogle-registrar-lock').on('click', function() {
-    var regLockValue = 0;
-    if ($(this).is(':checked')) {
-        regLockValue = 1;
+    function escapeHtml(text) {
+        return $('<div>').text(text).html();
     }
-    $.post('index.php?fuse=clients&controller=products&action=updateregistrarlock', {
-        value: regLockValue,
-        id: productId
-    },
-    function(data) {
-        clientexec.parseResponse(data);
-    });
-});
-<?php } ?>
 
-$('#passwordChange').on('click', function(e) {
-    e.preventDefault();
-
-    $.confirm({
-        title: clientexec.lang('Password Change'),
-        content: '' +
-        '<form action="">' +
-        '<div class="form-group">' +
-        '<label>' + clientexec.lang('Please enter a new password') + '</label>' +
-        '<input type="password" class="password form-control" />' +
-        '</div>' +
-        '</form>',
-        buttons: {
-            formSubmit: {
-                text: clientexec.lang('Save'),
-                btnClass: 'btn btn-primary',
-                action: function () {
-                    var password = this.$content.find('.password').val();
-                    if( $.trim(password) !== "" ) {
-                        $.post('index.php?fuse=clients&controller=products&action=updatehostingpassword', {
-                            id: productId,
-                            password: password
-                        }, function( data ) {
-                            clientexec.parseResponse(data);
-                        });
-                    }
-                }
-            },
-            cancel: {
-                text: clientexec.lang('Cancel'),
-                action: function () {
-                }
-            },
-        },
-        onContentReady: function () {
-            var jc = this;
-            this.$content.find('form').on('submit', function (e) {
-                // if the user submits the form by pressing enter in the field.
-                e.preventDefault();
-                jc.$$formSubmit.trigger('click');
-            });
+    function customFieldColumnClass(value) {
+        if (value.length > 50) {
+            return 'medium';
         }
-    });
-});
-
-$('.customFieldModal').on('click', function(e){
-
-    var content = $(this).data('content');
-    if (content.length > 50) {
-        columnClass = 'medium';
-    } else if (content.length > 25) {
-        columnClass = 'small';
-    } else {
-        columnClass = 'xsmall';
-    }
-
-    $.dialog({
-        title: $(this).data('name'),
-        content: content,
-        columnClass: columnClass,
-        containerFluid: true,
-    });
-});
-
-
-$('.customFieldChange').on('click', function(e){
-    e.preventDefault();
-    var fieldName = $(this).data('name');
-    var value = $(this).data('value');
-    var key = $(this).data('key');
-    var type = $(this).data('type');
-
-    var field = fields_markup_array[key];  //for cFHelper
-
-    if (value.length > 50) {
-        columnClass = 'medium';
-    } else if (value.length > 25) {
-        columnClass = 'small';
-    } else {
-        columnClass = 'xsmall';
-    }
-
-    $.confirm({
-        columnClass: columnClass,
-        containerFluid: true,
-        title: '',
-        content: '' +
-        '<form id="customFieldForm" action="">' +
-        '<div class="form-group">' +
-        '<label>' + fieldName + '<br>' + clientexec.lang('Please enter a new value') + '</label>' +
-        field +
-        '</div>' +
-        '</form>',
-        buttons: {
-            formSubmit: {
-                text: clientexec.lang('Save'),
-                btnClass: 'btn btn-primary',
-                action: function () {
-                    var form = $('#customFieldForm').parsley();
-                    if (form.isValid()) {
-                        var value = this.$content.find('.form-control').val();
-
-                        $.post('index.php?fuse=clients&controller=products&action=updatecustomfield', {
-                            id: productId,
-                            fieldName: fieldName,
-                            value: value,
-                            type: type
-                        }, function( data ) {
-                            response = clientexec.parseResponse(data);
-                            if (response.success === true) {
-                                location.reload();
-                            }
-                        });
-                    } else {
-                        $('#parsley-errors-list').remove();
-                        $('#formValueInput').after('<ul id="parsley-errors-list" class="parsley-errors-list filled" style="display: block;"><li class="parsley-required" style="display: list-item;">' + clientexec.lang('This value seems to be invalid') + '</li></ul>');
-                        return false;
-                    }
-                }
-            },
-            cancel: {
-                text: clientexec.lang('Cancel'),
-                action: function () {
-                }
-            },
-        },
-        onContentReady: function () {
-            var jc = this;
-            this.$content.find('form').on('submit', function (e) {
-                // if the user submits the form by pressing enter in the field.
-                e.preventDefault();
-                jc.$$formSubmit.trigger('click');
-            });
+        if (value.length > 25) {
+            return 'small';
         }
+        return 'xsmall';
+    }
+
+    function openCustomFieldEditor(fieldName, key, type, columnClass, prefillValue) {
+        var field = fields_markup_array[key];  //for cFHelper
+
+        $.confirm({
+            columnClass: columnClass,
+            containerFluid: true,
+            title: '',
+            content: '' +
+                '<form id="customFieldForm" action="">' +
+                '<div class="form-group">' +
+                '<label>' + escapeHtml(fieldName) + '<br>' + clientexec.lang('Please enter a new value') + '</label>' +
+                field +
+                '</div>' +
+                '</form>',
+            buttons: {
+                formSubmit: {
+                    text: clientexec.lang('Save'),
+                    btnClass: 'btn btn-primary',
+                    action: function () {
+                        var form = $('#customFieldForm').parsley();
+                        if (form.isValid()) {
+                            var value = this.$content.find('.form-control').val();
+
+                            $.post('index.php?fuse=clients&controller=products&action=updatecustomfield', {
+                                id: productId,
+                                fieldName: fieldName,
+                                value: value,
+                                type: type
+                            }, function( data ) {
+                                var response = clientexec.parseResponse(data);
+                                if (response.success === true) {
+                                    location.reload();
+                                }
+                            });
+                        } else {
+                            $('#parsley-errors-list').remove();
+                            $('#formValueInput').after('<ul id="parsley-errors-list" class="parsley-errors-list filled" style="display: block;"><li class="parsley-required" style="display: list-item;">' + clientexec.lang('This value seems to be invalid') + '</li></ul>');
+                            return false;
+                        }
+                    }
+                },
+                cancel: {
+                    text: clientexec.lang('Cancel'),
+                    action: function () {
+                    }
+                },
+            },
+            onContentReady: function () {
+                var jc = this;
+                if (prefillValue !== null) {
+                    // Set via .val() so the value never passes through an HTML string.
+                    this.$content.find('.form-control').val(prefillValue);
+                }
+                this.$content.find('form').on('submit', function (e) {
+                    // if the user submits the form by pressing enter in the field.
+                    e.preventDefault();
+                    jc.$$formSubmit.trigger('click');
+                });
+            }
+        });
+    }
+
+    <?php if ($this->showAutomaticRenewal) { ?>
+    $('#toogle-automatic-cc-charge').on('click', function() {
+        $.post('index.php?fuse=clients&controller=products&action=toogleautomaticcccharge', {
+                id: productId
+            },
+            function(data) {
+                clientexec.parseResponse(data);
+            });
     });
-});
+    <?php } ?>
+
+
+    <?php if ($this->package['registrarLock'] != '' && $this->package['status']['statusRaw'] == 'Active') { ?>
+    $('#toogle-registrar-lock').on('click', function() {
+        var regLockValue = 0;
+        if ($(this).is(':checked')) {
+            regLockValue = 1;
+        }
+        $.post('index.php?fuse=clients&controller=products&action=updateregistrarlock', {
+                value: regLockValue,
+                id: productId
+            },
+            function(data) {
+                clientexec.parseResponse(data);
+            });
+    });
+    <?php } ?>
+
+    $('#passwordChange').on('click', function(e) {
+        e.preventDefault();
+
+        $.confirm({
+            title: clientexec.lang('Password Change'),
+            content: '' +
+                '<form action="">' +
+                '<div class="form-group">' +
+                '<label>' + clientexec.lang('Please enter a new password') + '</label>' +
+                '<input type="password" class="password form-control" />' +
+                '</div>' +
+                '</form>',
+            buttons: {
+                formSubmit: {
+                    text: clientexec.lang('Save'),
+                    btnClass: 'btn btn-primary',
+                    action: function () {
+                        var password = this.$content.find('.password').val();
+                        if( $.trim(password) !== "" ) {
+                            $.post('index.php?fuse=clients&controller=products&action=updatehostingpassword', {
+                                id: productId,
+                                password: password
+                            }, function( data ) {
+                                clientexec.parseResponse(data);
+                            });
+                        }
+                    }
+                },
+                cancel: {
+                    text: clientexec.lang('Cancel'),
+                    action: function () {
+                    }
+                },
+            },
+            onContentReady: function () {
+                var jc = this;
+                this.$content.find('form').on('submit', function (e) {
+                    // if the user submits the form by pressing enter in the field.
+                    e.preventDefault();
+                    jc.$$formSubmit.trigger('click');
+                });
+            }
+        });
+    });
+
+    $('.customFieldModal').on('click', function(e){
+        e.preventDefault();
+        var content = String($(this).attr('data-content'));
+
+        $.dialog({
+            title: $(this).attr('data-name'),
+            content: content,
+            columnClass: customFieldColumnClass(content),
+            containerFluid: true,
+        });
+    });
+
+    $('.customFieldChange').on('click', function(e){
+        e.preventDefault();
+        var $link = $(this);
+        var value = String($link.attr('data-value'));
+
+        openCustomFieldEditor(
+            $link.attr('data-name'),
+            $link.attr('data-key'),
+            $link.attr('data-type'),
+            customFieldColumnClass(value),
+            null
+        );
+    });
+
+    $('.customFieldPasswordView').on('click', function(e){
+        e.preventDefault();
+        var $link = $(this);
+        var fieldName = $link.attr('data-name');
+
+        $.post('index.php?fuse=clients&controller=products&action=getcustomfieldvalue', {
+            id: productId,
+            fieldName: fieldName
+        }, function( data ) {
+            var response = clientexec.parseResponse(data);
+            if (response.success !== true) {
+                return;
+            }
+
+            var value = String(response.value);
+            if ($link.attr('data-changeable') === '1') {
+                openCustomFieldEditor(fieldName, $link.attr('data-key'), $link.attr('data-type'), 'small', value);
+                return;
+            }
+
+            $.dialog({
+                title: escapeHtml(fieldName),
+                content: escapeHtml(value),
+                columnClass: customFieldColumnClass(value),
+                containerFluid: true,
+            });
+        });
+    });
 
 </script>
 

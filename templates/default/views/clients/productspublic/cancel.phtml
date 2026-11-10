@@ -31,7 +31,7 @@
                             </label>
                             <select name="type" id="type" class="form-control normalSelect2">
                                 <option value="<?php echo PACKAGE_CANCELLATION_TYPE_IMMEDIATE; ?>"><?php echo $this->user->lang('Immediate'); ?></option>
-                                <?php if ($this->paidInvoicesCount > 0) { ?>
+                                <?php if ($this->paidInvoicesCount > 0 && $this->isPeriodPaid) { ?>
                                 <option value="<?php echo PACKAGE_CANCELLATION_TYPE_END_BILLING; ?>"><?php echo $this->user->lang('End of Billing Period'); ?> (<?php echo $this->endOfBillingPeriod; ?>)</option>
                                 <?php } ?>
                             </select>

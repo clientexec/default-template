@@ -177,6 +177,21 @@
     var MAX_UPLOAD_SIZE = <?php echo (int) $this->maxfilesizeBytes; ?>;
 
     $('#support-ticket-form').parsley();
+    $('#support-ticket-form').on('submit', function(e) {
+        var $form = $(this);
+        var $button = $form.find('input[type="submit"]');
+
+        if ($button.data('submitting')) {
+            e.preventDefault();
+            return false;
+        }
+
+        $button.data('submitting', true);
+
+        setTimeout(function() {
+            $button.prop('disabled', true).val(clientexec.lang('Submitting...'));
+        }, 0);
+    });
 
     $('.drop-ticket-type').on('change',function(){
         $('.review-questions-fortype').html('');

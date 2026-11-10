@@ -10,8 +10,20 @@ mix.autoload({
 
 mix.setPublicPath('templates/default');
 
-mix.sass('templates/default/resources/sass/app.scss', 'templates/default/css/vendor.css').sourceMaps();
+mix.sass('templates/default/resources/sass/app.scss', 'templates/default/css/vendor.css', {
+    sassOptions: {
+        quietDeps: true
+    }
+}).sourceMaps();
 mix.js('templates/default/resources/js/app.js', 'templates/default/js').sourceMaps();
+
+mix.copyDirectory(
+    'templates/default/resources/fonts',
+    'templates/default/fonts'
+);
+
+// We want to only minify affiliate.js
+mix.minify('templates/default/resources/js/affiliate.js', 'templates/default/js/aff.js');
 
 mix.copy(
     [

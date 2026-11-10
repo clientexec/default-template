@@ -6,7 +6,7 @@
         <div class="summery-cont">
             <ul>
                 <li class="d-flex justify-content-between align-items-center package">
-                    <h5><?php echo $this->planName; ?></h5>
+                    <h5><?php echo $this->unescape($this->planName); ?></h5>
                     <span class="summary-amount"></span>
                 </li>
                 <?php foreach ($this->addons as $addon) { ?>
@@ -248,10 +248,13 @@
     }
 
     function writeTerm(term, termFee) {
-        sum = 0;
-        tmp = 0;
-        for( var el in termFee ) {
-            if( termFee.hasOwnProperty( el ) ) {
+        var sum = 0;
+        var fee = 0;
+        var discountable = 0;
+        var packageDiscountable = false;
+
+        for (var el in termFee) {
+            if (termFee.hasOwnProperty(el)) {
                 fee = parseFloat(termFee[el]);
                 sum += fee;
 
@@ -259,20 +262,28 @@
                     total['package'] += fee;
 
                     if (discountApplyTo & 4) {
-                        total['package'] -= calcDiscount(fee);
+                        // Package coupon
+                        discountable += fee;
+                        packageDiscountable = true;
                     }
                 } else {
                     total['addons'] += fee;
 
                     if (discountApplyTo & 16) {
-                        tmp += fee;
+                        // Addon coupon
+                        discountable += fee;
                     }
                 }
             }
         }
 
-        if (tmp > 0) {
-            total['addons'] -= calcDiscount(tmp);
+        // Discount package and addons together so rounding matches checkout and the invoice
+        if (discountable > 0) {
+            if (packageDiscountable) {
+                total['package'] -= calcDiscount(discountable);
+            } else {
+                total['addons'] -= calcDiscount(discountable);
+            }
         }
 
         if (sum != 0) {

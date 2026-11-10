@@ -1,0 +1,122 @@
+<?php
+$phoneNumber = (string) $this->phoneNumber;
+$maskedPhone = '';
+if ($phoneNumber !== '') {
+    $maskedPhone = mb_strlen($phoneNumber) > 4
+        ? str_repeat('*', mb_strlen($phoneNumber) - 4) . mb_substr($phoneNumber, -4)
+        : $phoneNumber;
+}
+?>
+
+<section class="cart-pages-wrapper">
+    <div class="container">
+        <?php
+        echo $this->partial('../partials/cartHeader.phtml', [
+            'tempInformation' => $this->tempInformation,
+            'step' => 3,
+            'summary' => $this->summary,
+            'bundled' => $this->bundled
+        ]);
+        ?>
+        <div class="cm-box-holder customer-details">
+            <div class="head border-btm">
+                <h3 class="mb-1"><?php echo $this->user->lang('Phone Verification'); ?></h3>
+            </div>
+            <div class="form-wrapper pb-2">
+                <p>
+                    <?php echo $this->user->lang('To help prevent fraudulent orders, we require new clients to verify their phone number.'); ?>
+                </p>
+                <?php if ($maskedPhone !== '') { ?>
+                    <p>
+                        <strong>
+                            <?php
+                            if ($this->isCalled) {
+                                echo $this->user->lang('A verification code was already sent to %s.', $this->escape($maskedPhone));
+                            } else {
+                                echo $this->user->lang('A verification code has been sent to %s.', $this->escape($maskedPhone));
+                            }
+                            ?>
+                        </strong>
+                        <?php echo $this->user->lang('Enter it below to complete your order.'); ?>
+                    </p>
+                    <form name="phoneverification" class="validate-form" action="order.php?fuse=admin&controller=signup&action=phoneverificationcheck" method="POST" id="phoneVerificationForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-elem">
+                                    <label for="verificationCode" class="customfield_label">
+                                        <?php echo $this->user->lang('Verification Code'); ?>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="code"
+                                        id="verificationCode"
+                                        class="form-control"
+                                        inputmode="numeric"
+                                        autocomplete="one-time-code"
+                                        maxlength="4"
+                                        data-parsley-required="true"
+                                        data-parsley-pattern="^[0-9]{4}$"
+                                        data-parsley-required-message="<?php echo $this->escape($this->user->lang('Please enter the verification code.')); ?>"
+                                        data-parsley-pattern-message="<?php echo $this->escape($this->user->lang('The verification code is 4 digits.')); ?>"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="make-mid mt-3 pb-3">
+                            <button type="submit" class="app-btns primary" id="phoneVerificationSubmit">
+                                <?php echo $this->user->lang('Verify and Complete Order'); ?>
+                            </button>
+                        </div>
+                    </form>
+                    <p class="text-center">
+                        <small>
+                            <?php
+                            echo $this->user->lang(
+                                'Didn\'t receive a code? Check that your phone number is correct, then %sreturn to checkout%s and place your order again. A new code will be issued.',
+                                '<a href="order.php?step=3">',
+                                '</a>'
+                            );
+                            ?>
+                        </small>
+                    </p>
+                <?php } else { ?>
+                    <p>
+                        <?php
+                        echo $this->user->lang(
+                            'We could not start phone verification for this order. Please %sreturn to checkout%s and try again.',
+                            '<a href="order.php?step=3">',
+                            '</a>'
+                        );
+                        ?>
+                    </p>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script data-cfasync="false" type="text/javascript">
+    $(document).ready(function() {
+        var $form = $('#phoneVerificationForm');
+        if ($form.length === 0) {
+            return;
+        }
+
+        $('#verificationCode').trigger('focus');
+
+        $form.on('submit', function(e) {
+            var parsleyForm = $form.parsley();
+            if (!parsleyForm.validate()) {
+                e.preventDefault();
+                return;
+            }
+
+            // Prevent double submission, which would count as two attempts
+            if ($('#phoneVerificationSubmit').hasClass('disabled')) {
+                e.preventDefault();
+                return;
+            }
+            $('#phoneVerificationSubmit').addClass('disabled').prop('disabled', true);
+        });
+    });
+</script>

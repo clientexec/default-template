@@ -9,110 +9,114 @@
                     <?php echo $this->pageTitle; ?>: <?php echo $this->domain; ?>
                 </span>
             </h1>
-        <?php if ( $this->domainNotRegistered == true ) { ?>
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <?php echo $this->user->lang("This domain currently isn't registered.");?>
-            </div>
+            <?php if ( $this->domainNotRegistered == true ) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("This domain currently isn't registered.");?>
+                </div>
             <?php } else if ( $this->domainNotActive == true ) { ?>
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <?php echo $this->user->lang("This domain currently isn't active.");?>
-            </div>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("This domain currently isn't active.");?>
+                </div>
             <?php } else if ( $this->hostRecordsNotSupported == true ) { ?>
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <?php echo $this->user->lang("Managing host records is not supported.");?>
-            </div>
-            <?php } else if ($this->domainNotTransfered == true) { ?>
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <?php echo $this->user->lang("The transfer for this domain has not completed.");?>
-            </div>
-            <?php } else { ?>
-            <div class="dns-records-box cloneable d-none">
-                <ul class="dns-records-box-ul">
-                    <li>
-                        <input type="text" class="dns-records-input" value="">
-                    </li>
-                    <li>
-                        <select class="dns-records-input">
-                            <?php foreach ($this->hostTypes as $type) { ?>
-                            <option value="<?php echo $type; ?>"><?php echo $type; ?></option>
-                            <?php } ?>
-                        </select>
-                    </li>
-                    <li>
-                        <input type="text" class="dns-records-input" value="" data-parsley-required="true">
-                    </li>
-                    <?php if ( $this->user->hasPermission('domains_updatedns') ) { ?>
-                    <li>
-                        <button class="dns-records-submit" name="recorddelete">
-                            <?php echo $this->user->lang('Delete');?>
-                        </button>
-                    </li>
+                <div class="alert alert-danger" role="alert">
+                    <?php if ( $this->hostRecordsErrorMessage != '' ) { ?>
+                        <?php echo $this->hostRecordsErrorMessage; ?>
+                    <?php } else { ?>
+                        <?php echo $this->user->lang("Managing host records is not supported."); ?>
                     <?php } ?>
-                </ul>
-            </div>
-            <?php
-                echo $this->form()->open(
-                    'index.php?fuse=clients&controller=products&action=savedomainhostrecords',
-                    'POST',
-                    ['id' => 'hostrecords']
-                );
-                echo $this->form()->hidden('id', $this->packageId);
-            ?>
-            <?php foreach ($this->hostRecords as $record) { ?>
-                <div class="dns-records-box" id="dns-record-<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                </div>
+            <?php } else if ($this->domainNotTransfered == true) { ?>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <?php echo $this->user->lang("The transfer for this domain has not completed.");?>
+                </div>
+            <?php } else { ?>
+                <div class="dns-records-box cloneable d-none">
                     <ul class="dns-records-box-ul">
                         <li>
-                            <input
-                                    name="hostname_CT_<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    type="text"
-                                    class="dns-records-input"
-                                    value="<?php echo htmlspecialchars($record['hostname'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-parsley-required="true"
-                            >
+                            <input type="text" class="dns-records-input" value="">
                         </li>
                         <li>
-                            <select class="dns-records-input normalSelect2" name="hosttype_CT_<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <select class="dns-records-input">
                                 <?php foreach ($this->hostTypes as $type) { ?>
-                                    <option <?php if ($type == $record['type']) { ?> selected="selected" <?php } ?> value="<?php echo htmlspecialchars($type, ENT_QUOTES, 'UTF-8'); ?>">
-                                        <?php echo htmlspecialchars($type, ENT_QUOTES, 'UTF-8'); ?>
-                                    </option>
+                                    <option value="<?php echo $type; ?>"><?php echo $type; ?></option>
                                 <?php } ?>
                             </select>
                         </li>
                         <li>
-                            <input
-                                    name="hostaddress_CT_<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    type="text"
-                                    class="dns-records-input"
-                                    value="<?php echo htmlspecialchars($record['address'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-parsley-required="true"
-                            >
+                            <input type="text" class="dns-records-input" value="" data-parsley-required="true">
                         </li>
-                        <li>
-                            <button class="dns-records-submit" name="recorddelete" value="<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>">
-                                <?php echo $this->user->lang('Delete'); ?>
-                            </button>
-                        </li>
+                        <?php if ( $this->user->hasPermission('domains_updatedns') ) { ?>
+                            <li>
+                                <button class="dns-records-submit" name="recorddelete">
+                                    <?php echo $this->user->lang('Delete');?>
+                                </button>
+                            </li>
+                        <?php } ?>
                     </ul>
                 </div>
-            <?php } ?>
-            <?php if ( $this->user->hasPermission('domains_updatedns') ) { ?>
-            <div class="dns-records-box">
-                <ul class="dns-records-box-ul">
-                    <li>
-                        <button type="submit" class="dns-records-submit" id="recordadd">
-                            <?php echo $this->user->lang('Add New Record'); ?>
+                <?php
+                echo $this->form()->open(
+                        'index.php?fuse=clients&controller=products&action=savedomainhostrecords',
+                        'POST',
+                        ['id' => 'hostrecords']
+                );
+                echo $this->form()->hidden('id', $this->packageId);
+                ?>
+                <?php foreach ($this->hostRecords as $record) { ?>
+                    <div class="dns-records-box" id="dns-record-<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <ul class="dns-records-box-ul">
+                            <li>
+                                <input
+                                        name="hostname_CT_<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>"
+                                        type="text"
+                                        class="dns-records-input"
+                                        value="<?php echo htmlspecialchars($record['hostname'], ENT_QUOTES, 'UTF-8'); ?>"
+                                        data-parsley-required="true"
+                                >
+                            </li>
+                            <li>
+                                <select class="dns-records-input normalSelect2" name="hosttype_CT_<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php foreach ($this->hostTypes as $type) { ?>
+                                        <option <?php if ($type == $record['type']) { ?> selected="selected" <?php } ?> value="<?php echo htmlspecialchars($type, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <?php echo htmlspecialchars($type, ENT_QUOTES, 'UTF-8'); ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </li>
+                            <li>
+                                <input
+                                        name="hostaddress_CT_<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>"
+                                        type="text"
+                                        class="dns-records-input"
+                                        value="<?php echo htmlspecialchars($record['address'], ENT_QUOTES, 'UTF-8'); ?>"
+                                        data-parsley-required="true"
+                                >
+                            </li>
+                            <li>
+                                <button class="dns-records-submit" name="recorddelete" value="<?php echo htmlspecialchars($record['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php echo $this->user->lang('Delete'); ?>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                <?php } ?>
+                <?php if ( $this->user->hasPermission('domains_updatedns') ) { ?>
+                    <div class="dns-records-box">
+                        <ul class="dns-records-box-ul">
+                            <li>
+                                <button type="submit" class="dns-records-submit" id="recordadd">
+                                    <?php echo $this->user->lang('Add New Record'); ?>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dns-records-updates">
+                        <button type="submit" class="submit-reply-btn app-btns primary">
+                            <?php echo $this->user->lang('Update Host Records'); ?>
                         </button>
-                    </li>
-                </ul>
-            </div>
-            <div class="dns-records-updates">
-                <button type="submit" class="submit-reply-btn app-btns primary">
-                    <?php echo $this->user->lang('Update Host Records'); ?>
-                </button>
-            </div>
-            <?php } ?>
-            <?php echo $this->form()->close(); ?>
+                    </div>
+                <?php } ?>
+                <?php echo $this->form()->close(); ?>
             <?php } ?>
         </div>
     </div>

@@ -35,20 +35,21 @@
 
                     <div class="twofactor-actions mt-3">
                         <?php if ($this->userEnabled) { ?>
-                            <a href="index.php?fuse=clients&controller=twofactor&action=disable"
-                               class="btn btn-danger"
-                               id="disable2faBtn">
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    data-toggle="modal"
+                                    data-target="#disable2FAModal">
                                 <i class="fas fa-trash me-1"></i>
                                 <?php echo $this->user->lang('Disable'); ?>
-                            </a>
+                            </button>
                         <?php } else { ?>
-                            <a href="javascript:void(0);"
-                               class="btn btn-primary"
-                               data-toggle="modal"
-                               data-target="#enable2FAModal">
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    data-toggle="modal"
+                                    data-target="#enable2FAModal">
                                 <i class="fas fa-shield-alt me-1"></i>
                                 <?php echo $this->user->lang('Enable'); ?>
-                            </a>
+                            </button>
                         <?php } ?>
                     </div>
                 </div>
@@ -56,79 +57,158 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="enable2FAModal" tabindex="-1" role="dialog" aria-labelledby="enable2FALabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title" id="enable2FALabel">
-                    <?php echo $this->user->lang('Two-Factor Authentication'); ?>
-                </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span>&times;</span>
-                </button>
-            </div>
+<?php if (!$this->userEnabled) { ?>
+    <div class="modal fade" id="enable2FAModal" tabindex="-1" role="dialog" aria-labelledby="enable2FALabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
 
-            <div class="modal-body">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="enable2FALabel">
+                        <?php echo $this->user->lang('Two-Factor Authentication'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
 
-                <p class="text-muted">
-                    <?php echo $this->message; ?>
-                </p>
+                <div class="modal-body">
 
-                <?php if (!empty($this->qrCodeUrl)) { ?>
-                <div class="text-center mb-3">
-                    <div class="border rounded p-3 d-inline-block">
-                        <img src="<?php echo $this->qrCodeUrl; ?>" alt="QR Code" style="width:150px; height:150px;">
+                    <p class="text-muted">
+                        <?php echo $this->message; ?>
+                    </p>
+
+                    <?php if (!empty($this->qrCodeUrl)) { ?>
+                        <div class="text-center mb-3">
+                            <div class="border rounded p-3 d-inline-block">
+                                <img src="<?php echo $this->qrCodeUrl; ?>" alt="QR Code" style="width:150px; height:150px;">
+                            </div>
+                        </div>
+                    <?php } ?>
+
+                    <div id="twofactor-error" class="alert alert-danger d-none"></div>
+
+                    <div class="form-group">
+                        <label for="twofactor-code">
+                            <?php echo $this->user->lang('Authentication Code'); ?>
+                        </label>
+                        <input type="text"
+                               id="twofactor-code"
+                               class="form-control"
+                               placeholder="123456"
+                               maxlength="6"
+                               inputmode="numeric"
+                               autocomplete="one-time-code">
                     </div>
+
+                    <div class="form-group">
+                        <label for="twofactor-password">
+                            <?php echo $this->user->lang('Current Password'); ?>
+                        </label>
+                        <input type="password"
+                               id="twofactor-password"
+                               class="form-control"
+                               autocomplete="current-password">
+                    </div>
+
                 </div>
-                <?php } ?>
 
-                <div id="twofactor-error" class="alert alert-danger d-none"></div>
+                <div class="modal-footer">
 
-                <div class="form-group">
-                    <label>
-                        <?php echo $this->user->lang('Authentication Code'); ?>
-                    </label>
-                    <input type="text"
-                           id="twofactor-code"
-                           class="form-control"
-                           placeholder="123456"
-                           maxlength="6">
+                    <button type="button"
+                            id="verify2faBtn"
+                            class="btn btn-primary">
+                        <?php echo $this->user->lang('Verify & Enable'); ?>
+                    </button>
+
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <?php echo $this->user->lang('Cancel'); ?>
+                    </button>
                 </div>
 
             </div>
-
-            <div class="modal-footer">
-
-                <button type="button"
-                        id="verify2faBtn"
-                        class="btn btn-primary">
-                    <?php echo $this->user->lang('Verify & Enable'); ?>
-                </button>
-
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <?php echo $this->user->lang('Cancel'); ?>
-                </button>
-            </div>
-
         </div>
     </div>
-</div>
+<?php } else { ?>
+    <div class="modal fade" id="disable2FAModal" tabindex="-1" role="dialog" aria-labelledby="disable2FALabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="disable2FALabel">
+                        <?php echo $this->user->lang('Disable Two-Factor Authentication'); ?>
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <p class="text-muted">
+                        <?php echo $this->user->lang('Enter your current password to disable two-factor authentication.'); ?>
+                    </p>
+
+                    <div id="disable2fa-error" class="alert alert-danger d-none"></div>
+
+                    <div class="form-group">
+                        <label for="disable2fa-password">
+                            <?php echo $this->user->lang('Current Password'); ?>
+                        </label>
+                        <input type="password"
+                               id="disable2fa-password"
+                               class="form-control"
+                               autocomplete="current-password">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            id="confirmDisable2faBtn"
+                            class="btn btn-danger">
+                        <?php echo $this->user->lang('Disable'); ?>
+                    </button>
+
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <?php echo $this->user->lang('Cancel'); ?>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+<?php } ?>
 
 <script>
-    $('#verify2faBtn').on('click', function () {
-        var code = $('#twofactor-code').val();
-        var errorBox = $('#twofactor-error');
+    var twoFactorUrl = 'index.php?fuse=clients&controller=twofactor&view=twofactor';
 
-        // reset state
+    function showTwoFactorError(box, message) {
+        box.text(message).removeClass('d-none');
+    }
+
+    // Enable
+    $('#verify2faBtn').on('click', function () {
+        var code = $.trim($('#twofactor-code').val());
+        var passwordInput = $('#twofactor-password');
+        var password = passwordInput.val();
+        var errorBox = $('#twofactor-error');
+        var btn = $(this);
+
         errorBox.addClass('d-none').text('');
 
-        if (code.length !== 6) {
-            errorBox.text(clientexec.lang('Please enter a valid 6-digit code')).removeClass('d-none');
+        if (!/^\d{6}$/.test(code)) {
+            showTwoFactorError(errorBox, clientexec.lang('Please enter a valid 6-digit code'));
             return;
         }
 
-        var btn = $(this);
+        if (password === '') {
+            showTwoFactorError(errorBox, clientexec.lang('Please enter your current password'));
+            passwordInput.focus();
+            return;
+        }
+
         btn.prop('disabled', true).text(clientexec.lang('Verifying...'));
 
         $.ajax({
@@ -136,23 +216,21 @@
             method: 'POST',
             dataType: 'json',
             data: {
-                code: code
+                code: code,
+                password: password
             },
             success: function (response) {
                 if (response.success) {
-                    if (response.to_signup) {
-                        location.href = 'order.php?step=3';
-                    } else {
-                        location.href = 'index.php?fuse=clients&controller=twofactor&view=twofactor';
-                    }
-
-                } else {
-                    errorBox.text(response.error || clientexec.lang('Invalid code')).removeClass('d-none');
-                    btn.prop('disabled', false).text(clientexec.lang('Verify & Enable'));
+                    location.href = response.to_signup ? 'order.php?step=3' : twoFactorUrl;
+                    return;
                 }
+
+                showTwoFactorError(errorBox, response.message || clientexec.lang('Invalid code'));
+                passwordInput.val('');
+                btn.prop('disabled', false).text(clientexec.lang('Verify & Enable'));
             },
             error: function () {
-                errorBox.text(clientexec.lang('An error occurred. Please try again.')).removeClass('d-none');
+                showTwoFactorError(errorBox, clientexec.lang('An error occurred. Please try again.'));
                 btn.prop('disabled', false).text(clientexec.lang('Verify & Enable'));
             }
         });
@@ -162,35 +240,70 @@
         $('#twofactor-code').focus();
     });
 
-    $('#twofactor-code').on('input', function () {
+    $('#twofactor-code, #twofactor-password').on('input', function () {
         $('#twofactor-error').addClass('d-none').text('');
     });
 
-    $('#disable2faBtn').on('click', function (e) {
-        e.preventDefault();
+    $('#twofactor-code, #twofactor-password').on('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            $('#verify2faBtn').trigger('click');
+        }
+    });
 
-        if (!confirm(clientexec.lang('Are you sure you want to disable two-factor authentication?'))) {
+    // Disable
+    $('#confirmDisable2faBtn').on('click', function () {
+        var passwordInput = $('#disable2fa-password');
+        var password = passwordInput.val();
+        var errorBox = $('#disable2fa-error');
+        var btn = $(this);
+
+        errorBox.addClass('d-none').text('');
+
+        if (password === '') {
+            showTwoFactorError(errorBox, clientexec.lang('Please enter your current password'));
+            passwordInput.focus();
             return;
         }
 
-        var btn = $(this);
         btn.prop('disabled', true).text(clientexec.lang('Disabling...'));
 
         $.ajax({
             url: 'index.php?fuse=clients&controller=twofactor&action=disable',
             method: 'POST',
+            dataType: 'json',
+            data: {
+                password: password
+            },
             success: function (response) {
                 if (response.success) {
-                    location.href = 'index.php?fuse=clients&controller=twofactor&view=twofactor';
-                } else {
-                    alert(response.error || clientexec.lang('Failed to disable two-factor authentication.'));
-                    btn.prop('disabled', false).text(clientexec.lang('Disable'));
+                    location.href = twoFactorUrl;
+                    return;
                 }
+
+                showTwoFactorError(errorBox, response.message || clientexec.lang('Failed to disable two-factor authentication.'));
+                passwordInput.val('').focus();
+                btn.prop('disabled', false).text(clientexec.lang('Disable'));
             },
             error: function () {
-                alert(clientexec.lang('An error occurred. Please try again.'));
+                showTwoFactorError(errorBox, clientexec.lang('An error occurred. Please try again.'));
                 btn.prop('disabled', false).text(clientexec.lang('Disable'));
             }
         });
+    });
+
+    $('#disable2FAModal').on('shown.bs.modal', function () {
+        $('#disable2fa-password').focus();
+    });
+
+    $('#disable2fa-password').on('input', function () {
+        $('#disable2fa-error').addClass('d-none').text('');
+    });
+
+    $('#disable2fa-password').on('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            $('#confirmDisable2faBtn').trigger('click');
+        }
     });
 </script>

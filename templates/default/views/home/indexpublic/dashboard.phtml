@@ -367,21 +367,58 @@
 
     });
 
-    $(document).on('click', '.clickable-action', function(e) {
-        e.preventDefault();
-        var command = $(this).data('command');
-        var packageId = $(this).data('package-id');
-
+    function runPluginAction(packageId, command) {
         clientexec.mask();
         $.ajax({
             url: 'index.php?fuse=clients&action=callpluginaction',
-            success: function(xhr) {
-                clientexec.parseResponse(xhr);
-                clientexec.unMask();
-            },
+            type: 'POST',
             data: {
                 id: packageId,
-                actioncmd: command
+                actioncmd: command,
+                sessionHash: '<?php echo CE_Lib::getSessionHash(); ?>'
+            },
+            success: function(xhr) {
+                const response = clientexec.parseResponse(xhr);
+                if (response.error) {
+                    clientexec.unMask();
+                    return;
+                }
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            },
+            error: function() {
+                clientexec.unMask();
+                $.showNotification({body: clientexec.lang('There was an error performing this action'), type: 'danger'});
+            }
+        });
+    }
+
+    $(document).on('click', '.clickable-action', function(e) {
+        e.preventDefault();
+        const command = $(this).data('command');
+        const packageId = $(this).data('package-id');
+        const confirmMessage = $(this).data('confirm');
+
+        if (!confirmMessage) {
+            runPluginAction(packageId, command);
+            return;
+        }
+
+        $.confirm({
+            title: clientexec.lang('Please Confirm'),
+            content: clientexec.htmlspecialchars(confirmMessage),
+            buttons: {
+                confirm: {
+                    text: clientexec.lang('Confirm'),
+                    btnClass: 'btn-danger',
+                    action: function() {
+                        runPluginAction(packageId, command);
+                    }
+                },
+                cancel: {
+                    text: clientexec.lang('Cancel')
+                }
             }
         });
     });

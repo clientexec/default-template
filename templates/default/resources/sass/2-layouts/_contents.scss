@@ -389,9 +389,12 @@
                 // 14-12-2020 For cog drop down menu
                 .cog-drop-down {
                     position: absolute;
-                    top: 52px;
-                    right: 27px;
+                    // Anchored to the centered .action cog (54px x 36px) rather than the td edges,
+                    // so the menu's top-right corner sits flush under the cog at any column width
+                    top: calc(50% + 28px);
+                    right: calc(50% - 27px);
                     width: max-content;
+                    min-width: 180px;
                     opacity: 0;
                     pointer-events: none;
                     background: #FFF;
@@ -403,7 +406,7 @@
 
                     &.pull-it {
                         opacity: 1;
-                        top: 42px;
+                        top: calc(50% + 18px);
                         pointer-events: auto;
                         z-index: 4;
                     }
@@ -413,6 +416,14 @@
 
                         &:first-child {
                             border-top: none;
+                        }
+
+                        &.action-loading {
+                            color: #8f9bb9;
+                            font-size: 14px;
+                            font-weight: 600;
+                            padding: 12px 18px;
+                            cursor: default;
                         }
 
                         a {
@@ -429,8 +440,8 @@
                         }
                     }
                 }
-
                 // 14-12-2020 For cog drop down menu END
+
 
                 .product-name {
                     display: block;
@@ -2964,6 +2975,15 @@ span {
 }
 
 .invoice-page-wraper {
+
+    #paymentOptions {
+        scroll-margin-top: 140px;
+
+        @include portrait {
+            scroll-margin-top: 90px;
+        }
+    }
+
     display: block;
     padding: 50px 0;
     .invoice-top-block {
@@ -3276,10 +3296,10 @@ span {
     }
     .invoice-payment-box {
         display: block;
-         position: relative;
-         .form-option {
-             padding-bottom: 0px;
-             label {
+        position: relative;
+        .form-option {
+            padding-bottom: 0px;
+            label {
                 padding-left: 32px;
                 .text {
                     color: #2f3441;
@@ -3296,9 +3316,9 @@ span {
                     bottom: initial;
                     top: 6px;
                 }
-             }
-         }
-         .form-check-box {
+            }
+        }
+        .form-check-box {
             padding: 18px 0 0 0;
             label {
                 padding-left: 32px;
@@ -3311,8 +3331,8 @@ span {
                     line-height: 14px;
                 }
             }
-         }
-         p{
+        }
+        p{
             padding-left: 32px;
             color: #8b919e;
             display: block;
@@ -3344,9 +3364,13 @@ span {
     }
     .invoice-from-to {
         display: block;
+        flex: 1 1 auto;
+        min-width: 0;
+        padding-right: 20px;
         @include tab-landscape{
             text-align: center;
             margin-bottom: 20px;
+            padding-right: 0;
         }
         li {
             display: inline-block;
@@ -3354,18 +3378,22 @@ span {
             padding: 0 45px;
             border-right: 1px solid #4a87d4;
             color: #fff;
+            max-width: 260px;
+            word-break: break-word;
+            overflow-wrap: break-word;
             @include tab-landscape{
-                padding: 0 25px;
-            }
-            @include portrait-small{
                 display: block;
-                border-top: 1px solid #4a87d4;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
                 border-right: none;
-                padding: 20px 0px;
+                padding: 12px 0 16px 0;
+                margin-top: 8px;
+                max-width: none;
             }
             &:first-child {
-                @include portrait-small{
+                @include tab-landscape{
                     border-top: none;
+                    margin-top: 0;
+                    padding-top: 0;
                 }
             }
             h6 {
@@ -3378,6 +3406,7 @@ span {
     }
     .invoice2-top-btns {
         display: block;
+        flex: 0 0 auto;
         @include tab-landscape{
             text-align: center;
         }
@@ -3388,6 +3417,35 @@ span {
             @include portrait{
                 margin-bottom: 10px;
             }
+
+            .invoice2-icon-group {
+                display: inline-flex;
+                align-items: stretch;
+                background: #ffffff;
+                border-radius: 3px;
+                height: 28px;
+                overflow: hidden;
+
+                .invoice2-icon-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 34px;
+                    color: #1e6bca;
+                    font-size: 14px;
+
+                    &:not(:first-child) {
+                        border-left: 1px solid #dbe6f5;
+                    }
+
+                    &:hover {
+                        background: #66d286;
+                        color: #fff;
+                        text-decoration: none;
+                    }
+                }
+            }
+
             .status-btn {
                 display: block;
                 // background: #ff7f27;
@@ -3434,6 +3492,7 @@ span {
                 border-radius: 3px;
                 height: 28px;
                 line-height: 28px;
+                white-space: nowrap;
                 &:hover {
                     background: #66d286;
                     color: #fff;
@@ -3581,9 +3640,9 @@ span {
    17-05-2021 invoice page2 end
    ====================================================== */
 
-   /* ======================================================
-   24-05-2021 upgrade-downgrade begin
-   ====================================================== */
+/* ======================================================
+24-05-2021 upgrade-downgrade begin
+====================================================== */
 .upgrade-downgrade-page-wraper {
     display: block;
     padding: 50px 0;
@@ -3670,9 +3729,9 @@ span {
         position: relative;
         border-right: 1px solid #dbdde7;
         @include portrait {
-             padding-right: 0px;
-             border-right: none;
-             margin-bottom: 15px;
+            padding-right: 0px;
+            border-right: none;
+            margin-bottom: 15px;
         }
         label {
             display: block;
@@ -3696,7 +3755,7 @@ span {
         padding-left: 20px;
         @include portrait {
             padding-left:0px;
-       }
+        }
         h5 {
             display: block;
             color: #35404d;
@@ -4310,6 +4369,11 @@ span {
         }
     }
 }
+
+.plugin-public-view {
+    margin-top: 30px;
+}
+
 .submit-ticket{
     padding: 60px 45px;
     border-radius: 10px;

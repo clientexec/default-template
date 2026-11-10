@@ -3,8 +3,6 @@
     if ($mostRecentMessageOnTop) {
         $this->comments = array_reverse($this->comments);
     }
-
-    $ticketGateway = new TicketGateway($this->user);
 ?>
 
 <div class="content-area dashboard-wraper">
@@ -136,13 +134,14 @@
                                         <?php } ?>
                                         <p>
                                             <?php
-                                            /* before v5 was released logs stored htmlentities, which need to be interpreted, so we don't escape them here */
+                                            /* before v5 was released logs stored htmlentities, which need to be interpreted,
+                                               so decode them first and let the sanitizer handle the resulting markup */
+                                            $message = $comment['message'];
+                                            if (empty($comment['createdAt_unix']) || $comment['createdAt_unix'] < 1396587600) {
+                                                $message = html_entity_decode($message, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                                            }
                                             ?>
-                                            <?php if ($comment['createdAt_unix'] < 1396587600) { ?>
-                                            <?php echo nl2br(trim($this->linkify($comment['message'])));?>
-                                            <?php } else { ?>
-                                            <?php echo trim($this->linkify($ticketGateway->formatTicketMessage($comment['message'])));?>
-                                            <?php } ?>
+                                            <?php echo trim($message); ?>
                                         </p>
                                         <?php foreach($this->metadata['attachments'] as $attachment) { ?>
                                         <?php if ($attachment['belongs_to_log_id'] == $comment['logid']) { ?>

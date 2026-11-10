@@ -344,7 +344,7 @@
         <div class="make-mid mt-3 pb-3">
         <?php if (count($this->paymentmethods) != 0) { ?>
                 <span class='paymentbutton1'>
-                    <button class="app-btns primary <?php echo $submitButtonDisabled; ?>" onclick="cart.submit_form(<?php echo $this->loggedIn; ?>);"  id="submitButton"></button>
+                    <button type="button" class="app-btns primary <?php echo $submitButtonDisabled; ?>" onclick="cart.submit_form(<?php echo $this->loggedIn; ?>);"  id="submitButton"></button>
                 </span>
             <?php foreach ($this->gatewayForms as $gatewayName => $gatewayForm) { ?>
                 <div class='paymentbutton2 <?php echo $gatewayName."paymentbutton"; ?> col-12 d-none pt-2'>
@@ -678,6 +678,20 @@ cart.toggle_gateway = function(gatewayName) {
     }
 }
 
+cart.agree_tc = function() {
+    if ($('#tocAgree').is(':checked')) {
+        $('#submitButton').removeClass('disabled');
+        $('.customButton').removeClass('disabled');
+    } else {
+        $('#submitButton').addClass('disabled');
+        $('.customButton').addClass('disabled');
+    }
+}
+
+<?php if ($this->termsConditions) { ?>
+    cart.agree_tc();
+<?php } ?>
+
 cart.submit_form = function(allowSubmit) {
     if ($('#submitButton').hasClass('disabled')) {
         return;
@@ -687,12 +701,23 @@ cart.submit_form = function(allowSubmit) {
         return;
     }
 
-    $('#submitForm').parsley({
+    var $form = $('#submitForm');
+
+    var parsleyForm = $form.parsley({
         excluded: 'input[type=button], input[type=submit], input[type=reset], :hidden'
     });
 
-    $('#submitForm').submit();
-}
+    // Stop if validation fails
+    if (!parsleyForm.validate()) {
+        return;
+    }
+
+    // Prevent double-submission
+    $('#submitButton').addClass('disabled');
+    $('.customButton').addClass('disabled');
+
+    $form.submit();
+};
 
 $('#couponModal').on('show.bs.modal', function (event) {
     var itemId = $(event.relatedTarget).data('item-id');
@@ -764,17 +789,6 @@ $('.remove-button').on('click', function(e) {
         }
     });
 });
-
-cart.agree_tc = function() {
-
-    if ($('#tocAgree').is(':checked')) {
-        $('#submitButton').removeClass('disabled');
-        $('.customButton').removeClass('disabled');
-    } else {
-        $('#submitButton').addClass('disabled');
-        $('.customButton').addClass('disabled');
-    }
-}
 
 cart.toggle_addons = function(productId) {
     $('#addons-' + productId).toggle('hidden');

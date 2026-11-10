@@ -1,0 +1,28 @@
+<?php foreach ($this->addons as $addon) { ?>
+    <?php if ($addon['fieldtype'] !== (string)typeHIDDEN) { ?>
+        <li>
+            <span class="card-label">
+                <?php echo $addon['namelanguage']; ?>
+            </span>
+            <span class="card-value">
+            <?php
+                $addonQuantity = '';
+                $addonQuantityPrice = $addon['optioncustomerprice'];
+                $addonQuantitySetupPrice = $addon['optionsetupprice'];
+                if ($addon['optioncustomerquantity'] > 1 || $addon['optioncustomerquantity'] == 0) {
+                    $addonQuantity = $addon['optioncustomerquantity'].' x ';
+                    $addonQuantityPrice = '@ '.$addon['optioncustomerprice'].'/'.$this->user->lang("each").' = '.$addon['optioncustomerquantityprice'];
+
+                    if($addon['optionsetupprice'] !== false){
+                        $addonQuantitySetupPrice = $addon['optionsetupprice'].'/'.$this->user->lang("each").' = '.$addon['optionsetupquantityprice'];
+                    }
+                }
+                echo $addonQuantity.$addon['optionnamelanguage'].' '.$addonQuantityPrice.' / '.$addon['optioncycle'];
+                if($addonQuantitySetupPrice !== false){
+                    echo '<br><span style="float:right;">+ '.$addonQuantity.$addonQuantitySetupPrice.' / '.$addon['optionsetup'].'</span><br><br>';
+                }
+            ?>
+            </span>
+        </li>
+    <?php } ?>
+<?php } ?>

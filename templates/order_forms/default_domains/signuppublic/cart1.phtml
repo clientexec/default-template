@@ -45,7 +45,7 @@
                             <?php if ($this->group['advanced']['disallowRegister'] == '0' || $this->group['advanced']['disallowRegister'] == null) { ?>
                             <div>
                                 <div class="need-domain">
-                                    <span class="www-name">www.</span>
+                                    <span class="www-name">https://</span>
                                     <input pattern="<?php echo REGEXDOMAIN_PARSLEY; ?>" type="text" class="domain-input need-domain-input first_domain_name" placeholder="<?php echo $this->user->lang('Search Domain'); ?>" name="first_domain_name" value="<?php echo $this->domainName; ?>" />
                                     <div class="domain-dropdown">
                                         <select name="domain_extension" id="" class="searchSelect2 domain_extension">
@@ -74,7 +74,7 @@
                             <?php if ($this->group['advanced']['allowTransfer'] == 1) { ?>
                             <div>
                                 <div class="need-domain">
-                                    <span class="www-name">www.</span>
+                                    <span class="www-name">https://</span>
                                     <input type="text" class="domain-input transfer_domain" placeholder="<?php echo $this->user->lang('Domain Name'); ?>" id="transfer_extension" name="transfer_domain" value="<?php echo $this->domainName; ?>">
                                     <div class="domain-dropdown">
                                         <select name="domain_extension" id="" class="searchSelect2 transfer_extension">
@@ -101,7 +101,7 @@
                             <div>
                                 <form id="submitForm">
                                     <div class="need-domain">
-                                        <span class="www-name">www.</span>
+                                        <span class="www-name">https://</span>
                                         <input data-parsley-pattern="<?php echo REGEXDOMAIN_PARSLEY; ?>" placeholder="<?php echo $this->user->lang('Domain Name'); ?>" id="self_domain" type="text" name="self_domain" class="domain-input self_domain form-control" data-parsley-required="true" value="<?php echo ($this->domainName != '') ? $this->domainName . '.' . $this->tld : ''; ?>">
                                     </div>
                                     <div class="domain-bottom pb-4">
@@ -120,7 +120,7 @@
                             <?php if (count($this->subdomains) > 0) { ?>
                             <div>
                                 <div class="need-domain">
-                                    <span class="www-name">www.</span>
+                                    <span class="www-name">https://</span>
                                     <input data-parsley-pattern="<?php echo REGEXSUBDOMAIN_PARSLEY; ?>" type="text" class="domain-input need-domain-input" placeholder="<?php echo $this->user->lang('Search Domain'); ?>" name="subdomain" id="subdomain" onkeyup="domains.validateSubDomain('subdomain');" data-parsley-required="true" />
                                     <div class="domain-dropdown">
                                          <select name="subdomain-tld" id="subdomain-tld" onchange="domains.validateSubDomain('subdomain');" class="normalSelect2">
@@ -298,7 +298,7 @@ domains.search_domain = function(searchType) {
 
     $.getJSON('index.php?fuse=admin&controller=signup&action=searchdomain',
     {
-        name: name,
+        name: name.replace(/^www\./i, ''),
         tld: tld.trim(),
         product:product_id,
         searchType: searchType,

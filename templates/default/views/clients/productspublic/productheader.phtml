@@ -4,99 +4,137 @@
     </button>
     <div class="sidenav">
         <ul class="mb-2">
-        <?php foreach ($this->tabs as $tab) { ?>
-            <li class="<?php echo $tab['class'];?>">
-                <a href="index.php?fuse=clients&controller=products&view=<?php echo $tab['view'];?>&id=<?php echo $this->productId;?>">
-                    <i class="<?php echo $tab['fa']; ?>" aria-hidden="true"></i><?php echo $tab['name'];?>
-                </a>
-            </li>
+            <?php foreach ($this->tabs as $tab) { ?>
+                <li class="<?php echo $tab['class'];?>">
+                    <a href="index.php?fuse=clients&controller=products&view=<?php echo $tab['view'];?>&id=<?php echo $this->productId;?>">
+                        <i class="<?php echo $tab['fa']; ?>" aria-hidden="true"></i><?php echo $tab['name'];?>
+                    </a>
+                </li>
             <?php } ?>
             <?php foreach ($this->product_tab_snapins as $tab) {
                 $class = "";
                 if (($tab['key'] == $this->productSnapinKey) && ($tab['plugin'] == $this->productSnapinName)) {
                     $class = "active";
                 }
-            ?>
-            <li>
-                <a class="<?php echo $class; ?>" href="index.php?fuse=clients&controller=products&view=productsnapinview&key=<?php echo $tab['key'];?>&name=<?php echo $tab['plugin'];?>&id=<?php echo $this->productId;?>">
-                    <span class="overview"></span>
-                    <?php echo $tab['title'];?>
-                </a>
-            </li>
+                ?>
+                <li>
+                    <a class="<?php echo $class; ?>" href="index.php?fuse=clients&controller=products&view=productsnapinview&key=<?php echo $tab['key'];?>&name=<?php echo $tab['plugin'];?>&id=<?php echo $this->productId;?>">
+                        <span class="overview"></span>
+                        <?php echo $tab['title'];?>
+                    </a>
+                </li>
             <?php } ?>
             <?php foreach ($this->publicPanels as $panel) {
                 $class = "";
                 if ($this->activePublicTab == $panel['view']) {
                     $class = 'active';
                 }
-            ?>
-            <li class="<?php echo $class; ?>">
-                <a href="index.php?fuse=clients&controller=products&view=productsnapinview&key=<?php echo $panel['view']; ?>&id=<?php echo $this->productId; ?>&publicPanel=1">
-                    <i class="<?php echo $panel['fa']; ?>"></i>
-                    <?php echo $panel['name'];?>
-                </a>
-            </li>
+                ?>
+                <li class="<?php echo $class; ?>">
+                    <a href="index.php?fuse=clients&controller=products&view=productsnapinview&key=<?php echo $panel['view']; ?>&id=<?php echo $this->productId; ?>&publicPanel=1">
+                        <i class="<?php echo $panel['fa']; ?>"></i>
+                        <?php echo $panel['name'];?>
+                    </a>
+                </li>
             <?php } ?>
         </ul>
         <?php if (count($this->pluginActions) > 0) { ?>
-        <div class="actions-header">
-            <h4 class="my-0 font-actions">
-                <?php echo $this->user->lang('Quick Actions'); ?>
-            </h4>
-        </div>
-        <ul class="actions">
-            <?php $additionalHTML = ''; ?>
-             <?php foreach ($this->pluginActions as $action) { ?>
-            <?php if (isset($action['url'])) { ?>
-            <li>
-                <a href="<?php echo $action['url']; ?>">
-                    <i class="<?php echo $action['fa']; ?> fa-fw" aria-hidden="true"></i><?php echo $action['name']; ?>
-                </a>
-            </li>
-            <?php } else if (isset($action['link']) && $action['form'] == '') { ?>
-            <li>
-                <a target="_blank" href="<?php echo $action['link']; ?>">
-                    <i class="<?php echo $action['fa']; ?> fa-fw" aria-hidden="true"></i><?php echo $action['text']; ?>
-                </a>
-            </li>
-            <?php } else if (isset($action['form']) && $action['form'] != '') { ?>
-            <li>
-                <a href="#" onclick="<?php echo $action['onclick']; ?>">
-                    <i class="<?php echo $action['fa']; ?> fa-fw" aria-hidden="true"></i><?php echo $action['text']; ?>
-                </a>
-            </li>
-            <?php $additionalHTML .= $action['form']; ?>
-            <?php } else { ?>
-            <li>
-                <a href="#" class="clickable-action" data-command="<?php echo $action['command']; ?>">
-                    <i class="<?php echo $action['fa']; ?> fa-fw" aria-hidden="true"></i><?php echo $action['name']; ?>
-                </a>
-            </li>
-            <?php } ?>
-        <?php } ?>
-        </ul>
-        <?php echo $additionalHTML; ?>
+            <div class="actions-header">
+                <h4 class="my-0 font-actions">
+                    <?php echo $this->user->lang('Quick Actions'); ?>
+                </h4>
+            </div>
+            <ul class="actions">
+                <?php $additionalHTML = ''; ?>
+                <?php foreach ($this->pluginActions as $action) { ?>
+                    <?php if (isset($action['url'])) { ?>
+                        <li>
+                            <a href="<?php echo $action['url']; ?>">
+                                <i class="<?php echo $action['fa']; ?> fa-fw" aria-hidden="true"></i><?php echo $action['name']; ?>
+                            </a>
+                        </li>
+                    <?php } else if (isset($action['link']) && $action['form'] == '') { ?>
+                        <li>
+                            <a target="_blank" href="<?php echo $action['link']; ?>">
+                                <i class="<?php echo $action['fa']; ?> fa-fw" aria-hidden="true"></i><?php echo $action['text']; ?>
+                            </a>
+                        </li>
+                    <?php } else if (isset($action['form']) && $action['form'] != '') { ?>
+                        <li>
+                            <a href="#" onclick="<?php echo $action['onclick']; ?>">
+                                <i class="<?php echo $action['fa']; ?> fa-fw" aria-hidden="true"></i><?php echo $action['text']; ?>
+                            </a>
+                        </li>
+                        <?php $additionalHTML .= $action['form']; ?>
+                    <?php } else { ?>
+                        <li>
+                            <a href="#" class="clickable-action" data-command="<?php echo htmlspecialchars($action['command'], ENT_QUOTES); ?>"<?php if (!empty($action['confirm'])) { ?> data-confirm="<?php echo htmlspecialchars($action['confirm'], ENT_QUOTES); ?>"<?php } ?>>
+                                <i class="<?php echo $action['fa']; ?> fa-fw" aria-hidden="true"></i><?php echo $action['name']; ?>
+                            </a>
+                        </li>
+                    <?php } ?>
+                <?php } ?>
+            </ul>
+            <?php echo $additionalHTML; ?>
         <?php } ?>
     </div>
 </div>
 
 <script>
     var packageId = '<?php echo $this->productId; ?>';
-    $('.clickable-action').on('click', function(e) {
-        e.preventDefault();
-        command = $(this).data('command');
 
+    function runPluginAction(command) {
         clientexec.mask();
         $.ajax({
             url: 'index.php?fuse=clients&action=callpluginaction',
-            success: function(xhr) {
-                clientexec.parseResponse(xhr);
-                clientexec.unMask();
-            },
+            type: 'POST',
             data: {
                 id: packageId,
-                actioncmd: command
+                actioncmd: command,
+                sessionHash: '<?php echo CE_Lib::getSessionHash(); ?>'
+            },
+            success: function(xhr) {
+                const response = clientexec.parseResponse(xhr);
+                if (response.error) {
+                    clientexec.unMask();
+                    return;
+                }
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            },
+            error: function() {
+                clientexec.unMask();
+                $.showNotification({body: clientexec.lang('There was an error performing this action'), type: 'danger'});
             }
         });
-    })
+    }
+
+    $('.clickable-action').on('click', function(e) {
+        e.preventDefault();
+        const command = $(this).data('command');
+        const confirmMessage = $(this).data('confirm');
+
+        if (!confirmMessage) {
+            runPluginAction(command);
+            return;
+        }
+
+        $.confirm({
+            title: clientexec.lang('Please Confirm'),
+            content: clientexec.htmlspecialchars(confirmMessage),
+            buttons: {
+                confirm: {
+                    text: clientexec.lang('Confirm'),
+                    btnClass: 'btn-danger',
+                    action: function() {
+                        runPluginAction(command);
+                    }
+                },
+                cancel: {
+                    text: clientexec.lang('Cancel')
+                }
+            }
+        });
+    });
 </script>

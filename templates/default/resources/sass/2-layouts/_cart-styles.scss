@@ -511,13 +511,26 @@
                 min-width: 40%;
             }
 
+            @include portrait-small {
+                min-width: 80%;
+            }
+
             .head,
             .product-features {
                 padding-left: 30px;
                 padding-right: 30px;
+
+                @include tab-landscape {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                }
+
+                @include portrait-small {
+                    padding-left: 15px;
+                    padding-right: 15px;
+                }
             }
         }
-
     }
 
     &.three-col {
@@ -643,23 +656,70 @@
             h3 {
                 font-size: 33px;
                 font-weight: 600;
+                min-width: 0;
+
+                .pricesMedium,
+                .pricesSmall,
+                .pricesXSmall,
+                .pricesXXSmall {
+                    min-width: 0;
+                    overflow-wrap: anywhere;
+                }
 
                 .pricesMedium {
                     font-size: 30px;
+
+                    @include tab-landscape {
+                        font-size: 26px;
+                    }
+
+                    @include portrait-small {
+                        font-size: 24px;
+                    }
                 }
 
                 .pricesSmall {
                     font-size: 28px;
+
+                    @include tab-landscape {
+                        font-size: 24px;
+                    }
+
+                    @include portrait-small {
+                        font-size: 22px;
+                    }
                 }
+
                 .pricesXSmall {
                     font-size: 25px;
+
+                    @include tab-landscape {
+                        font-size: 22px;
+                    }
+
+                    @include portrait-small {
+                        font-size: 20px;
+                    }
                 }
+
                 .pricesXXSmall {
                     font-size: 22px;
+
+                    @include tab-landscape {
+                        font-size: 20px;
+                    }
+
+                    @include portrait-small {
+                        font-size: 18px;
+                    }
                 }
 
                 .compare-term {
                     font-size: 20px;
+
+                    @include portrait-small {
+                        font-size: 16px;
+                    }
                 }
 
                 .setupfee {

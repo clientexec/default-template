@@ -1,0 +1,31 @@
+<?php foreach ($this->customFields as $customFieldKey => $customField) { ?>
+    <li>
+        <span class="card-label">
+            <?php echo $customField['name']; ?>
+        </span>
+        <span class="card-value">
+        <?php
+        $customField['valuetoshow'] = $this->escape($customField['valuetoshow']);
+        $customField['value'] = $this->escape($customField['value']);
+        if (isset($customField['password'])) {
+            echo $customField['valuetoshow'];
+        } elseif ($customField['valuetoshow'] == $this->user->lang("Left Blank") && !$customField['isClientChangeable']) {
+            echo "<span class='muted'>" . $customField['valuetoshow'] . "</span>";
+        } elseif ($customField['type'] == TYPEPASSWORD) {
+            // Password values are never rendered into the page; they are fetched on demand.
+            echo '<a href="#" class="customFieldPasswordView" data-key="' . $this->escape($customFieldKey) . '" data-type="' . $this->escape($customField['type']) . '" data-name="' . $this->escape($customField['name']) . '" data-changeable="' . ($customField['isClientChangeable'] ? '1' : '0') . '">' . $this->user->lang('View %s', $customField['name']) . '</a>';
+        } elseif ($customField['isClientChangeable']) {
+            if (mb_strlen($customField['valuetoshow']) >= 25) {
+                echo '<a href="#" data-value="' . $customField['value'] . '" data-key="' . $customFieldKey . '" data-type="' . $customField['type'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name'])  . '</a>';
+            } else {
+                echo '<a href="#" data-value="' . $customField['value'] . '" data-key="' . $customFieldKey . '" data-type="' . $customField['type'] . '" class="customFieldChange" data-name="' . $customField['name'] . '">' . $customField['valuetoshow'] . '</a>';
+            }
+        } elseif (mb_strlen($customField['valuetoshow']) >= 25) {
+            echo '<a href="#" class="customFieldModal" data-content="' . $customField['valuetoshow'] . '" data-name="' . $customField['name'] . '">' . $this->user->lang('View %s', $customField['name']) . '</a>';
+        } else {
+            echo $customField['valuetoshow'];
+        }
+        ?>
+        </span>
+    </li>
+<?php } ?>
